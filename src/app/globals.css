@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -19,8 +21,333 @@
   }
 }
 
+.star-field {
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2px 2px at 160px 30px, #eee, transparent);
+  background-repeat: repeat;
+  background-size: 200px 100px;
+  animation: sparkle 8s linear infinite;
+}
+
+.star-field-2 {
+  background-image: 
+    radial-gradient(1px 1px at 25px 15px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 75px 55px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 110px 25px, #fff, transparent),
+    radial-gradient(1px 1px at 170px 65px, rgba(255,255,255,0.5), transparent);
+  background-repeat: repeat;
+  background-size: 250px 120px;
+  animation: sparkle 12s linear infinite reverse;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.nebula-1 {
+  background: radial-gradient(ellipse 800px 400px at 30% 20%, rgba(139, 69, 199, 0.15), transparent 50%);
+  animation: float 20s ease-in-out infinite;
+}
+
+.nebula-2 {
+  background: radial-gradient(ellipse 600px 300px at 70% 80%, rgba(59, 130, 246, 0.12), transparent 50%);
+  animation: float 25s ease-in-out infinite reverse;
+}
+
+.nebula-3 {
+  background: radial-gradient(ellipse 500px 250px at 50% 50%, rgba(16, 185, 129, 0.08), transparent 50%);
+  animation: float 30s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+  33% { transform: translateY(-20px) translateX(10px) rotate(1deg); }
+  66% { transform: translateY(10px) translateX(-15px) rotate(-1deg); }
+}
+
+.cosmic-dust {
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 2%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 2%),
+    radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.06) 0%, transparent 2%),
+    radial-gradient(circle at 60% 10%, rgba(255, 255, 255, 0.04) 0%, transparent 2%);
+  background-size: 300px 300px, 400px 400px, 200px 200px, 350px 350px;
+  animation: drift 40s linear infinite;
+}
+
+@keyframes drift {
+  0% { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%; }
+  100% { background-position: 100% 100%, -100% 50%, 50% -100%, -50% 100%; }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@font-face {
+  font-family: 'Amsterdam Four';
+  src: url('fonts/Amsterdam 400.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Veronica';
+  src: url('fonts/Verona-Regular.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Rozha On';
+  src: url('fonts/RozhaOne-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.rozha-class {
+  font-family: 'Rozha On', serif;
+}
+
+.my-class {
+  font-family: 'Amsterdam Four', cursive;
+}
+
+.veronica-class {
+  font-family: 'Veronica', cursive;
+}
+
+.slick-dots li button:before {
+  color: white !important;
+  opacity: 0.6; /* faded default */
+}
+
+.slick-dots li.slick-active button:before {
+  color: white !important;
+  opacity: 1;
+}
+
+  @keyframes progress {
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
+  }
+
+@keyframes move1 {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-50px, 30px);
+  }
+  50% {
+    transform: translate(50px, -30px);
+  }
+  75% {
+    transform: translate(-30px, -50px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes move2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(30px, -50px);
+  }
+  50% {
+    transform: translate(-30px, 50px);
+  }
+  75% {
+    transform: translate(50px, 30px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+.moving-gradient-1 {
+  animation: move1 15s ease-in-out infinite;
+}
+
+.moving-gradient-2 {
+  animation: move2 20s ease-in-out infinite;
+}
+
+  @keyframes progress-bar {
+    0% { width: 0%; }
+    100% { width: 100%; }
+  }
+  
+  .animate-progress-bar {
+    animation: progress-bar 3s linear infinite;
+  }
+  
+  .animate-spin-slow {
+    animation: spin 4s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes infinite-scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+.animate-infinite-scroll {
+    animation: infinite-scroll 20s linear infinite;
+}
+
+@keyframes spin-border {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animated-gold-border {
+  position: relative;
+  border-radius: 1rem;
+  padding: 4px;
+  overflow: hidden;
+}
+
+.animated-gold-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(#d4af37, #f8e9a1, #d4af37);
+  animation: spin-border 3s linear infinite;
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.link-underline { position: relative; }
+.link-underline::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px; width: 0; background: linear-gradient(90deg, #fff, rgb(255, 240, 255)); transition: width 300ms; }
+.link-underline:hover::after { width: 100%; }
+@keyframes slide-in-from-right-full {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation-fill-mode: both;
+}
+
+.slide-in-from-right-full {
+  animation-name: slide-in-from-right-full;
+}
+
+.duration-300 {
+  animation-duration: 300ms;
 }

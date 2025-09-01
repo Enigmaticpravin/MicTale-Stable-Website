@@ -1,103 +1,131 @@
-import Image from "next/image";
+import ClientHome from './ClientHome'
 
-export default function Home() {
+export const metadata = {
+  title: "MicTale | India’s Leading Open Mic Platform",
+  description:
+    "MicTale is India's leading open mic platform for poetry, comedy, storytelling, and music performances. Discover events, showcase your talent, and be part of a thriving artistic community.",
+  keywords:
+    "MicTale, poetry, poem, ghazal, nazm, hindi, urdu, comedy, music, open mic platform, poetry platform, Indian art, poetry events, creative performances, open mic events, artists in India",
+  authors: [{ name: "MicTale" }],
+  openGraph: {
+    title: "MicTale | India’s Leading Open Mic Platform",
+    description:
+      "Join MicTale, a platform for artists, poets, and performers to share their creativity and redefine the dynamics of art and performance in India.",
+    url: "https://www.mictale.in/",
+    type: "website",
+    images: [
+      {
+        url: "https://i.imgur.com/YFpScQU.png",
+        width: 1200,
+        height: 630,
+        alt: "MicTale Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MicTale | India’s Leading Open Mic Platform",
+    description:
+      "Discover MicTale, the new-age open mic platform redefining art and performance in India. A space for poetry, creativity, and connection.",
+    images: ["https://i.imgur.com/YFpScQU.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "https://www.mictale.in/",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
+}
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "MicTale",
+  url: "https://www.mictale.in",
+  logo: "https://i.imgur.com/YFpScQU.png",
+  description:
+    "MicTale is a new-age open mic platform transforming the art and performance landscape in India. Join us to celebrate poetry, creativity, and connection.",
+  sameAs: [
+    "https://www.instagram.com/mictale.in",
+    "https://www.youtube.com/@mictaleoriginals",
+  ],
+  keywords: "open mic, poetry, spoken word, storytelling, live performance, MicTale",
+  foundingDate: "2024",
+  founder: [
+    {
+      "@type": "Person",
+      name: "Pravin Gupta",
+      jobTitle: "Founder & CTO",
+      sameAs: [
+        "https://www.linkedin.com/in/enigmaticpravin",
+        "https://www.instagram.com/enigmaticpravin",
+        "https://twitter.com/enigmaticpravin",
+        "https://www.facebook.com/enigmaticpravin",
+      ],
+    },
+  ],
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      telephone: "+91-9667645676",
+      contactType: "customer service",
+      areaServed: "IN",
+      availableLanguage: ["en", "hi"],
+    },
+  ],
+  openingHours: "Mo-Su 10:00-22:00",
+  areaServed: "India",
+}
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.mictale.in/" },
+    { "@type": "ListItem", position: 2, name: "Treasury", item: "https://www.mictale.in/treasury" },
+    { "@type": "ListItem", position: 3, name: "About Us", item: "https://www.mictale.in/about" },
+  ],
+}
+
+const navigationSchema = {
+  "@context": "https://schema.org",
+  "@type": "SiteNavigationElement",
+  name: "Main Navigation",
+  url: "https://www.mictale.in/",
+  hasPart: [
+    { "@type": "SiteNavigationElement", name: "About Us", url: "https://www.mictale.in/about" },
+    { "@type": "SiteNavigationElement", name: "Events", url: "https://www.mictale.in/treasury" },
+    { "@type": "SiteNavigationElement", name: "Terms & Conditions", url: "https://www.mictale.in/terms-and-conditions" },
+    { "@type": "SiteNavigationElement", name: "Privacy Policy", url: "https://www.mictale.in/privacy-policy" },
+  ],
+}
+
+export default function HomePage() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(navigationSchema) }}
+      />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+      <ClientHome />
+    </>
+  )
 }
