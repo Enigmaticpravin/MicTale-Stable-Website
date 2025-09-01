@@ -1,4 +1,4 @@
-import { getAllPoemSlugs } from '@/lib/poems'
+import { getAllPoemSlugs } from '@/app/lib/poems'
 
 export default async function sitemap() {
   const base = process.env.NEXT_PUBLIC_BASE_URL
