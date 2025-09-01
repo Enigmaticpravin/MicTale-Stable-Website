@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/firebase";
+import { db } from "@/app/lib/firebase";
 import { collection, query, where, getDocs, updateDoc } from "firebase/firestore";
 
 export const runtime = "nodejs";

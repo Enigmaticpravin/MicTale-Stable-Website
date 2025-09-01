@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { XCircle, AlertTriangle } from "lucide-react";
-import { collection, getDocs, db } from "@/lib/firebase";
+import { collection, getDocs, db } from "@/app/lib/firebase";
 
 export default function PaymentFailure() {
   const router = useRouter();
