@@ -15,7 +15,7 @@ export default async function LatestBlogsShowcase({ limit = 7 }) {
   try {
     const colRef = collection(db, 'blogs')
 
-    const q = query(colRef, orderBy('createdAt', 'desc'), fbLimit(25)) // fetch a bit more
+    const q = query(colRef, orderBy('createdAt', 'desc'), fbLimit(25))
 
     const snap = await getDocs(q)
     const items = []

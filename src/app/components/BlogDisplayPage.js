@@ -1,65 +1,41 @@
-"use client"
+'use client'
 
-import React, { useEffect, useState } from "react"
-import { motion } from "framer-motion"
-import Link from "next/link"
-import { Calendar, Clock, User, Tag, Share2, ArrowLeft, Bookmark, BookmarkCheck, ArrowRight } from "lucide-react"
-import Footer from "./Footer"
-import Image from "next/image"
+import React, { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import Link from 'next/link'
+import {
+  Calendar,
+  Clock,
+  User,
+  Tag,
+  Share2,
+  ArrowLeft,
+  Bookmark,
+  BookmarkCheck,
+  ArrowRight
+} from 'lucide-react'
+import Footer from './Footer'
+import Image from 'next/image'
 import logo from '@/app/images/mic transparent.png'
 
-export default function BlogDisplayPageDark({ blog, similarBlogs = [] }) {
+export default function BlogDisplayPageDark ({ blog, similarBlogs = [] }) {
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [readingTime, setReadingTime] = useState(0)
 
   useEffect(() => {
-    const wordCount = (blog?.content || "").split(/\s+/).filter(Boolean).length
+    const wordCount = (blog?.content || '').split(/\s+/).filter(Boolean).length
     const time = Math.max(1, Math.ceil(wordCount / 200))
     setReadingTime(time)
   }, [blog?.content])
 
-  const parseMarkdown = (text) => {
-    if (!text) return ""
-    
-    let html = text
-      .replace(/^### (.*$)/gm, '<h3 class="text-xl font-semibold text-slate-100 mt-8 mb-4 tracking-wide">$1</h3>')
-      .replace(/^## (.*$)/gm, '<h2 class="text-2xl font-semibold text-slate-100 mt-10 mb-5 tracking-wide">$1</h2>')
-      .replace(/^# (.*$)/gm, '<h1 class="text-3xl font-bold text-slate-100 mt-12 mb-6 tracking-wide">$1</h1>')
-      
-      .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em class="text-slate-100 font-bold">$1</em></strong>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-100 font-semibold">$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em class="text-slate-100 italic">$1</em>')
-      
-      .replace(/```([\s\S]*?)```/g, '<pre class="bg-slate-900/50 border border-slate-800/50 rounded-xl p-6 my-8 overflow-x-auto backdrop-blur-sm"><code class="text-sm text-emerald-400 font-mono leading-relaxed">$1</code></pre>')
-      .replace(/`([^`]+)`/g, '<code class="bg-slate-800/60 text-emerald-400 px-3 py-1.5 rounded-md text-sm font-mono border border-slate-700/50">$1</code>')
-      
-      .replace(/^> (.*$)/gm, '<blockquote class="border-l-2 border-slate-600 pl-6 py-4 my-8 text-slate-200 italic bg-slate-900/20 rounded-r-lg">$1</blockquote>')
-      
-      .replace(/^\* (.*$)/gm, '<li class="text-slate-300 mb-3 leading-relaxed">$1</li>')
-      .replace(/^- (.*$)/gm, '<li class="text-slate-300 mb-3 leading-relaxed">$1</li>')
-      .replace(/^• (.*$)/gm, '<li class="text-slate-300 mb-3 leading-relaxed">$1</li>')
-      .replace(/^\+ (.*$)/gm, '<li class="text-slate-300 mb-3 leading-relaxed">$1</li>')
-      
-      .replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2" class="text-blue-400 hover:text-blue-300 underline decoration-blue-400/30 hover:decoration-blue-300/50 transition-all duration-300 font-medium underline-offset-4" target="_blank" rel="noopener noreferrer">$1</a>')
-      
-      .replace(/\n\n/g, '</p><p class="text-slate-200 leading-loose mb-6 text-base sm:text-lg">')
-      .replace(/\n/g, '<br>')
-
-    html = html.replace(/(<li class="text-slate-300 mb-3 leading-relaxed">.*?<\/li>\s*)+/g, (match) => {
-      return `<ul class="list-disc list-outside space-y-2 my-8 ml-6 text-slate-300">${match}</ul>`
-    })
-
-    if (!html.match(/^<[h1-6|ul|ol|blockquote|pre]/)) {
-      html = `<p class="text-slate-200 leading-loose mb-6 text-base sm:text-lg">${html}</p>`
-    }
-
-    return html
-  }
-
   const handleShare = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: blog.title, text: blog.excerpt, url: window.location.href })
+        await navigator.share({
+          title: blog.title,
+          text: blog.excerpt,
+          url: window.location.href
+        })
       } catch (err) {
         console.log('Error sharing:', err)
       }
@@ -67,7 +43,8 @@ export default function BlogDisplayPageDark({ blog, similarBlogs = [] }) {
       navigator.clipboard.writeText(window.location.href)
       const el = document.createElement('div')
       el.textContent = 'URL copied to clipboard'
-      el.className = 'fixed right-6 bottom-6 bg-slate-800/90 backdrop-blur-sm border border-slate-700/50 text-slate-100 px-6 py-3 rounded-xl shadow-2xl z-50 font-medium'
+      el.className =
+        'fixed right-6 bottom-6 bg-slate-800/90 backdrop-blur-sm border border-slate-700/50 text-slate-100 px-6 py-3 rounded-xl shadow-2xl z-50 font-medium'
       document.body.appendChild(el)
       setTimeout(() => el.remove(), 3000)
     }
@@ -77,15 +54,24 @@ export default function BlogDisplayPageDark({ blog, similarBlogs = [] }) {
     setIsBookmarked(!isBookmarked)
   }
 
-  const formatDate = (dateString) => {
-    try {
-      const date = new Date(dateString)
-      return new Intl.DateTimeFormat('en-IN', { year: 'numeric', month: 'short', day: 'numeric' }).format(date)
-    } catch (e) { return dateString }
+  const poppinsStyle = {
+    fontFamily: 'Poppins, sans-serif'
   }
 
-  const calculateReadingTime = (content) => {
-    const wordCount = (content || "").split(/\s+/).filter(Boolean).length
+  const formatDate = dateString => {
+    try {
+      const date = new Date(dateString)
+      return new Intl.DateTimeFormat('en-IN', {
+        month: 'short',
+        day: 'numeric'
+      }).format(date)
+    } catch (e) {
+      return dateString
+    }
+  }
+
+  const calculateReadingTime = content => {
+    const wordCount = (content || '').split(/\s+/).filter(Boolean).length
     return Math.max(1, Math.ceil(wordCount / 200))
   }
 
@@ -95,175 +81,166 @@ export default function BlogDisplayPageDark({ blog, similarBlogs = [] }) {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 antialiased">
+      <div className='ml-1 mr-1 mb-1 md:mr-5 md:ml-5 md:mb-5 rounded-2xl min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 antialiased'>
+        <div className='absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(59,130,246,0.05),transparent_50%),radial-gradient(circle_at_75%_75%,rgba(16,185,129,0.05),transparent_50%)] pointer-events-none'></div>
 
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(59,130,246,0.05),transparent_50%),radial-gradient(circle_at_75%_75%,rgba(16,185,129,0.05),transparent_50%)] pointer-events-none"></div>
-        
-        <main className="relative max-w-4xl mx-auto px-6 sm:px-8 lg:px-10 py-12 sm:py-16">
-          <motion.header 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ duration: 0.6, ease: "easeOut" }} 
-            className="md:mb-12 mb-5"
+        <main className='relative mx-auto px-6 sm:px-8 lg:px-10 py-12 sm:py-16'>
+          <motion.header
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            className='md:mb-12 mb-5 max-w-4xl w-full mx-auto'
           >
-            <div className="flex items-center flex-wrap gap-6 text-sm text-slate-400 mb-6">
-              <div className="flex items-center gap-2">
-                <div className="md:w-8 md:h-8 w-4 h-4 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full flex items-center justify-center">
-                  <User className="md:w-4 md:h-4 h-2 w-2 text-slate-300" />
-                </div>
-                <span className="text-slate-300 font-medium text-xs md:text-sm">{blog.author}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-3 h-3 md:w-4 md:h-4 text-slate-500" />
-                <time dateTime={blog.createdAt} className="font-medium text-xs md:text-sm">{formatDate(blog.createdAt)}</time>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="md:w-4 md:h-4 h-3 w-3 text-slate-500" />
-                <span className="font-medium text-xs md:text-sm">{readingTime} min read</span>
-              </div>
-            </div>
-
-            <h1 className="text-3xl md:text-6xl font-bold tracking-tight text-slate-50 leading-tight mb-6 bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">
+            <h1 className='text-2xl md:text-6xl font-bold tracking-tight leading-tight mb-6 bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent garamond-class text-center uppercase'>
               {blog.title}
             </h1>
 
-            {blog.excerpt && (
-              <p className="text-sm md:text-xl text-slate-300 max-w-3xl font-light leading-relaxed mb-5 md:mb-8">
-                {blog.excerpt}
-              </p>
-            )}
-
-            <div className="flex items-center justify-between flex-wrap gap-3 md:gap-6">
-              <div className="flex flex-wrap gap-3">
-                {(blog.tags || []).map((tag, i) => (
-                  <span 
-                    key={i} 
-                    className="inline-flex items-center gap-2 md:px-4 py-1 px-2 md:py-2 text-xs font-medium bg-slate-800/60 text-slate-200 rounded-full border border-slate-700/50 hover:bg-slate-700/60 transition-all duration-300 backdrop-blur-sm"
-                  >
-                    <Tag className="w-3 h-3" />
-                    {tag}
-                  </span>
-                ))}
+            <div className='flex items-center w-full mx-auto justify-center flex-wrap gap-6 text-sm text-slate-400 mb-6'>
+              <div className='flex items-center gap-2'>
+                <Calendar className='w-3 h-3 md:w-4 md:h-4 text-slate-500' />
+                <time
+                  dateTime={blog.createdAt}
+                  className='font-medium text-xs md:text-sm'
+                >
+                  {formatDate(blog.createdAt)}
+                </time>
               </div>
-              
-              <div className="flex items-center gap-3">
-                <button 
-                  onClick={toggleBookmark}
-                  className="p-2 md:p-3 rounded-full bg-slate-800/60 hover:bg-slate-700/60 transition-all duration-300 backdrop-blur-sm border border-slate-700/50"
-                >
-                  {isBookmarked ? 
-                    <BookmarkCheck className="w-3 h-3 md:w-5 md:h-5 text-blue-400" /> : 
-                    <Bookmark className="w-3 h-3 md:w-5 md:h-5 text-slate-400" />
-                  }
-                </button>
-                <button 
-                  onClick={handleShare}
-                  className="p-2 md:p-3 rounded-full bg-slate-800/60 hover:bg-slate-700/60 transition-all duration-300 backdrop-blur-sm border border-slate-700/50"
-                >
-                  <Share2 className="md:w-5 md:h-5 w-3 h-3 text-slate-400" />
-                </button>
+              <div className='flex items-center gap-2'>
+                <Clock className='md:w-4 md:h-4 h-3 w-3 text-slate-500' />
+                <span className='font-medium text-xs md:text-sm'>
+                  {readingTime} min read
+                </span>
               </div>
             </div>
           </motion.header>
 
           {blog.coverImage && (
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }} 
-              animate={{ scale: 1, opacity: 1 }} 
-              transition={{ duration: 0.8, delay: 0.2 }} 
-              className="md:mb-16 mb-5 rounded-3xl overflow-hidden shadow-2xl border border-slate-800/50"
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className='md:mb-16 mb-5 mx-auto w-full max-w-4xl'
             >
               <Image
                 src={blog.coverImage}
                 alt={blog.title}
-                className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                loading="eager"
-                width={1200}
-                height={800}
+                className='w-[900px] rounded-xl h-[430px] object-cover transition-transform duration-700 group-hover:scale-105'
+                loading='eager'
+                width={900}
+                height={430}
               />
             </motion.div>
           )}
 
-          <motion.article 
-            initial={{ opacity: 0, y: 30 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.4, duration: 0.8 }} 
-            className="prose prose-invert prose-sm md:prose-xl max-w-none mb-5 md:mb-20"
+          <motion.article
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className='max-w-5xl mx-auto mb-5 md:mb-20'
           >
-            <div 
-              className="blog-content text-slate-200 leading-loose"
+            <div
+              className='text-slate-200 text-lg md:text-2xl leading-relaxed garamond-class text-justify
+             first-letter:float-left first-letter:mr-2 first-letter:mt-1
+             first-letter:text-6xl md:first-letter:text-7xl
+             first-letter:leading-none first-letter:font-bold'
               dangerouslySetInnerHTML={{
-                __html: parseMarkdown(blog.content || '')
+                __html: blog.content || ''
               }}
             />
           </motion.article>
+
+           <div className='flex flex-col items-center justify-center mt-10 md:mt-0 mb-10'>
+            <p className='helvetica-class text-xs md:text-sm italic uppercase font-light mb-2'>Published by</p>
+              <div className='flex items-center gap-2 md:gap-4 border border-slate-500/50 rounded-full px-2 md:px-5'>
+             <Image
+                    src={logo}
+                    alt='MicTale Logo'
+                    width={64}
+                    height={64}
+                    className='bg-slate-950 rounded-full h-7 w-7 md:h-10 md:w-10'
+                  />
+                <div>
+                  <h3 className='text-slate-100 helvetica-class font-semibold text-sm  md:text-lg'>
+                    {blog.author}
+                  </h3>
+                </div>
+              </div>
+            </div>
 
           {displaySimilarBlogs.length > 0 && (
             <motion.section
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
-              className="mb-5 md:mb-20"
+              className='mb-5 md:mb-20'
             >
-              <div className="border-t border-slate-800/50 pt-5 md:pt-16">
-                <h2 className="text-lg md:text-3xl font-bold text-slate-100 mb-5 md:mb-12 tracking-tight">
-                  Related Articles
-                </h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 md:gap-8 gap-4">
+              <div className='border-t border-slate-800/50 pt-5 md:pt-16'>
+                <div className='justify-center items-center flex flex-col mb-3 md:mb-10'>
+                  <p
+                    className='uppercase text-transparent bg-clip-text bg-gradient-to-t font-bold text-[12px] md:text-[18px] from-yellow-700 via-yellow-500 to-yellow-900'
+                    style={poppinsStyle}
+                  >
+                    Explore these
+                  </p>
+                  <p className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white veronica-class'>
+                    Related Articles{' '}
+                  </p>
+                </div>
+                <div className='grid grid-cols-2 md:grid-cols-2 md:gap-8 gap-4 max-w-4xl mx-auto'>
                   {displaySimilarBlogs.map((similarBlog, index) => (
                     <motion.article
                       key={similarBlog.id || index}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.8 + index * 0.1, duration: 0.6 }}
-                      className="group"
+                      className='group'
                     >
-                      <Link href={`/blog/${similarBlog.slug || similarBlog.id}`} className="block">
-                        <div className="bg-slate-900/40 backdrop-blur-sm border border-slate-800/50 rounded-2xl overflow-hidden hover:border-slate-700/50 transition-all duration-500 hover:transform hover:scale-[1.02] hover:shadow-xl">
-                          {similarBlog.coverImage && (
-                            <div className="aspect-video overflow-hidden">
-                              <Image
-                                src={similarBlog.coverImage}
-                                alt={similarBlog.title}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                loading="lazy"
-                                width={1200}
-                                height={800}
-                              />
-                            </div>
-                          )}
-                          
-                          <div className="p-6">
-                            <div className="flex items-center gap-4 text-xs text-slate-400 mb-3">
-                              <span className="flex items-center gap-1">
-                                <Calendar className="w-3 h-3" />
-                                {formatDate(similarBlog.createdAt)}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                {calculateReadingTime(similarBlog.content)} min
-                              </span>
-                            </div>
-                            
-                            <h3 className="text-lg font-semibold text-slate-100 mb-3 line-clamp-2 group-hover:text-blue-400 transition-colors duration-300">
-                              {similarBlog.title}
-                            </h3>
-                            
-                            {similarBlog.excerpt && (
-                              <p className="text-sm text-slate-400 line-clamp-3 mb-4 leading-relaxed">
-                                {similarBlog.excerpt}
-                              </p>
-                            )}
-                            
-                         
-                            
-                            <div className="flex items-center text-blue-400 text-sm font-medium group-hover:text-blue-300 transition-colors duration-300">
-                              <span>Read Article</span>
-                              <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-                            </div>
-                          </div>
+                      <Link
+                        href={`/blog/${similarBlog.slug || similarBlog.id}`}
+                        className='block'
+                      >
+                         <div className="p-2 relative rounded-2xl bg-gray-900/40 border border-gray-700/30 overflow-hidden backdrop-blur-sm shadow-xl transition-all duration-300 group-hover/card:shadow-2xl group-hover/card:border-gray-600/50">
+                    <div className="relative overflow-hidden">
+                      {similarBlog.coverImage ? (
+                        <img 
+                          src={similarBlog.coverImage} 
+                          alt={similarBlog.title}
+                          loading="lazy"
+                          className="md:h-40 h-20 w-full rounded-lg object-cover transition-transform duration-500 group-hover/card:scale-110"
+                        />
+                      ) : (
+                        <div className="h-full w-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                          <svg className="w-8 h-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
                         </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent" />
+                    </div>
+
+                    <div className="md:p-5 space-y-3 mt-2">
+                      <h3 className="md:font-semibold text-white text-sm md:text-lg leading-tight line-clamp-2 group-hover/card:underline ">
+                        {similarBlog.title}
+                      </h3>
+                    
+                      <div className="flex items-center justify-between text-xs md:text-sm">
+                        <time
+                          dateTime={similarBlog.createdAt}
+                          className="text-gray-400 font-light"
+                        >
+                          {formatDate(similarBlog.createdAt)}
+                        </time>
+                        <div className="flex items-center text-gray-500 group-hover/card:text-gray-400 transition-colors">
+                          <span className="text-xs">Read more</span>
+                          <svg className="w-3 h-3 transition-transform group-hover/card:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 rounded-2xl" />
+                  </div>
                       </Link>
                     </motion.article>
                   ))}
@@ -271,150 +248,7 @@ export default function BlogDisplayPageDark({ blog, similarBlogs = [] }) {
               </div>
             </motion.section>
           )}
-
-          <motion.footer 
-            initial={{ opacity: 0, y: 30 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.8, duration: 0.6 }} 
-            className="border-t border-slate-800/50 pt-12"
-          >
-            <div className="flex items-center justify-between gap-8">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 md:w-16 md:h-16 bg-gradient-to-br from-slate-900 to-slate-950 rounded-2xl flex items-center justify-center text-white font-semibold shadow-lg backdrop-blur-sm">
-               <Image
-  src={logo}
-  alt="MicTale Logo"
-  width={64}
-  height={64}
-  className="invert"
-/>
-                </div>
-                <div>
-                  <h3 className="text-slate-100 font-semibold text-sm  md:text-lg">{blog.author}</h3>
-                  <p className="text-xs md:text-sm text-slate-400">Writer & Creator</p>
-                </div>
-              </div>
-
-              <div className="text-xs md:text-sm text-slate-400">
-                Published on {formatDate(blog.createdAt)}
-              </div>
-            </div>
-          </motion.footer>
         </main>
-
-        {/* Enhanced Styles */}
-        <style jsx>{`
-          .blog-content {
-            color: rgb(226 232 240);
-            line-height: 1.8;
-          }
-
-          .blog-content * {
-            color: inherit;
-          }
-
-          .blog-content h1,
-          .blog-content h2,
-          .blog-content h3 {
-            scroll-margin-top: 2rem;
-            font-weight: bold;
-            color: rgb(248 250 252);
-          }
-
-          .blog-content p {
-            text-align: justify;
-            hyphens: auto;
-            margin-bottom: 1.5rem;
-          }
-
-          .blog-content ul {
-            margin: 2rem 0;
-          }
-
-          .blog-content li {
-            position: relative;
-            line-height: 1.7;
-            margin-bottom: 0.75rem;
-          }
-
-          .blog-content li::marker {
-            color: rgb(148 163 184);
-          }
-
-          .blog-content blockquote {
-            position: relative;
-            font-style: italic;
-            quotes: '"' '"';
-            background: rgba(15 23 42 / 0.3);
-          }
-
-          .blog-content blockquote::before {
-            content: open-quote;
-            font-size: 3rem;
-            color: rgb(96 165 250);
-            position: absolute;
-            left: -1.5rem;
-            top: -1rem;
-            line-height: 1;
-            opacity: 0.7;
-          }
-
-          .blog-content pre {
-            position: relative;
-            font-size: 0.875rem;
-          }
-
-          .blog-content code {
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
-            font-size: 0.875rem;
-            font-weight: 500;
-          }
-
-          .blog-content a {
-            position: relative;
-            text-decoration: none;
-          }
-
-          .blog-content a:hover {
-            text-shadow: 0 0 8px rgba(96, 165, 250, 0.3);
-          }
-
-          .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-          }
-
-          .line-clamp-3 {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-          }
-
-          html {
-            scroll-behavior: smooth;
-          }
-
-          @media print {
-            .blog-content { color: black !important; background: white !important; }
-            .blog-content h1,
-            .blog-content h2,
-            .blog-content h3 { color: black !important; page-break-after: avoid; }
-            .blog-content blockquote {
-              border-left: 4px solid #333 !important;
-              background: #f5f5f5 !important;
-              color: #333 !important;
-            }
-            .blog-content pre,
-            .blog-content code {
-              background: #f5f5f5 !important;
-              color: #333 !important;
-              border: 1px solid #ccc !important;
-            }
-          }
-        `}</style>
       </div>
       <Footer />
     </>

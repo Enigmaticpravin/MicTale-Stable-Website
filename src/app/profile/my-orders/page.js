@@ -279,7 +279,7 @@ export default function MyTickets() {
                 </svg>
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">No tickets found</h2>
-              <p className="text-gray-400 max-w-md mx-auto">Looks like you haven't purchased any tickets yet. Explore our upcoming events and secure your spot!</p>
+              <p className="text-gray-400 max-w-md mx-auto">Looks like you haven&apos;t purchased any tickets yet. Explore our upcoming events and secure your spot!</p>
            
             </div>
           ) : filteredTickets.length === 0 ? (

@@ -6,7 +6,6 @@ export async function GET(request) {
   const title = url.searchParams.get('title') || ''
   const q = title.toLowerCase()
 
-  // map some legacy titles to static paths
   const map = {
     'kaalikh (author-signed, paperback)': '/book/kaalikh-author-signed-paperback-by-pravin-gupta',
     'kaalikh (author-signed, revised edition)': '/book/kaalikh-author-signed-paperback-by-pravin-gupta',

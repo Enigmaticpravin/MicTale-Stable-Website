@@ -856,7 +856,7 @@ const isActive = (path) => pathname === path
                       </h3>
                       <div className='mt-2'>
                         <p className='text-sm text-gray-300'>
-                          Are you sure you want to sign out? You'll need to sign
+                          Are you sure you want to sign out? You will need to sign
                           in again to access your account.
                         </p>
                       </div>

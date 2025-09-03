@@ -28,7 +28,6 @@ export async function POST(request) {
       auth: jwtClient
     })
 
-    // Submit URL for indexing
     const response = await indexing.urlNotifications.publish({
       requestBody: {
         url: url,

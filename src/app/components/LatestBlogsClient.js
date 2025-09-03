@@ -97,7 +97,6 @@ export default function LatestBlogsClient({ blogs = [] }) {
         >
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 rounded-3xl" />
           <div className="relative z-10 grid lg:grid-cols-2 gap-0">
-            {/* Image section */}
             <div className="relative aspect-[16/10] lg:aspect-square overflow-hidden">
               <Image
                 src={main.coverImage}
@@ -113,7 +112,7 @@ export default function LatestBlogsClient({ blogs = [] }) {
             <div className="p-6 sm:p-8 lg:p-10 flex flex-col justify-center space-y-6">
               <div className="space-y-4">
                 <motion.div 
-                  className="inline-flex items-center gap-2 text-xs font-medium text-blue-400/80 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20"
+                  className=" hidden md:inline-flex items-center gap-2 text-xs font-medium text-blue-400/80 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20"
                   variants={item}
                 >
                   <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
@@ -121,7 +120,7 @@ export default function LatestBlogsClient({ blogs = [] }) {
                 </motion.div>
                 
                 <motion.h1 
-                  className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white leading-tight tracking-tight"
+                  className="text-lg sm:text-3xl lg:text-4xl font-semibold text-white leading-tight tracking-tight"
                   variants={item}
                 >
                   <a 
@@ -134,7 +133,7 @@ export default function LatestBlogsClient({ blogs = [] }) {
                 </motion.h1>
 
               <motion.p 
-  className="text-gray-300 leading-relaxed text-sm sm:text-base font-light line-clamp-7"
+  className="text-gray-300 leading-relaxed text-xs md:text-base font-light line-clamp-3"
   variants={item}
 >
   {main.content}
@@ -146,7 +145,7 @@ export default function LatestBlogsClient({ blogs = [] }) {
                 className="flex items-center justify-between pt-4 border-t border-gray-700/50"
                 variants={item}
               >
-                <div className="flex items-center gap-3 text-sm text-gray-400">
+                <div className="flex items-center gap-3 text-xs md:text-sm text-gray-400">
                   <time dateTime={main.createdAt}>
                     {formatDate(main.createdAt)}
                   </time>
@@ -156,7 +155,7 @@ export default function LatestBlogsClient({ blogs = [] }) {
                 
                 <a 
                   href={`/blog/${main.slug}`} 
-                  className="group/btn inline-flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-gray-600/30 hover:border-gray-500/50 rounded-xl text-sm font-medium text-white transition-all duration-300"
+                  className="group/btn inline-flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-gray-600/30 hover:border-gray-500/50 rounded-xl text-xs md:text-sm font-medium text-white transition-all duration-300"
                 >
                   Read Article
                   <svg className="w-4 h-4 transition-transform group-hover/btn:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -170,14 +169,13 @@ export default function LatestBlogsClient({ blogs = [] }) {
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-blue-500/20 via-purple-500/10 to-transparent rounded-full blur-3xl opacity-60 animate-pulse" />
         </motion.article>
 
-        {/* More Articles Section */}
         <motion.div className="space-y-6" variants={item}>
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl sm:text-2xl font-semibold text-white mb-2">
+              <h2 className="text-sm md:text-2xl font-semibold text-white">
                 More Articles
               </h2>
-              <p className="text-gray-400 text-sm font-light">
+              <p className="text-gray-400 text-xs md:text-sm font-light">
                 Discover our latest insights and stories
               </p>
             </div>
@@ -222,8 +220,7 @@ export default function LatestBlogsClient({ blogs = [] }) {
                   variants={cardHover}
                 >
                   <div className="relative rounded-2xl bg-gray-900/40 border border-gray-700/30 overflow-hidden backdrop-blur-sm shadow-xl transition-all duration-300 group-hover/card:shadow-2xl group-hover/card:border-gray-600/50">
-                    {/* Image */}
-                    <div className="relative aspect-[16/10] overflow-hidden">
+                    <div className="relative aspect-[16/8] overflow-hidden">
                       {blog.coverImage ? (
                         <img 
                           src={blog.coverImage} 
@@ -241,13 +238,12 @@ export default function LatestBlogsClient({ blogs = [] }) {
                       <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent" />
                     </div>
 
-                    {/* Content */}
                     <div className="p-5 space-y-3">
-                      <h3 className="font-semibold text-white text-lg leading-tight line-clamp-2 group-hover/card:underline ">
+                      <h3 className="font-semibold text-white text-sm md:text-lg leading-tight line-clamp-2 group-hover/card:underline ">
                         {blog.title}
                       </h3>
                       
-                      <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center justify-between text-xs md:text-sm">
                         <time 
                           dateTime={blog.createdAt}
                           className="text-gray-400 font-light"
@@ -263,7 +259,6 @@ export default function LatestBlogsClient({ blogs = [] }) {
                       </div>
                     </div>
 
-                    {/* Hover gradient */}
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 rounded-2xl" />
                   </div>
                 </motion.a>

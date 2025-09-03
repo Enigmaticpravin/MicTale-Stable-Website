@@ -49,7 +49,6 @@ async function getSimilarBlogs(currentBlog, currentBlogId) {
       }
     }
     
-    // Strategy 2: If we need more blogs, get recent ones
     if (similarBlogs.length < 4) {
       try {
         console.log('Fetching recent blogs to fill remaining slots')
@@ -81,7 +80,6 @@ async function getSimilarBlogs(currentBlog, currentBlogId) {
       }
     }
     
-    // Strategy 3: Final fallback - simple collection fetch if all else fails
     if (similarBlogs.length === 0) {
       try {
         console.log('Using fallback: simple collection query')
@@ -246,7 +244,6 @@ export default async function BlogPage({ params }) {
       notFound()
     }
     
-    // Fetch similar blogs
     const similarBlogs = await getSimilarBlogs(blog, docSnap.id)
     
     return (

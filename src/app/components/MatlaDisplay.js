@@ -182,7 +182,7 @@ const MatlaDisplay = () => {
           className="uppercase text-transparent bg-clip-text bg-gradient-to-t font-semibold text-[12px] md:text-[18px] from-yellow-700 via-yellow-500 to-yellow-900"
           style={poppinsStyle}
         >
-          Today's Top
+          Today&apos;s Top
         </h2>
         <h1 className="text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white veronica-class">
           Best Ghazals

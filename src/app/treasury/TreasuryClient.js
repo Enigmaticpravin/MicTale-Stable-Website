@@ -119,15 +119,15 @@ export default function TreasuryClient ({ initialPoems = [] }) {
                      focus:ring-2 focus:ring-white/20'
                   >
                     <div className='flex items-start justify-between gap-3'>
-                      <h2 className='text-lg font-medium leading-snug text-white group-hover:text-white'>
+                      <h2 className='text-sm md:text-lg font-medium leading-snug text-white group-hover:text-white'>
                         {p.title}
                       </h2>
-                      <span className='shrink-0 rounded-full border border-white/10 px-2.5 py-1 text-[10px] uppercase tracking-wide text-white/50'>
+                      <span className='shrink-0 rounded-full border border-white/10 px-2.5 py-1 text-[7px] md:text-[10px] uppercase tracking-wide text-white/50'>
                         {p.category}
                       </span>
                     </div>
 
-                    <div className='mt-1 text-sm text-white/60'>{p.author}</div>
+                    <div className='mt-1 text-xs md:text-sm text-white/60'>{p.author}</div>
 
                     {Array.isArray(p.lines) && p.lines.length > 0 ? (
                       <p className='mt-3  md:flex hidden line-clamp-3 whitespace-pre-wrap text-sm leading-relaxed text-white/70'>

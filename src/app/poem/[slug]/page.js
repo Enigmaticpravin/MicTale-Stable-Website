@@ -161,7 +161,7 @@ export default async function PoemPage({ params }) {
 
   return (
     <>
-      <main className="min-h-screen bg-slate-950">
+      <main className="ml-1 mr-1 mb-1 md:mr-5 md:ml-5 md:mb-5 rounded-2xl min-h-screen bg-slate-950">
 
         <div className="max-w-5xl mx-auto px-6 py-8 md:py-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16">

@@ -275,7 +275,7 @@ console.log('toggleForgotPassword');
               <div className="px-8 pb-10">
                 <div className="mb-4 text-center">
                   <h4 className="text-lg font-medium mb-2">Reset Password</h4>
-                  <p className="text-sm text-gray-400">Enter your email address and we'll send you a link to reset your password.</p>
+                  <p className="text-sm text-gray-400">Enter your email address and we will send you a link to reset your password.</p>
                 </div>
                 
                 {success && (
@@ -403,7 +403,7 @@ console.log('toggleForgotPassword');
                   </button>
 
                   <div className="text-center mt-7 text-sm text-gray-400">
-                    Don't have an account? <button type="button" onClick={switchCard} className="text-blue-400 hover:text-blue-300 transition-colors duration-200 hover:underline cursor-pointer">Sign up, it's free!</button>
+                    Don&apos;t have an account? <button type="button" onClick={switchCard} className="text-blue-400 hover:text-blue-300 transition-colors duration-200 hover:underline cursor-pointer">Sign up, it&apos;s free!</button>
                   </div>
                 </div>
               </>

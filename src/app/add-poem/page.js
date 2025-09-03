@@ -856,7 +856,7 @@ code block
                   <p>• <strong className="text-gray-200">Structure:</strong> 5-15 couplets (sher), each expressing a complete thought</p>
                   <p>• <strong className="text-gray-200">Radif:</strong> Repeated word or phrase at the end of second line in each couplet</p>
                   <p>• <strong className="text-gray-200">Qafiya:</strong> Rhyming word that comes before the radif</p>
-                  <p>• <strong className="text-gray-200">Maqta:</strong> Final couplet often includes poet's pen name (takhallus)</p>
+                  <p>• <strong className="text-gray-200">Maqta:</strong> Final couplet often includes poet&apos;s pen name (takhallus)</p>
                   <p>• <strong className="text-gray-200">Theme:</strong> Traditionally about love, loss, longing, or philosophical reflection</p>
                 </>
               )}

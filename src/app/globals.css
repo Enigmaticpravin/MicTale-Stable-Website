@@ -168,6 +168,28 @@ body {
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Garamond';
+  src: url('fonts/Garamond-Regular.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Helvetica';
+  src: url('fonts/Helvetica.ttf') format('truetype');
+}
+
+.helvetica-class {
+  font-family: 'Helvetica', serif;
+  font-weight: lighter;
+  font-style: normal;
+}
+
+.garamond-class {
+  font-family: 'Garamond', serif;
+}
+
 .rozha-class {
   font-family: 'Rozha On', serif;
 }
@@ -182,7 +204,7 @@ body {
 
 .slick-dots li button:before {
   color: white !important;
-  opacity: 0.6; /* faded default */
+  opacity: 0.6;
 }
 
 .slick-dots li.slick-active button:before {
@@ -351,3 +373,4 @@ body {
 .duration-300 {
   animation-duration: 300ms;
 }
+          

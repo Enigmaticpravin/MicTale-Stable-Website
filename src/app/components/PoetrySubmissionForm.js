@@ -156,7 +156,7 @@ const PoetrySubmissionForm = () => {
             Submission Received
           </h2>
           <p className='text-gray-600 mb-8 leading-relaxed'>
-            Thank you for sharing your work with us. We'll personally review
+            Thank you for sharing your work with us. We will personally review
             your submission and respond within 7 days.
           </p>
           <button
