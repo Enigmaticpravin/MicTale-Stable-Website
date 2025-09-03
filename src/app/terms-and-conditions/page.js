@@ -91,11 +91,10 @@ export default function TermsPage() {
           role="main"
         >
           <div className="backdrop-blur-lg bg-gray-900/50 rounded-2xl border border-gray-700 shadow-2xl">
-            {/* Content sections */}
             <section className="p-8 border-b border-gray-700">
               <h2 className="text-2xl font-semibold text-white mb-4">Welcome to MicTale</h2>
               <p className="text-gray-300 leading-relaxed">
-                By accessing or using MicTale's platform, you agree to be bound by these Terms and
+                By accessing or using MicTale&apos;s platform, you agree to be bound by these Terms and
                 Conditions. Please read these terms carefully before participating in any open mic
                 events or using our services.
               </p>

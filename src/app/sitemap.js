@@ -1,8 +1,9 @@
-import { getAllPoemSlugs } from '@/app/lib/poems'
+// src/app/sitemap.js
+import { listPoemSlugs } from '@/app/lib/poems'
 
 export default async function sitemap() {
   const base = process.env.NEXT_PUBLIC_BASE_URL
-  const poems = await getAllPoemSlugs()
+  const poems = await listPoemSlugs()
 
   return [
     { url: `${base}/`, lastModified: new Date() },

@@ -119,12 +119,13 @@ const ShowDetails = ({ showid }) => {
     ]
   }
 
-  const benefitIcons = [
-    <Gift className='text-yellow-400 w-8 h-8' />,
-    <Star className='text-yellow-400 w-8 h-8' />,
-    <Video className='text-yellow-400 w-8 h-8' />,
-    <Megaphone className='text-yellow-400 w-8 h-8' />
-  ]
+const benefitIcons = [
+  <Gift key="gift" className="text-yellow-400 w-8 h-8" />,
+  <Star key="star" className="text-yellow-400 w-8 h-8" />,
+  <Video key="video" className="text-yellow-400 w-8 h-8" />,
+  <Megaphone key="megaphone" className="text-yellow-400 w-8 h-8" />
+]
+
 
   const poppinsStyle = {
     fontFamily: 'Poppins, sans-serif'

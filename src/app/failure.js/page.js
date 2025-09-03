@@ -143,7 +143,7 @@ export default function PaymentFailure() {
             <XCircle className="h-16 w-16 text-red-500" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Payment Failed</h1>
-          <p className="text-gray-500">We couldn't process your payment for the Open Mic slot</p>
+          <p className="text-gray-500">We could not process your payment for the Open Mic slot</p>
         </div>
 
         {paymentData ? (
@@ -154,7 +154,7 @@ export default function PaymentFailure() {
                 <span className="font-medium">Transaction Failed</span>
               </div>
               <p className="text-sm text-red-600">
-                Your payment was unsuccessful. You haven't been charged.
+                Your payment was unsuccessful. You have not been charged.
               </p>
             </div>
 

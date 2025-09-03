@@ -18,6 +18,7 @@ function formatDate(iso) {
 }
 
 export default function LatestBlogsClient({ blogs = [] }) {
+    const stripRef = useRef(null) 
   if (!Array.isArray(blogs) || blogs.length === 0) {
     return (
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -33,7 +34,6 @@ export default function LatestBlogsClient({ blogs = [] }) {
   }
 
   const [main, ...rest] = blogs
-  const stripRef = useRef(null)
 
   function scrollStrip(delta = 1) {
     const node = stripRef.current
