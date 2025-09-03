@@ -16,13 +16,7 @@ export default function RootLayout ({ children }) {
       <body {...(ADD_GPTW ? { 'data-gptw': '' } : {})}>
         <ClientRoot>
           <ToastProvider>
-        <main className="relative min-h-screen overflow-hidden">
-  <div className="absolute inset-0 star-field pointer-events-none"></div>
-  <div className="absolute inset-0 star-field-2 pointer-events-none"></div>
-  <div className="absolute inset-0 cosmic-dust pointer-events-none"></div>
-  {children}
-</main>
-
+              {children}
           </ToastProvider>
         </ClientRoot>
       </body>

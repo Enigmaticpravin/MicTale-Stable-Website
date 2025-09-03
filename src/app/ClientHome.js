@@ -134,7 +134,7 @@ const handleClick = event => {
     fontFamily: 'Poppins, sans-serif'
   }
   return (
-   <div className='relative min-h-screen text-white overflow-hidden'>
+   <div className='relative min-h-screen bg-slate-950 text-white overflow-hidden'>
   
   <div className='fixed inset-0 pointer-events-none'>
     <div
