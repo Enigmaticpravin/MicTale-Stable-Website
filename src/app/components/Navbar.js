@@ -32,8 +32,18 @@ import { createContext, useContext } from 'react'
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { Cancel01FreeIcons, CancelCircleFreeIcons, Edit01FreeIcons, HelpCircleFreeIcons, Home01FreeIcons, InformationCircleFreeIcons, Menu01FreeIcons, Ticket01FreeIcons, UserAdd01FreeIcons } from '@hugeicons/core-free-icons/index'
-import { usePathname } from 'next/navigation'
+import {
+  Cancel01FreeIcons,
+  CancelCircleFreeIcons,
+  Edit01FreeIcons,
+  HelpCircleFreeIcons,
+  Home01FreeIcons,
+  InformationCircleFreeIcons,
+  Menu01FreeIcons,
+  Ticket01FreeIcons,
+  UserAdd01FreeIcons
+} from '@hugeicons/core-free-icons/index'
+import { usePathname, useRouter } from 'next/navigation'
 
 export const UserContext = createContext(null)
 export const ShowsContext = createContext([])
@@ -43,6 +53,7 @@ export function UserProvider ({ children }) {
   const [loading, setLoading] = useState(true)
   const [authChecked, setAuthChecked] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async currentUser => {
@@ -178,10 +189,13 @@ const Navbar = () => {
   const menuRef = useRef(null)
   const mobileMenuRef = useRef(null)
 
+  
+  const router = useRouter()
+
   const { user } = useUser()
   const { upcomingShows } = useShows()
-const pathname = usePathname()
-const isActive = (path) => pathname === path
+  const pathname = usePathname()
+  const isActive = path => pathname === path
 
   useEffect(() => {
     const handleScroll = () => {
@@ -257,11 +271,24 @@ const isActive = (path) => pathname === path
     setMobileMenuOpen(false)
   }
 
+  const pushToProfile = () => {
+    router.push('/profile')
+  }
+
+  const handleLogin = () => {
+    window.location.href = '/login'
+  }
+
   return (
     <>
- <nav className={`text-white sticky top-0 z-50 transition-all duration-500 ${isScrolled ? 'bg-gradient-to-r from-gray-950 via-slate-900 to-gray-950 m-1 md:m-5 top-2 rounded-2xl' : 'bg-transparent'}`}>
+      <nav
+        className={`text-white sticky top-0 z-50 transition-all duration-500 ${
+          isScrolled
+            ? 'bg-gradient-to-r from-gray-950 via-slate-900 to-gray-950 m-1 md:m-5 top-2 rounded-2xl'
+            : 'bg-transparent'
+        }`}
+      >
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center'>
-          
           <div
             className='relative cursor-pointer'
             onClick={() => (window.location.href = '/')}
@@ -313,9 +340,7 @@ const isActive = (path) => pathname === path
                   `}</style>
                 </span>
               )}
-              <span className='relative z-10  rounded-full'>
-                Home
-              </span>
+              <span className='relative z-10  rounded-full'>Home</span>
             </Link>
             <Link
               href='/treasury'
@@ -351,9 +376,7 @@ const isActive = (path) => pathname === path
                   `}</style>
                 </span>
               )}
-              <span className='relative z-10  rounded-full'>
-                Treasury
-              </span>
+              <span className='relative z-10  rounded-full'>Treasury</span>
             </Link>
             <Link
               href='/about'
@@ -387,9 +410,7 @@ const isActive = (path) => pathname === path
                   `}</style>
                 </span>
               )}
-              <span className='relative z-10 rounded-full'>
-                About Us
-              </span>
+              <span className='relative z-10 rounded-full'>About Us</span>
             </Link>
           </div>
 
@@ -652,153 +673,177 @@ const isActive = (path) => pathname === path
                 )}
               </AnimatePresence>
             </div>
-          <div className="md:hidden">
-      <button
-        onClick={toggleMobileMenu}
-        className="w-8 h-8 flex justify-center items-center text-white"
-        aria-label="Toggle mobile menu"
-      >
-        {mobileMenuOpen ? (
-          <HugeiconsIcon icon={Cancel01FreeIcons} size={24} />
-        ) : (
-          <HugeiconsIcon icon={Menu01FreeIcons} size={24} />
+            <div className='md:hidden'>
+              <button
+                onClick={toggleMobileMenu}
+                className='w-8 h-8 flex justify-center items-center text-white'
+                aria-label='Toggle mobile menu'
+              >
+                {mobileMenuOpen ? (
+                  <HugeiconsIcon icon={Cancel01FreeIcons} size={24} />
+                ) : (
+                  <HugeiconsIcon icon={Menu01FreeIcons} size={24} />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+        {!isScrolled && (
+          <div className='absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-gray-950 via-gray-600 to-gray-950'></div>
         )}
-      </button>
-    </div>
-          </div>
-        </div>
-        {!isScrolled && <div className='absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-gray-950 via-gray-600 to-gray-950'></div>}
       </nav>
-       <div
-      ref={mobileMenuRef}
-      className={`fixed inset-0 z-50 md:hidden transition-all duration-500 ease-in-out ${
-        mobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
-      }`}
-    >
       <div
-        className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-500 ease-in-out ${
-          mobileMenuOpen ? 'opacity-100' : 'opacity-0'
+        ref={mobileMenuRef}
+        className={`fixed inset-0 z-50 md:hidden transition-all duration-500 ease-in-out ${
+          mobileMenuOpen
+            ? 'translate-y-0 opacity-100'
+            : '-translate-y-full opacity-0'
         }`}
-        onClick={closeMobileMenu}
-      />
-
-  <div className="fixed top-0 left-0 right-0 m-2 max-h-screen overflow-y-auto bg-gray-950 border border-gray-800 shadow-xl rounded-lg">
-  <div className="mx-auto max-w-md px-5">
-    {/* Header */}
-    <div className="flex items-center justify-between py-4 border-b border-gray-800">
-      <Image src={logo} alt="Logo" className="h-6 w-auto" priority />
-      <button
-        onClick={closeMobileMenu}
-        className="p-2 text-gray-400 hover:text-white transition-colors"
       >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
-    </div>
+        <div
+          className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-500 ease-in-out ${
+            mobileMenuOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={closeMobileMenu}
+        />
 
-    {/* Nav links */}
-   <nav className="flex flex-row w-full py-4">
-  <Link
-    href="/"
-    onClick={closeMobileMenu}
-    className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${
-      isActive('/')
-        ? 'text-white bg-gray-800'
-        : 'text-gray-400 hover:text-white hover:bg-gray-900'
-    }`}
+        <div className='fixed top-0 left-0 right-0 m-2 max-h-screen overflow-y-auto bg-gray-950 border border-gray-800 shadow-xl rounded-lg'>
+          <div className='mx-auto max-w-md px-5'>
+            <div className='flex items-center justify-between py-4 border-b border-gray-800'>
+              <Image src={logo} alt='Logo' className='h-6 w-auto' priority />
+              <button
+                onClick={closeMobileMenu}
+                className='p-2 text-gray-400 hover:text-white transition-colors'
+              >
+                <svg
+                  className='w-6 h-6'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M6 18L18 6M6 6l12 12'
+                  />
+                </svg>
+              </button>
+            </div>
+            <nav className='flex flex-row w-full py-4'>
+              <Link
+                href='/'
+                onClick={closeMobileMenu}
+                className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${
+                  isActive('/')
+                    ? 'text-white bg-gray-800'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-900'
+                }`}
+              >
+                Home
+              </Link>
+
+              <Link
+                href='/treasury'
+                onClick={closeMobileMenu}
+                className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${
+                  isActive('/treasury')
+                    ? 'text-white bg-gray-800'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-900'
+                }`}
+              >
+                Treasury
+              </Link>
+
+              <Link
+                href='/about'
+                onClick={closeMobileMenu}
+                className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${
+                  isActive('/about')
+                    ? 'text-white bg-gray-800'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-900'
+                }`}
+              >
+                About Us
+              </Link>
+            </nav>
+
+            {user ? (
+              <div className='py-6 border-t border-gray-800'>
+                <div className='flex items-center space-x-3'>
+                  <Image
+                    src={user?.profilePicture || '/default-avatar.png'}
+                    alt='User Avatar'
+                    width={40}
+                    height={40}
+                    className='rounded-full'
+                  />
+                  <div>
+                    <p className='text-white text-sm font-medium'>
+                      {user?.name}
+                    </p>
+                    <p className='text-gray-400 text-xs'>{user?.email}</p>
+                  </div>
+                </div>
+         <div className='mt-4 flex flex-row space-x-2'>
+  <button
+    onClick={pushToProfile}
+    className='flex-1 h-10 rounded-md bg-gray-800 px-4 text-sm font-medium text-white hover:bg-gray-700 transition'
   >
-    Home
-  </Link>
-
-  <Link
-    href="/treasury"
-    onClick={closeMobileMenu}
-    className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${
-      isActive('/treasury')
-        ? 'text-white bg-gray-800'
-        : 'text-gray-400 hover:text-white hover:bg-gray-900'
-    }`}
+    Dashboard
+  </button>
+  <button
+    onClick={handleLogout}
+    className='flex-1 h-10 rounded-md bg-red-600 px-4 text-sm font-medium text-white hover:bg-red-500 transition'
   >
-    Treasury
-  </Link>
-
-  <Link
-    href="/about"
-    onClick={closeMobileMenu}
-    className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${
-      isActive('/about')
-        ? 'text-white bg-gray-800'
-        : 'text-gray-400 hover:text-white hover:bg-gray-900'
-    }`}
-  >
-    About Us
-  </Link>
-</nav>
-
-    {user && (
-      <div className="py-6 border-t border-gray-800">
-        <div className="flex items-center space-x-3">
-          <Image
-            src={user?.image || '/default-avatar.png'}
-            alt="User Avatar"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-          <div>
-            <p className="text-white text-sm font-medium">{user?.name}</p>
-            <p className="text-gray-400 text-xs">{user?.email}</p>
-          </div>
-        </div>
-        <div className="mt-4 flex flex-col space-y-2">
-          <button className="w-full rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 transition">
-            Dashboard
-          </button>
-          <button
-            onClick={handleLogout}
-            className="w-full rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-500 transition"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-    )}
-
-    <div className="flex flex-col py-6 border-t mx-auto justify-center items-center border-gray-800">
-      <h4 className="text-xs uppercase tracking-wide text-gray-500 mb-3">
-        Connect
-      </h4>
-      <div className="flex items-center space-x-4 mb-4">
-        <a href="#" className="text-gray-400 hover:text-white transition">
-          <Instagram size={18} />
-        </a>
-        <a href="#" className="text-gray-400 hover:text-white transition">
-          <Mail size={18} />
-        </a>
-        <a href="#" className="text-gray-400 hover:text-white transition">
-          <Phone size={18} />
-        </a>
-      </div>
-      <div className="flex items-center space-x-2 text-gray-400 text-xs">
-        <MapPin size={14} />
-        <span>Noida, India</span>
-      </div>
-    </div>
-  </div>
+    Logout
+  </button>
 </div>
 
-    </div>
+              </div>
+            ) : (
+              <div className='py-6 border-t border-gray-800'>
+                <button
+                  onClick={handleLogin}
+                  className='w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-200 border border-gray-700 hover:bg-gray-800 hover:text-white transition-colors'
+                >
+                  Login
+                </button>
+              </div>
+            )}
+
+            <div className='flex flex-col py-6 border-t mx-auto justify-center items-center border-gray-800'>
+              <h4 className='text-xs uppercase tracking-wide text-gray-500 mb-3'>
+                Connect
+              </h4>
+              <div className='flex items-center space-x-4 mb-4'>
+                <a
+                  href='#'
+                  className='text-gray-400 hover:text-white transition'
+                >
+                  <Instagram size={18} />
+                </a>
+                <a
+                  href='#'
+                  className='text-gray-400 hover:text-white transition'
+                >
+                  <Mail size={18} />
+                </a>
+                <a
+                  href='#'
+                  className='text-gray-400 hover:text-white transition'
+                >
+                  <Phone size={18} />
+                </a>
+              </div>
+              <div className='flex items-center space-x-2 text-gray-400 text-xs'>
+                <MapPin size={14} />
+                <span>Noida, India</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <AnimatePresence>
         {showLogoutConfirmation && (
           <>
@@ -813,7 +858,6 @@ const isActive = (path) => pathname === path
             />
 
             <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
-  
               <motion.div
                 role='dialog'
                 aria-modal='true'
@@ -856,8 +900,8 @@ const isActive = (path) => pathname === path
                       </h3>
                       <div className='mt-2'>
                         <p className='text-sm text-gray-300'>
-                          Are you sure you want to sign out? You will need to sign
-                          in again to access your account.
+                          Are you sure you want to sign out? You will need to
+                          sign in again to access your account.
                         </p>
                       </div>
                     </div>
