@@ -153,13 +153,13 @@ const handleClick = event => {
     <Image
       src={BookPoster}
       alt='Book Cover'
-      className='w-full cursor-pointer rounded-2xl md:flex hidden'
+      className='w-full h-auto cursor-pointer rounded-2xl md:flex hidden'
       priority={true}
     />
      <Image
       src='/images/mobilebanner.png'      
       alt='Book Cover'
-      className='w-full cursor-pointer rounded-2xl md:hidden flex'
+      className='w-full h-auto cursor-pointer rounded-2xl md:hidden flex'
       height={600}
       width={300}
       priority={true}
@@ -178,7 +178,7 @@ const handleClick = event => {
           <Image
             src={poster}
             alt='MicTale Poster'
-            className='w-full cursor-pointer'
+            className='w-full h-auto cursor-pointer'
             priority={true}
           />
         </Link>
@@ -187,7 +187,7 @@ const handleClick = event => {
         <Image
           src={BookPoster}
           alt='Book Cover'
-          className='w-full cursor-pointer'
+          className='w-full h-auto cursor-pointer'
           priority={true}
         />
       </div>
@@ -228,7 +228,7 @@ const handleClick = event => {
               <Image
                 src={originallogo}
                 alt='MicTale Logo'
-                className='w-24 sm:w-28 invert-0'
+                className='w-24 h-auto sm:w-28 invert-0'
               />
               <p
                 className='text-black text-[10px] md:text-[16px]'

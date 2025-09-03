@@ -282,10 +282,10 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`text-white sticky top-0 z-50 transition-all duration-500 ${
+        className={`text-white bg-gradient-to-r from-gray-950 via-slate-900 to-gray-950 sticky top-0 z-50 transition-all duration-500 ${
           isScrolled
             ? 'bg-gradient-to-r from-gray-950 via-slate-900 to-gray-950 m-1 md:m-5 top-2 rounded-2xl'
-            : 'bg-transparent'
+            : 'm-0'
         }`}
       >
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center'>
