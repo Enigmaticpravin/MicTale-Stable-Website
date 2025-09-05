@@ -94,32 +94,19 @@ Experience the magic of words, emotions, and rhythm. Let the verses speak to you
         <div className='lg:grid lg:grid-cols-12 lg:gap-12 items-center py-20'>
           <div className='lg:col-span-5 md:mb-12 lg:mb-0'>
             <div className='space-y-6 flex flex-col items-center lg:items-start'>
-              <div className='inline-flex items-center gap-2 px-2 py-1 md:px-4 md:py-2 bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 rounded-full border border-yellow-500/30 backdrop-blur-sm'>
-                <Sparkles className='w-4 h-4 text-yellow-400' />
-                <span
-                  className='text-yellow-400 text-xs md:text-sm font-medium'
-                  style={poppinsStyle}
-                >
-                  Exclusive Content
-                </span>
-              </div>
-
               <div className='space-y-4 justify-center text-center lg:text-left items-center'>
                 <Image
                   src='/images/originallogo.png'
                   alt='MicTale Originals'
                   width={600}
                   height={200}
-                  className='w-fit h-20'
+                  className='w-fit h-14'
                 />
-                <div className='h-1 w-24 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mx-auto md:mx-0'></div>
+                <div className='h-[2px] w-24 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mx-auto md:mx-0'></div>
               </div>
 
               <div className='space-y-0 md:space-y-4 text-center md:text-left'>
-                <p
-                  className='md:text-xl text-lg text-gray-300 leading-relaxed'
-                  style={poppinsStyle}
-                >
+                <p className='md:text-xl uppercase text-sm text-gray-300 leading-relaxed garamond-class'>
                   A special segment where we shoot and produce
                   <span className='text-yellow-400 font-semibold'>
                     {' '}
@@ -138,9 +125,9 @@ Experience the magic of words, emotions, and rhythm. Let the verses speak to you
                       } ${hoveredCard === index ? 'z-30' : ''}`}
                       style={{
                         transformStyle: 'preserve-3d',
-                        width: '160px',
-                        height: '200px',
-                        left: index === 0 ? '15%' : '45%',
+                        width: '130px',
+                        height: '170px',
+                        left: index === 0 ? '5%' : '40%',
                         top: index === 0 ? '15%' : '25%'
                       }}
                       onMouseEnter={() => setHoveredCard(index)}
@@ -150,7 +137,7 @@ Experience the magic of words, emotions, and rhythm. Let the verses speak to you
                       <div className='absolute inset-0 bg-black/40 rounded-lg blur-lg transform translate-y-4 scale-95'></div>
 
                       <div className='relative w-full h-full bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-lg rounded-lg border border-gray-700/50 overflow-hidden shadow-2xl'>
-                        <div className='relative h-24 overflow-hidden'>
+                        <div className='relative h-20 overflow-hidden'>
                           <img
                             src={video.thumbnail}
                             alt={video.title}
@@ -204,7 +191,7 @@ Experience the magic of words, emotions, and rhythm. Let the verses speak to you
                 </div>
 
                 <p
-                  className='text-gray-400 leading-relaxed text-justify'
+                  className='text-gray-400 text-sm md:text-lg leading-relaxed text-center'
                   style={poppinsStyle}
                 >
                   Experience the magic of words, emotions, and rhythm through
@@ -218,24 +205,24 @@ Experience the magic of words, emotions, and rhythm. Let the verses speak to you
                     <Video className='w-4 h-4 text-yellow-400' />
                   </div>
                   <div>
-                    <div className='text-white font-medium text-sm'>
+                    <div className='text-white font-medium text-xs md:text-sm'>
                       Original Content
                     </div>
-                    <div className='text-gray-400 text-xs'>
+                    <div className='text-gray-400 text-[10px] md:text-xs'>
                       Exclusive productions
                     </div>
                   </div>
                 </div>
 
-                <div className='flex items-center gap-3 p-3 bg-gray-800/30 rounded-lg border border-gray-700/50 backdrop-blur-sm'>
+                <div className='flex items-center gap-3 md:p-3 px-1 bg-gray-800/30 rounded-lg border border-gray-700/50 backdrop-blur-sm'>
                   <div className='w-8 h-8 bg-yellow-500/20 rounded-full flex items-center justify-center'>
                     <Star className='w-4 h-4 text-yellow-400' />
                   </div>
                   <div>
-                    <div className='text-white font-medium text-sm'>
+                    <div className='text-white font-medium text-xs md:text-sm'>
                       Premium Quality
                     </div>
-                    <div className='text-gray-400 text-xs'>
+                    <div className='text-gray-400 text-[10px] md:text-xs'>
                       Curated experiences
                     </div>
                   </div>

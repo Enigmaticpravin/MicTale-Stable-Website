@@ -39,7 +39,7 @@ const TopPerformers = () => {
   }
 
   return (
-    <section className=" py-12 px-4 flex items-center justify-center">
+    <section className=" py-12  px-4 flex items-center justify-center">
       <div className="max-w-6xl w-full">
         <div className="text-center mb-10">
           <p style={poppinsStyle} className="uppercase text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-yellow-400 tracking-wide">

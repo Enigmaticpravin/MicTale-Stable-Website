@@ -95,17 +95,16 @@ export default async function TreasuryPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
       />
-
-       
-        <TreasuryClient initialPoems={initialPoems} />
+      <div className='bg-slate-950'>
+<TreasuryClient initialPoems={initialPoems} />
         <LatestBlogsShowcase limit={7} />
         <div className='bg-gradient-to-b from-transparent to-slate-900 h-20'></div>
-        <div className='z-50 relative bg-slate-900'>
         <InstagramGrid />
-        </div>
         <div className='bg-gradient-to-b from-slate-900 to-transparent h-10'></div>
         <MetallicFeatureCard />
         <Footer />
+      </div>
+        
     </>
   )
 }

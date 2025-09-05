@@ -144,7 +144,7 @@ export default function MicTalePremium() {
         <link rel="manifest" href="/site.webmanifest" />
       </ReactHead>
 
-      <div className='relative min-h-screen text-gray-300 overflow-hidden'>
+      <div className='relative min-h-screen bg-slate-950 text-gray-300 overflow-hidden'>
  
         <div 
           className="fixed pointer-events-none z-50 w-96 h-96 rounded-full opacity-10 blur-3xl transition-all duration-300 ease-out"
@@ -158,9 +158,8 @@ export default function MicTalePremium() {
         <section
           ref={setRef('hero')}
           id="hero"
-          style={getAnimationStyle('hero')}
-        >
-          <a href={`/form/${upcomingShows[0]?.id}`} className='z-10 block px-1 md:px-6'>
+          style={getAnimationStyle('hero')}>
+          <a href={`/form/${upcomingShows[0]?.id}`} className='z-10 block md:px-6'>
             <Image
               src={poster}
               alt='MicTale Official Banner'
@@ -169,7 +168,7 @@ export default function MicTalePremium() {
             <Image
               src={mobile}
               alt='MicTale Official Banner'
-              className='cursor-pointer w-full rounded-2xl md:hidden flex'
+              className='cursor-pointer w-full rounded-b-2xl md:hidden flex'
             />
           </a>
 

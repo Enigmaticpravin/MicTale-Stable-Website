@@ -36,7 +36,7 @@ export default function Footer() {
     info('New update available.');
   };
   return (
-    <footer className="relative z-50 overflow-hidden m-1 md:m-5 rounded-2xl border-t border-white/10 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white">
+    <footer className=" overflow-hidden m-1 md:m-5 rounded-2xl border-t border-white/10 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white">
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -top-40 left-1/2 h-80 w-[64rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-sky-500/10 via-cyan-400/10 to-fuchsia-500/10 blur-3xl" />
       </div>

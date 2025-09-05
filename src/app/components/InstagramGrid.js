@@ -128,7 +128,7 @@ export default function InstagramGrid({ limit = 50, max = 500 }) {
   }
 
   return (
-    <section className="max-w-6xl mx-auto px-4 py-8">
+    <section className="mx-auto px-4 py-8 bg-slate-900">
       <div 
     className='justify-center items-center flex flex-col mb-3 md:mb-10'
   >
@@ -169,7 +169,7 @@ export default function InstagramGrid({ limit = 50, max = 500 }) {
 
       {!loading && !error && posts && posts.length > 0 && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div className="grid max-w-6xl justify-center items-center mx-auto grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {posts.slice(0, visibleCount).map((p, idx) => {
               const url = p.media_url
               const alt = (p.caption && p.caption.slice(0, 80)) || 'instagram post'

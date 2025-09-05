@@ -148,7 +148,7 @@ const handleClick = event => {
 
 
 
-   <div className={`relative mx-auto px-2 md:px-6 transition-all duration-1000`}>
+   <div className={`relative mx-auto md:px-6 transition-all duration-1000`}>
   <div className='w-full flex-shrink-0 ' onClick={handleClick}>
     <Image
       src={BookPoster}
@@ -159,7 +159,7 @@ const handleClick = event => {
      <Image
       src='/images/mobilebanner.png'      
       alt='Book Cover'
-      className='w-full h-auto cursor-pointer rounded-2xl md:hidden flex'
+      className='w-full h-auto cursor-pointer rounded-b-2xl md:hidden flex'
       height={600}
       width={300}
       priority={true}
