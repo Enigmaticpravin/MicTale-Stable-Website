@@ -40,7 +40,8 @@ const MatlaDisplay = () => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    arrows: false
+    arrows: false,
+    afterChange: (index) => setCurrentIndex(index),
   }
 
   const extractMatla = useCallback((data) => {

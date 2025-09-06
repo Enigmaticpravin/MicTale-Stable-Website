@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { amount, productInfo, firstname, email, phone, bookingId } = body;
+    const { amount, productInfo, firstname, email, phone, orderId } = body;
 
     const PAYU_MERCHANT_KEY = process.env.PAYU_MERCHANT_KEY;
     const PAYU_SALT = process.env.PAYU_SALT;
@@ -26,9 +26,9 @@ export async function POST(req) {
       firstname: firstname,
       email: email,
       phone: phone,
-      bookingId: bookingId,
-      surl: `${baseUrl}/api/payments/status?txnid=${txnId}&amount=${amount}&bookingId=${bookingId}&firstname=${encodeURIComponent(firstname)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&status=success`,
-      furl: `${baseUrl}/api/payments/status?txnid=${txnId}&amount=${amount}&bookingId=${bookingId}&firstname=${encodeURIComponent(firstname)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&status=failure`,
+      orderId: orderId,
+      surl: `${baseUrl}/api/payments/status?txnid=${txnId}&amount=${amount}&orderId=${orderId}&firstname=${encodeURIComponent(firstname)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&status=success`,
+      furl: `${baseUrl}/api/payments/status?txnid=${txnId}&amount=${amount}&orderId=${orderId}&firstname=${encodeURIComponent(firstname)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&status=failure`,
       hash: hash,
       action: PAYU_URL,
     };

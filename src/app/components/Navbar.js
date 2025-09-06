@@ -818,19 +818,19 @@ const Navbar = () => {
               </h4>
               <div className='flex items-center space-x-4 mb-4'>
                 <a
-                  href='#'
+                  href='https://www.instagram.com/mictale.in'
                   className='text-gray-400 hover:text-white transition'
                 >
                   <Instagram size={18} />
                 </a>
                 <a
-                  href='#'
+                  href='mailto:contact@mictale.in'
                   className='text-gray-400 hover:text-white transition'
                 >
                   <Mail size={18} />
                 </a>
                 <a
-                  href='#'
+                  href='tel:+919667645676'
                   className='text-gray-400 hover:text-white transition'
                 >
                   <Phone size={18} />
@@ -838,7 +838,7 @@ const Navbar = () => {
               </div>
               <div className='flex items-center space-x-2 text-gray-400 text-xs'>
                 <MapPin size={14} />
-                <span>Noida, India</span>
+                <span>Delhi, India</span>
               </div>
             </div>
           </div>

@@ -23,9 +23,9 @@ import {
   CheckCircle
 } from 'lucide-react'
 import Footer from '@/app/components/Footer'
+import Image from 'next/image'
 
 export default function Profile() {
-  // Single state object for all user data
   const [userData, setUserData] = useState({
     isLoading: true,
     user: null,
@@ -76,15 +76,13 @@ export default function Profile() {
     const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
       if (currentUser) {
         try {
-          // Fetch user data
           const userRef = doc(db, 'users', currentUser.uid)
           const userSnap = await getDoc(userRef)
           
           if (userSnap.exists()) {
             const user = userSnap.data()
             const nameParts = (user.name || '').split(' ')
-            
-            // Update all state at once
+            console.log('Fetched user data:', user)
             setUserData({
               isLoading: false,
               user,
@@ -110,7 +108,6 @@ export default function Profile() {
             error: 'Failed to load user data'
           }))
           
-          // Clear error after 3 seconds
           setTimeout(() => {
             setUserData(prev => ({ ...prev, error: '' }))
           }, 3000)
@@ -153,7 +150,6 @@ export default function Profile() {
       // Update in Firestore
       await updateDoc(userRef, updatedUserData)
 
-      // Update local state with the new user data
       setUserData(prev => ({
         ...prev,
         isLoading: false,
@@ -164,7 +160,6 @@ export default function Profile() {
         success: 'Profile updated successfully!'
       }))
 
-      // Clear success message after 3 seconds
       setTimeout(() => {
         setUserData(prev => ({ ...prev, success: '' }))
       }, 3000)
@@ -175,7 +170,6 @@ export default function Profile() {
         error: 'Failed to update profile'
       }))
       
-      // Clear error after 3 seconds
       setTimeout(() => {
         setUserData(prev => ({ ...prev, error: '' }))
       }, 3000)
@@ -206,7 +200,6 @@ export default function Profile() {
     }))
   
     try {
-      // Step 1: Compress the image
       const compressedFile = await imageCompression(file, {
         maxSizeMB: 1,
         maxWidthOrHeight: 1200,
@@ -223,15 +216,12 @@ export default function Profile() {
       const storageRef = ref(storage, `profilePictures/${auth.currentUser.uid}`)
       await uploadBytes(storageRef, compressedFile)
       
-      // Step 3: Get download URL
       const downloadURL = await getDownloadURL(storageRef)
       
-      // Step 4: Update user document in Firestore
       await updateDoc(doc(db, 'users', auth.currentUser.uid), {
         profilePicture: downloadURL
       })
       
-      // Step 5: Update local state
       setUserData(prev => ({
         ...prev,
         imageLoading: false,
@@ -246,7 +236,6 @@ export default function Profile() {
         success: 'Profile picture updated!'
       }))
       
-      // Clear success message after 3 seconds
       setTimeout(() => {
         setUserData(prev => ({ ...prev, success: '', error: '' }))
       }, 3000)
@@ -258,7 +247,6 @@ export default function Profile() {
         error: 'Failed to upload profile picture'
       }))
       
-      // Clear error after 3 seconds
       setTimeout(() => {
         setUserData(prev => ({ ...prev, success: '', error: '' }))
       }, 3000)
@@ -331,10 +319,13 @@ export default function Profile() {
                 onClick={() => fileInputRef.current.click()}
               >
                 {formData.profilePicture ? (
-                  <img
+                  <Image
                     src={formData.profilePicture}
                     alt='Profile'
+                    width={80}
+                    height={80}
                     className='w-full h-full object-cover'
+                    priority
                   />
                 ) : (
                   <div className='w-full h-full flex items-center justify-center bg-blue-600 text-xl font-bold'>
@@ -347,7 +338,6 @@ export default function Profile() {
                   <Edit2Icon size={24} className='text-white' />
                 </div>
 
-                {/* Hidden file input */}
                 <input
                   type="file"
                   accept="image/*"

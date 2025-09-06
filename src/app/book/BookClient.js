@@ -97,7 +97,8 @@ export default function BookClient ({ book, error, url }) {
           productInfo: `Book Order: ${book.title}`,
           firstname: formData.name,
           email: formData.email,
-          phone: formData.phone
+          phone: formData.phone,
+          orderId: newOrder.orderId
         })
       })
 
@@ -177,9 +178,6 @@ export default function BookClient ({ book, error, url }) {
     ((book.originalPrice - book.price) / book.originalPrice) * 100
   )
 
-  const formattedDescription = book.description.replace(/\n/g, '<br/>')
-
-  const poppinsStyle = { fontFamily: 'Poppins, sans-serif' }
 
   return (
     <>
@@ -405,7 +403,6 @@ export default function BookClient ({ book, error, url }) {
               </div>
             </div>
 
-            {/* right column */}
             <div className='hidden lg:flex-1 lg:flex flex-col space-y-4'>
               <div className='flex items-center space-x-4'>
                 <span className='text-3xl font-bold text-orange-600'>
@@ -626,7 +623,6 @@ export default function BookClient ({ book, error, url }) {
                   </div>
                 </div>
 
-                {/* Shipping Address Section */}
                 <div className='mb-6'>
                   <h3 className='text-md font-semibold text-gray-700 mb-3 flex items-center'>
                     <MapPin className='h-4 w-4 mr-2 text-orange-500' />
@@ -646,7 +642,6 @@ export default function BookClient ({ book, error, url }) {
                   </div>
                 </div>
 
-                {/* Order Summary Section */}
                 <div className='bg-gray-50 p-6 rounded-lg border border-gray-200'>
                   <h3 className='text-md font-semibold text-gray-700 mb-4 flex items-center'>
                     <ShoppingBag className='h-4 w-4 mr-2 text-orange-500' />
@@ -706,7 +701,7 @@ export default function BookClient ({ book, error, url }) {
 
                   <button
                     type='submit'
-                    className='w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-lg hover:from-orange-600 hover:to-orange-700 transition duration-300 flex items-center justify-center gap-3 font-medium shadow-md'
+                    className='w-full cursor-pointer bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-lg hover:from-orange-600 hover:to-orange-700 transition duration-300 flex items-center justify-center gap-3 font-medium shadow-md'
                   >
                     <LockIcon className='h-5 w-5' />
                     Place Order & Pay ₹{(book.price * quantity + 50).toFixed(2)}

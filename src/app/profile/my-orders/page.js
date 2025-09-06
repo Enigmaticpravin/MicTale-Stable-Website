@@ -1,20 +1,36 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Metadata } from 'next';
-import Footer from '@/app/components/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/app/lib/firebase';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { HelpCircle } from 'lucide-react';
+import { 
+  HelpCircle, 
+  Calendar, 
+  Clock, 
+  MapPin, 
+  User, 
+  Mail, 
+  Phone, 
+  Package, 
+  Download, 
+  CreditCard, 
+  BookOpen, 
+  Ticket,
+  ChevronDown,
+  Filter
+} from 'lucide-react';
+import Footer from '@/app/components/Footer';
 
-export default function MyTickets() {
+export default function MyOrders() {
   const [tickets, setTickets] = useState([]);
+  const [bookOrders, setBookOrders] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDetails, setShowDetails] = useState({});
   const [currentUser, setCurrentUser] = useState(null);
+  const [activeTab, setActiveTab] = useState('all'); // all, tickets, books
   const [filterStatus, setFilterStatus] = useState('all');
   const auth = getAuth();
 
@@ -22,96 +38,107 @@ export default function MyTickets() {
     const unsubscribe = onAuthStateChanged(auth, user => {
       setCurrentUser(user);
     });
-
     return () => unsubscribe();
   }, [auth]);
 
   useEffect(() => {
-    const fetchTickets = async () => {
+    const fetchOrders = async () => {
       if (!currentUser?.uid) return;
       
       try {
+        // Fetch tickets
         const ticketsQuery = query(
           collection(db, 'tickets'),
           where('userId', '==', currentUser?.uid),
         );
-        
         const ticketSnapshot = await getDocs(ticketsQuery);
         const ticketList = ticketSnapshot.docs.map(doc => ({
           id: doc.id,
+          type: 'ticket',
+          ...doc.data()
+        }));
+        
+        // Fetch book orders
+        const ordersQuery = query(
+          collection(db, 'orders'),
+          where('email', '==', currentUser.email),
+        );
+        const orderSnapshot = await getDocs(ordersQuery);
+        const orderList = orderSnapshot.docs.map(doc => ({
+          id: doc.id,
+          type: 'book',
           ...doc.data()
         }));
         
         setTickets(ticketList);
+        setBookOrders(orderList);
         
+        // Fetch show details for tickets
         const showIds = [...new Set(ticketList.map(ticket => ticket.showId))];
         await fetchShowDetails(showIds);
         
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching tickets:', error);
+        console.error('Error fetching orders:', error);
         setLoading(false);
       }
     };
     
-    fetchTickets();
-  }, [currentUser?.uid]);
+    fetchOrders();
+  }, [currentUser?.uid, currentUser?.email]);
 
-  const sendToPaymentGateway = async (ticket, show) => {
-    const { id, bookingId, amount, productInfo, fullName, email, phoneNumber } = ticket;
+  const sendToPaymentGateway = async (order) => {
+    const isTicket = order.type === 'ticket';
+    const orderId = isTicket ? order.bookingId : order.orderId;
+    const amount = isTicket ? 200 : (order.book.price * order.quantity + 50);
+    const productInfo = isTicket ? "Poetry Event Ticket" : `Book Order: ${order.book.title}`;
+    
     const response = await fetch('/api/payments/payu', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        amount: 200,
-        productInfo: "Poetry Event Ticket",
-        firstname: fullName,
-        email: email,
-        phone: phoneNumber,
-        bookingId: bookingId,
+        amount: amount,
+        productInfo: productInfo,
+        firstname: isTicket ? order.fullName : order.name,
+        email: order.email,
+        phone: isTicket ? order.phoneNumber : order.phone,
+        [isTicket ? 'bookingId' : 'orderId']: orderId,
       }),
     });
+    
     const data = await response.json();
+    if (data.action) {
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = data.action;
 
-      if (data.action) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = data.action;
-  
-        Object.keys(data).forEach((key) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = data[key];
-          form.appendChild(input);
-        });
-  
-        document.body.appendChild(form);
-        form.submit();
-     
+      Object.keys(data).forEach((key) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = data[key];
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
     }
   };
   
   const fetchShowDetails = async (showIds) => {
     try {
       const showData = {};
-      
       for (const showId of showIds) {
         const showQuery = query(
           collection(db, 'shows'),
           where('showid', '==', showId)
         );
-        
         const showSnapshot = await getDocs(showQuery);
         if (!showSnapshot.empty) {
           showData[showId] = showSnapshot.docs[0].data();
         }
       }
-      
       setShowDetails(showData);
-      console.log('Fetched show details:', showData);
     } catch (error) {
       console.error('Error fetching show details:', error);
     }
@@ -122,65 +149,35 @@ export default function MyTickets() {
   };
   
   const getStatusColor = (status) => {
-    switch(status.toLowerCase()) {
+    switch(status?.toLowerCase()) {
       case 'confirmed':
-        return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+      case 'delivered':
+        return 'text-green-400 bg-green-400/10 border-green-400/20';
       case 'pending':
-        return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+      case 'processing':
+        return 'text-amber-400 bg-amber-400/10 border-amber-400/20';
       case 'cancelled':
-        return 'bg-rose-500/20 text-rose-400 border-rose-500/30';
+        return 'text-red-400 bg-red-400/10 border-red-400/20';
+      case 'shipped':
+        return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
       default:
-        return 'bg-violet-500/20 text-violet-400 border-violet-500/30';
+        return 'text-gray-400 bg-gray-400/10 border-gray-400/20';
     }
   };
   
-  const getStatusIcon = (status) => {
-    switch(status.toLowerCase()) {
-      case 'confirmed':
-        return (
-          <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        );
-      case 'pending':
-        return (
-          <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 8V12L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        );
-      case 'cancelled':
-        return (
-          <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        );
-      default:
-        return (
-          <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 8V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            <path d="M12 16V16.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2"/>
-          </svg>
-        );
-    }
-  };
-  
-  const formatCreatedDate = (timestamp) => {
-    if (!timestamp) return '';
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+  const formatDate = (date) => {
+    if (!date) return 'Date TBD';
+    const eventDate = date.toDate ? date.toDate() : new Date(date);
+    return eventDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
     });
   };
 
   const formatTime = (date) => {
     if (!date) return 'Time TBD';
-    
-    const eventDate = typeof date === 'string' ? new Date(date) : date;
+    const eventDate = date.toDate ? date.toDate() : new Date(date);
     return eventDate.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
@@ -188,30 +185,43 @@ export default function MyTickets() {
     });
   };
 
-  const formatDate = (date) => {
-    if (!date) return 'Date TBD';
+  const allOrders = [...tickets, ...bookOrders].sort((a, b) => {
+    const dateA = a.createdAt || a.timestamp;
+    const dateB = b.createdAt || b.timestamp;
+    const timeA = dateA?.toDate ? dateA.toDate() : new Date(dateA);
+    const timeB = dateB?.toDate ? dateB.toDate() : new Date(dateB);
+    return timeB - timeA;
+  });
+
+  const poppinsStyle = { fontFamily: 'Poppins, sans-serif' };
+
+  const getFilteredOrders = () => {
+    let filtered = allOrders;
     
-    const eventDate = typeof date === 'string' ? new Date(date) : date;
-    return eventDate.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric'
-    });
+    if (activeTab === 'tickets') {
+      filtered = filtered.filter(order => order.type === 'ticket');
+    } else if (activeTab === 'books') {
+      filtered = filtered.filter(order => order.type === 'book');
+    }
+    
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(order => {
+        const status = order.paymentStatus || order.status;
+        return status?.toLowerCase() === filterStatus;
+      });
+    }
+    
+    return filtered;
   };
 
-  const filteredTickets = filterStatus === 'all' 
-    ? tickets 
-    : tickets.filter(ticket => ticket.paymentStatus?.toLowerCase() === filterStatus);
+  const filteredOrders = getFilteredOrders();
 
   if (loading) {
     return (
-      <div className="bg-gray-950 text-gray-100 min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center">
-          <div className="relative w-16 h-16">
-            <div className="absolute top-0 left-0 right-0 bottom-0 border-4 border-indigo-500/30 rounded-full"></div>
-            <div className="absolute top-0 left-0 right-0 bottom-0 border-4 border-transparent border-t-indigo-500 animate-spin rounded-full"></div>
-          </div>
-          <p className="mt-4 text-indigo-300 font-medium">Loading your tickets...</p>
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="flex items-center space-x-2 text-gray-400">
+          <div className="w-5 h-5 border-2 border-gray-600 border-t-gray-400 rounded-full animate-spin"></div>
+          <span>Loading orders...</span>
         </div>
       </div>
     );
@@ -219,303 +229,352 @@ export default function MyTickets() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-gray-100">
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.02] pointer-events-none"></div>
+     <div className="min-h-screen md:rounded-2xl md:mr-2 md:ml-2 md:mb-2 bg-gray-950 text-gray-100">
+      <div className="max-w-4xl mx-auto px-4 py-6 sm:px-6 sm:py-8">
         
-        <main className="max-w-5xl mx-auto py-4 md:py-12 px-4 sm:px-6 relative z-10">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-            <div>
-              <h1 className="md:text-5xl text-transparent bg-clip-text bg-gradient-to-t font-bold text-[18px] from-yellow-700 via-yellow-500 to-yellow-900">
-                My Tickets
-              </h1>
-              <p className="text-gray-400">
-                Manage and view your upcoming poetry events
-              </p>
-            </div>
-            
-            <div className="flex space-x-2 w-fit bg-gray-800/50 p-1 rounded-lg backdrop-blur-sm border border-gray-700/50">
-              <button 
-                onClick={() => setFilterStatus('all')}
-                className={`px-3 py-1.5 text-sm rounded-md transition-all ${
-                  filterStatus === 'all' 
-                    ? 'bg-yellow-600 text-white shadow-lg shadow-indigo-500/20' 
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-                }`}
-              >
-                All
-              </button>
-              <button 
-                onClick={() => setFilterStatus('confirmed')}
-                className={`px-3 py-1.5 text-sm rounded-md transition-all ${
-                  filterStatus === 'confirmed' 
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20' 
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-                }`}
-              >
-                Confirmed
-              </button>
-              <button 
-                onClick={() => setFilterStatus('pending')}
-                className={`px-3 py-1.5 text-sm rounded-md transition-all ${
-                  filterStatus === 'pending' 
-                    ? 'bg-amber-600 text-white shadow-lg shadow-amber-500/20' 
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-                }`}
-              >
-                Pending
-              </button>
+        <div className="mb-8 flex flex-col w-full justify-center text-center">
+        <p
+      className='uppercase text-transparent bg-clip-text bg-gradient-to-t font-bold text-[12px] md:text-[18px] from-yellow-700 via-yellow-500 to-yellow-900'
+      style={poppinsStyle}
+    >
+      Manage Your Orders
+    </p>
+    <p
+      className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white veronica-class'
+    >
+      For Shows and Books{' '}
+    </p>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-3 sm:p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs sm:text-sm text-gray-400">Total</p>
+                <p className="text-lg sm:text-xl font-semibold text-white">{allOrders.length}</p>
+              </div>
+              <Package className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
             </div>
           </div>
-          
-          {tickets.length === 0 ? (
-            <div className="bg-gray-800/40 backdrop-blur-sm rounded-2xl p-12 text-center border border-gray-700/50">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-700/50 flex items-center justify-center">
-                <svg className="w-10 h-10 text-gray-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 12V22H4V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M22 7H2V12H22V7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 22V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 7H16.5C17.163 7 17.7989 6.73661 18.2678 6.26777C18.7366 5.79893 19 5.16304 19 4.5C19 3.83696 18.7366 3.20107 18.2678 2.73223C17.7989 2.26339 17.163 2 16.5 2C13 2 12 7 12 7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 7H7.5C6.83696 7 6.20107 6.73661 5.73223 6.26777C5.26339 5.79893 5 5.16304 5 4.5C5 3.83696 5.26339 3.20107 5.73223 2.73223C6.20107 2.26339 6.83696 2 7.5 2C11 2 12 7 12 7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-3 sm:p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs sm:text-sm text-gray-400">Tickets</p>
+                <p className="text-lg sm:text-xl font-semibold text-white">{tickets.length}</p>
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">No tickets found</h2>
-              <p className="text-gray-400 max-w-md mx-auto">Looks like you haven&apos;t purchased any tickets yet. Explore our upcoming events and secure your spot!</p>
-           
+              <Ticket className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
             </div>
-          ) : filteredTickets.length === 0 ? (
-            <div className="bg-gray-800/40 backdrop-blur-sm rounded-2xl p-8 text-center border border-gray-700/50">
-              <h2 className="text-xl mb-2">No {filterStatus} tickets found</h2>
-              <p className="text-gray-400">Try selecting a different filter option.</p>
+          </div>
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-3 sm:p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs sm:text-sm text-gray-400">Books</p>
+                <p className="text-lg sm:text-xl font-semibold text-white">{bookOrders.length}</p>
+              </div>
+              <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
             </div>
-          ) : (
-            <div className="grid gap-6">
-              <AnimatePresence>
-                {filteredTickets.map((ticket) => {
-                  const show = showDetails[ticket.showId] || {};
-                  return (
-                    <motion.div
-                      key={ticket.id}
-                      layout
-                      className={`bg-gray-800/40 backdrop-blur-sm rounded-2xl overflow-hidden cursor-pointer border transition-all ${
-                        expandedId === ticket.id 
-                          ? 'border-indigo-500/30 shadow-lg shadow-indigo-900/20' 
-                          : 'border-gray-700/50 hover:border-indigo-500/20'
-                      }`}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4 }}
+          </div>
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-3 sm:p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs sm:text-sm text-gray-400">Pending</p>
+                <p className="text-lg sm:text-xl font-semibold text-white">
+                  {allOrders.filter(o => (o.paymentStatus || o.status)?.toLowerCase() === 'pending').length}
+                </p>
+              </div>
+              <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          {/* Category Filter */}
+          <div className="flex bg-gray-900 border border-gray-800 rounded-lg p-1 overflow-hidden">
+            {[
+              { key: 'all', label: 'All', count: allOrders.length },
+              { key: 'tickets', label: 'Tickets', count: tickets.length },
+              { key: 'books', label: 'Books', count: bookOrders.length }
+            ].map(({ key, label, count }) => (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  activeTab === key 
+                    ? 'bg-white text-gray-900' 
+                    : 'text-gray-400 hover:text-gray-200'
+                }`}
+              >
+                <span className="hidden sm:inline">{label}</span>
+                <span className="sm:hidden">{label.charAt(0)}</span>
+                <span className="ml-1 text-xs">({count})</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Status Filter */}
+          <div className="flex bg-gray-900 border border-gray-800 rounded-lg p-1">
+            {[
+              { key: 'all', label: 'All Status' },
+              { key: 'confirmed', label: 'Confirmed' },
+              { key: 'pending', label: 'Pending' }
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setFilterStatus(key)}
+                className={`px-3 py-2 text-sm rounded-md transition-colors ${
+                  filterStatus === key 
+                    ? 'bg-gray-800 text-white' 
+                    : 'text-gray-400 hover:text-gray-200'
+                }`}
+              >
+                <span className="hidden sm:inline">{label}</span>
+                <span className="sm:hidden">{label.split(' ')[0]}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        
+        {/* Orders List */}
+        {filteredOrders.length === 0 ? (
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-8 text-center">
+            <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <Package className="w-6 h-6 text-gray-500" />
+            </div>
+            <h3 className="text-lg font-medium text-white mb-2">No orders found</h3>
+            <p className="text-gray-400 text-sm">
+              {activeTab === 'all' 
+                ? "You haven't placed any orders yet."
+                : `No ${activeTab} found with the selected filters.`
+              }
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <AnimatePresence>
+              {filteredOrders.map((order) => {
+                const isTicket = order.type === 'ticket';
+                const show = isTicket ? showDetails[order.showId] || {} : null;
+                const status = order.paymentStatus || order.status || 'pending';
+                const isExpanded = expandedId === order.id;
+                
+                return (
+                  <motion.div
+                    key={order.id}
+                    layout
+                    className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden hover:border-gray-700 transition-colors"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {/* Order Header */}
+                    <div 
+                      onClick={() => toggleExpand(order.id)}
+                      className="p-4 cursor-pointer"
                     >
-                      <div 
-                        onClick={() => toggleExpand(ticket.id)}
-                        className="p-5 sm:p-6"
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                          <div className="flex items-center space-x-4">
-                            <div className="hidden sm:block w-14 h-14 rounded-xl bg-gray-700/50 overflow-hidden flex-shrink-0">
-                              <img 
-                                src={show.imageUrl} 
-                                alt="" 
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                            <div>
-                              <h2 className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors">
-                                {show.name || 'Poetry Event'}
-                              </h2>
-                              <div className="flex items-center mt-1 text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <span className="mr-3">{formatDate(show.date)}</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span>{formatTime(show.date)}</span>
-                              </div>
-                            </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3 min-w-0 flex-1">
+                          {/* Order Icon/Image */}
+                          <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                            {isTicket ? (
+                              show.imageUrl ? (
+                                <img src={show.imageUrl} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                <Ticket className="w-5 h-5 text-gray-400" />
+                              )
+                            ) : (
+                              order.book?.coverUrl ? (
+                                <img src={order.book.coverUrl} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                <BookOpen className="w-5 h-5 text-gray-400" />
+                              )
+                            )}
                           </div>
                           
-                          <div className="flex items-center space-x-3">
-                            <div className={`px-3 py-1.5 rounded-full flex items-center text-sm border ${getStatusColor(ticket.paymentStatus)}`}>
-                              {getStatusIcon(ticket.paymentStatus)}
-                              {ticket.paymentStatus?.charAt(0).toUpperCase() + ticket.paymentStatus?.slice(1)}
+                          {/* Order Info */}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <h3 className="font-medium text-white truncate text-sm sm:text-base">
+                                {isTicket ? (show.name || 'Poetry Event') : order.book?.title || 'Book Order'}
+                              </h3>
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                                isTicket ? 'bg-blue-400/10 text-blue-400' : 'bg-green-400/10 text-green-400'
+                              }`}>
+                                {isTicket ? 'Ticket' : 'Book'}
+                              </span>
                             </div>
-                            <motion.div 
-                              animate={{ rotate: expandedId === ticket.id ? 180 : 0 }}
-                              transition={{ duration: 0.3 }}
-                              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-700/70 text-indigo-300"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                              </svg>
-                            </motion.div>
+                            <div className="flex items-center space-x-3 text-xs sm:text-sm text-gray-400">
+                              <span className="truncate">
+                                {isTicket ? order.bookingId : order.orderId}
+                              </span>
+                              <span className="hidden sm:inline">
+                                {formatDate(order.createdAt || order.timestamp)}
+                              </span>
+                              {((isTicket && order.attendeeCount) || (!isTicket && order.quantity)) && (
+                                <span>
+                                  {isTicket ? `${order.attendeeCount} attendee${order.attendeeCount > 1 ? 's' : ''}` : `Qty: ${order.quantity}`}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                         
-                        <AnimatePresence>
-                          {expandedId === ticket.id && (
-                            <motion.div
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: "auto" }}
-                              exit={{ opacity: 0, height: 0 }}
-                              transition={{ duration: 0.4 }}
-                              className="mt-6 overflow-hidden"
-                            >
-                              <motion.div
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: 0.1 }}
-                              >
-                                <div className="relative w-full h-56 sm:h-64 rounded-xl overflow-hidden mb-6">
-                                  <img 
-                                    src={show.imageUrl} 
-                                    alt={`${show.name || 'Event'} banner`} 
-                                    className="w-full h-full object-cover"
-                                  />
-                                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-gray-900/0"></div>
-                                  <div className="absolute bottom-0 left-0 p-6 w-full">
-                                    <h3 className="text-2xl font-bold text-white mb-2">{show.name || 'Poetry Event'}</h3>
-                                    <div className="flex flex-wrap gap-2">
-                                      <span className="text-sm font-medium bg-gray-900/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-full flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                        {show.location || 'Venue TBD'}
-                                      </span>
-                                      <span className="text-sm font-medium bg-gray-900/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-full flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        {formatTime(show.date)}
-                                      </span>
-                                      <span className="text-sm font-medium bg-gray-900/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-full flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                        {formatDate(show.date)}
-                                      </span>
+                        {/* Status & Expand */}
+                        <div className="flex items-center space-x-2 flex-shrink-0">
+                          <span className={`inline-flex items-center px-2 py-1 rounded border text-xs font-medium ${getStatusColor(status)}`}>
+                            {status.charAt(0).toUpperCase() + status.slice(1)}
+                          </span>
+                          <motion.div 
+                            animate={{ rotate: isExpanded ? 180 : 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="p-1"
+                          >
+                            <ChevronDown className="w-4 h-4 text-gray-400" />
+                          </motion.div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Expanded Content */}
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="border-t border-gray-800 overflow-hidden"
+                        >
+                          <div className="p-4 space-y-4">
+                            {/* Order Image/Preview - Mobile Friendly */}
+                            <div className="relative h-32 sm:h-40 rounded-lg overflow-hidden bg-gray-800">
+                              {isTicket && show.imageUrl ? (
+                                <>
+                                  <img src={show.imageUrl} alt={show.name} className="w-full h-full object-cover" />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                  <div className="absolute bottom-2 left-2 right-2">
+                                    <h4 className="font-medium text-white text-sm mb-1 truncate">{show.name}</h4>
+                                    <div className="flex items-center space-x-3 text-xs text-gray-200">
+                                      {show.location && (
+                                        <div className="flex items-center space-x-1">
+                                          <MapPin className="w-3 h-3" />
+                                          <span className="truncate">{show.location}</span>
+                                        </div>
+                                      )}
+                                      {show.date && (
+                                        <div className="flex items-center space-x-1">
+                                          <Calendar className="w-3 h-3" />
+                                          <span>{formatDate(show.date)}</span>
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
+                                </>
+                              ) : !isTicket && order.book?.coverUrl ? (
+                                <div className="flex items-center justify-center h-full">
+                                  <img src={order.book.coverUrl} alt={order.book.title} className="h-24 sm:h-32 max-w-20 sm:max-w-24 object-cover rounded shadow-lg" />
                                 </div>
-                                
-                                <div className="space-y-6">
-                                  {show.description && (
-                                    <div className="bg-indigo-900/10 border border-indigo-500/20 rounded-xl p-5">
-                                      <p className="text-gray-300 leading-relaxed">{show.description}</p>
+                              ) : (
+                                <div className="flex items-center justify-center h-full">
+                                  {isTicket ? (
+                                    <Ticket className="w-8 h-8 text-gray-500" />
+                                  ) : (
+                                    <BookOpen className="w-8 h-8 text-gray-500" />
+                                  )}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Order Details */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <h5 className="text-gray-400 text-xs uppercase tracking-wide mb-2">Customer Details</h5>
+                                <div className="space-y-1">
+                                  <div className="flex items-center space-x-2">
+                                    <User className="w-3 h-3 text-gray-500" />
+                                    <span className="text-gray-300">{isTicket ? order.fullName : order.name}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <Mail className="w-3 h-3 text-gray-500" />
+                                    <span className="text-gray-300 truncate">{order.email}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <Phone className="w-3 h-3 text-gray-500" />
+                                    <span className="text-gray-300">{isTicket ? order.phoneNumber : order.phone}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div>
+                                <h5 className="text-gray-400 text-xs uppercase tracking-wide mb-2">Order Info</h5>
+                                <div className="space-y-1">
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Order ID:</span>
+                                    <span className="text-gray-300 font-mono text-xs">{isTicket ? order.bookingId : order.orderId}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Date:</span>
+                                    <span className="text-gray-300">{formatDate(order.createdAt || order.timestamp)}</span>
+                                  </div>
+                                  {isTicket && order.attendeeCount && (
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-400">Attendees:</span>
+                                      <span className="text-gray-300">{order.attendeeCount}</span>
                                     </div>
                                   )}
-                                  
-                                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                                    <div className="md:col-span-7">
-                                      <div className="bg-gray-800/70 backdrop-blur-sm border border-gray-700/50 rounded-xl overflow-hidden">
-                                        <div className="p-5 border-b border-gray-700/50">
-                                          <h3 className="font-semibold text-lg text-white">Ticket Details</h3>
-                                        </div>
-                                        <div className="divide-y divide-gray-700/50">
-                                          <div className="flex justify-between p-4">
-                                            <span className="text-gray-400">Booking ID</span>
-                                            <span className="font-medium text-white">{ticket.bookingId}</span>
-                                          </div>
-                                          <div className="flex justify-between p-4">
-                                            <span className="text-gray-400">Attendees</span>
-                                            <span className="font-medium text-white">{ticket.attendeeCount}</span>
-                                          </div>
-                                          <div className="flex justify-between p-4">
-                                            <span className="text-gray-400">Merchandise</span>
-                                            <span className="font-medium text-white">{ticket.merchandiseOption ? 'Signed Book' : 'None'}</span>
-                                          </div>
-                                          <div className="flex justify-between p-4">
-                                            <span className="text-gray-400">Date</span>
-                                            <span className="font-medium text-white">{show.date ? new Date(show.date).toLocaleDateString() : 'TBD'}</span>
-                                          </div>
-                                          <div className="flex justify-between p-4">
-                                            <span className="text-gray-400">Booked On</span>
-                                            <span className="font-medium text-white">{formatCreatedDate(ticket.createdAt)}</span>
-                                          </div>
-                                        </div>
-                                      </div>
+                                  {!isTicket && order.quantity && (
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-400">Quantity:</span>
+                                      <span className="text-gray-300">{order.quantity}</span>
                                     </div>
-                                    
-                                    <div className="md:col-span-5">
-                                      <div className="bg-gray-800/70 backdrop-blur-sm border border-gray-700/50 rounded-xl h-full">
-                                        <div className="p-5 border-b border-gray-700/50">
-                                          <h3 className="font-semibold text-lg text-white">Actions</h3>
-                                        </div>
-                                        <div className="p-6 flex flex-col items-center">
-                                          <div className="relative">
-                                            <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg blur opacity-50"></div>
-                                            
-                                          </div>
-                                          
-                                          {ticket.paymentStatus === 'pending' ? (
-                                            <button
-                                              onClick={() => sendToPaymentGateway(ticket, show)}
-                                              className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white py-3 px-4 rounded-xl font-medium shadow-lg shadow-amber-900/30 transition-all flex justify-center items-center space-x-2">
-                                              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M19 9L12 16L5 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                              </svg>
-                                              <span>Complete Payment</span>
-                                            </button>
-                                          ) : ticket.paymentStatus === 'confirmed' ? (
-                                            <button className="mt-6 w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white py-3 px-4 rounded-xl font-medium shadow-lg shadow-indigo-900/30 transition-all flex justify-center items-center space-x-2">
-                                              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M4 16V17C4 17.5304 4.21071 18.0391 4.58579 18.4142C4.96086 18.7893 5.46957 19 6 19H18C18.5304 19 19.0391 18.7893 19.4142 18.4142C19.7893 18.0391 20 17.5304 20 17V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                                <path d="M12 12V3M12 12L16 8M12 12L8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                              </svg>
-                                              <span>Download Ticket</span>
-                                            </button>
-                                          ) : (
-                                            <div className="mt-6 w-full bg-rose-900/30 border border-rose-500/30 text-rose-300 py-3 px-4 rounded-xl font-medium text-center flex justify-center items-center space-x-2">
-                                              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                                <path d="M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                              </svg>
-                                              <span>Ticket Cancelled</span>
-                                            </div>
-                                          )}
-                                          
-                                          {ticket.paymentStatus === 'confirmed' && (
-                                            <button className="mt-4 w-full bg-gray-700/50 border border-gray-600/50 hover:bg-gray-700 text-white py-2.5 px-4 rounded-xl font-medium transition-all flex justify-center items-center space-x-2">
-                                              <HelpCircle className="w-5 h-5" />
-                                              <span>Need Help?</span>
-                                      
-                                            </button>
-                                          )}
-                                          
-                                          <div className="mt-6 text-center">
-                                            <span className={`inline-flex items-center px-3 py-1 rounded-full ${getStatusColor(ticket.paymentStatus)}`}>
-                                              {getStatusIcon(ticket.paymentStatus)}
-                                              {ticket.paymentStatus?.charAt(0).toUpperCase() + ticket.paymentStatus?.slice(1)}
-                                            </span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
+                                  )}
                                 </div>
-                              </motion.div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            </div>
-          )}
-        </main>
+                              </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="pt-2 border-t border-gray-800">
+                              <div className="flex flex-col sm:flex-row gap-2">
+                                {status === 'pending' ? (
+                                  <button
+                                    onClick={() => sendToPaymentGateway(order)}
+                                    className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 text-sm"
+                                  >
+                                    <CreditCard className="w-4 h-4" />
+                                    <span>Complete Payment</span>
+                                  </button>
+                                ) : status === 'confirmed' ? (
+                                  <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 text-sm">
+                                    <Download className="w-4 h-4" />
+                                    <span>{isTicket ? 'Download Ticket' : 'Download Invoice'}</span>
+                                  </button>
+                                ) : (
+                                  <div className="flex-1 bg-red-600/20 border border-red-600/30 text-red-400 py-2 px-4 rounded-lg font-medium text-center text-sm">
+                                    Order {status.charAt(0).toUpperCase() + status.slice(1)}
+                                  </div>
+                                )}
+                                
+                                <button className="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 text-sm">
+                                  <HelpCircle className="w-4 h-4" />
+                                  <span>Help</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+        )}
       </div>
-      <Footer />
-      <style jsx>{`
-        .ticket-card {
-          transition: transform 0.3s ease;
-        }
-        .ticket-card:hover {
-          transform: translateY(-4px);
-        }
-      `}</style>
+    </div>
+    <Footer />
     </>
+   
   );
 }
