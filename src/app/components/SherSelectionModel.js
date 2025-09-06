@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 function SherSelectionModal({ shers, onSelect, onClose, title, author }) {
   const [selectedShers, setSelectedShers] = useState([])
 
-  // Prevent body scroll when modal is open
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => {
@@ -11,7 +10,6 @@ function SherSelectionModal({ shers, onSelect, onClose, title, author }) {
     }
   }, [])
 
-  // Handle escape key
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape') onClose()
@@ -46,12 +44,9 @@ function SherSelectionModal({ shers, onSelect, onClose, title, author }) {
       className="fixed inset-0 bg-black bg-opacity-60 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"
       onClick={handleBackdropClick}
     >
-      {/* Mobile: slide up from bottom, Desktop: centered modal */}
-      <div className="bg-slate-900 w-full sm:w-auto sm:max-w-2xl sm:rounded-lg rounded-t-2xl sm:rounded-t-lg max-h-[90vh] sm:max-h-[85vh] overflow-hidden flex flex-col animate-slide-up sm:animate-fade-in">
+      <div className="bg-slate-900 w-full sm:w-auto sm:max-w-2xl sm:rounded-lg rounded-t-2xl sm:rounded-t-lg overflow-hidden flex flex-col animate-slide-up sm:animate-fade-in">
         
-        {/* Header - Fixed */}
-        <div className="flex-shrink-0 p-4 sm:p-6 border-b border-slate-700 bg-slate-900">
-          {/* Mobile header with close button */}
+        <div className="fixed flex-shrink-0 p-4 sm:p-6 border-b border-slate-700 bg-slate-900">
           <div className="flex items-start justify-between mb-3 sm:hidden">
             <div className="flex-1">
               <h2 className="text-lg font-medium text-white rozha-class line-clamp-2 leading-tight">
@@ -72,7 +67,6 @@ function SherSelectionModal({ shers, onSelect, onClose, title, author }) {
             </button>
           </div>
 
-          {/* Desktop header */}
           <div className="hidden sm:block">
             <h2 className="text-xl font-medium text-white rozha-class mb-2">
               {title}
@@ -82,7 +76,6 @@ function SherSelectionModal({ shers, onSelect, onClose, title, author }) {
             </p>
           </div>
 
-          {/* Selection counter */}
           <div className="flex items-center justify-between">
             <p className="text-slate-300 text-sm">
               Select up to 5 shers
@@ -94,8 +87,6 @@ function SherSelectionModal({ shers, onSelect, onClose, title, author }) {
             </div>
           </div>
         </div>
-        
-        {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4">
           {shers.map((sher, index) => (
             <div
@@ -128,8 +119,7 @@ function SherSelectionModal({ shers, onSelect, onClose, title, author }) {
           ))}
         </div>
         
-        {/* Footer buttons - Fixed */}
-        <div className="flex-shrink-0 p-4 sm:p-6 border-t border-slate-700 bg-slate-900">
+        <div className="flex-shrink-0 fixed p-4 sm:p-6 border-t border-slate-700 bg-slate-900">
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <button
               onClick={onClose}

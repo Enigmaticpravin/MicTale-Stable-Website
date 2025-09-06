@@ -16,6 +16,9 @@ import {
   ChevronUp
 } from 'lucide-react'
 import { useToast } from './ui/Toast'
+import { Call02FreeIcons, InstagramFreeIcons, Linkedin01FreeIcons, LocationIconFreeIcons, Mail01FreeIcons, YoutubeFreeIcons } from '@hugeicons/core-free-icons/index'
+import { HugeiconsIcon } from '@hugeicons/react'
+
 
 export default function Footer() {
     const { success, error, warning, info, toast } = useToast();
@@ -36,128 +39,78 @@ export default function Footer() {
     info('New update available.');
   };
   return (
-    <footer className=" overflow-hidden m-1 md:m-5 rounded-2xl border-t border-white/10 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white">
+    <footer className="relative z-50 overflow-hidden m-1 md:m-5 rounded-2xl border-t border-white/10 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white">
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -top-40 left-1/2 h-80 w-[64rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-sky-500/10 via-cyan-400/10 to-fuchsia-500/10 blur-3xl" />
       </div>
 
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+
+        <div>
+          <Image
+            src="/images/footerlogo.png"
+            alt="MicTale Logo"
+            className='w-40 h-10 my-10 mx-auto'
+            height={400}
+            width={800}/>
+        </div>
        
-        <div className="grid grid-cols-1 gap-10 border-t border-white/10 py-12 md:grid-cols-3 lg:grid-cols-6">
+        <div className="flex flex-row justify-between border-t border-white/10 py-12">
           <div className="col-span-2 lg:col-span-2">
-            <h4 className="mb-4 text-sm font-semibold tracking-wide text-white/80">Stay in touch</h4>
-            <p className="mb-6 max-w-md text-sm leading-relaxed text-white/70">
-              Get show announcements, early-bird passes, and behind-the-scenes notes. No spam, just the real stuff.
-            </p>
-
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="group relative flex w-full max-w-md items-center rounded-2xl border border-white/10 bg-white/5 p-1.5 ring-0 backdrop-blur transition focus-within:bg-white/10"
-              aria-label="Subscribe to newsletter"
-            >
-              <input
-                type="email"
-                required
-                placeholder="your@email.com"
-                className="peer w-full bg-transparent px-3 py-2 text-sm text-white/90 placeholder-white/40 outline-none"
-              />
-              <button
-                type="submit"
-                onClick={handleError}
-                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm font-medium text-white/90 transition hover:bg-white/20 active:translate-y-px"
-              >
-                Subscribe
-                <ArrowRight className="h-4 w-4" />
-              </button>
-              <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-gradient-to-r from-sky-500/0 via-cyan-400/0 to-fuchsia-500/0 opacity-0 blur-2xl transition-all duration-300 group-focus-within:opacity-20" />
-            </form>
-
+          <h5 className="mb-4 text-xs font-semibold uppercase tracking-widest text-white/60">Contact Us</h5>
             <ul className="mt-6 space-y-2 text-sm text-white/80">
               <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-white/60" />
+                <HugeiconsIcon icon={Mail01FreeIcons} className="h-4 w-4 text-white/60" />
                 <a href="mailto:hello@mictale.in" className="link-underline">contact@mictale.in</a>
               </li>
               <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-white/60" />
+                <HugeiconsIcon icon={Call02FreeIcons} className="h-4 w-4 text-white/60" />
                 <a href="tel:+919999999999" className="link-underline">+91 99999 99999</a>
               </li>
               <li className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-white/60" />
+                <HugeiconsIcon icon={LocationIconFreeIcons} className="h-4 w-4 text-white/60" />
                 <span>Noida, India</span>
               </li>
             </ul>
           </div>
 
           <NavCol
-            title="Discover"
+            title="Menu"
             links={[
-              { label: 'Open Mic', href: '/open-mic' },
-              { label: 'Solo Shows', href: '/solo' },
-              { label: 'Workshops', href: '/workshops' },
-              { label: 'Studio Rentals', href: '/rentals' },
+              { label: 'Home', href: '/' },
+              { label: 'Treasury', href: '/treasury' },
+              { label: 'About us', href: '/about' }
             ]}
           />
 
-          <NavCol
-            title="Company"
-            links={[
-              { label: 'About', href: '/about' },
-              { label: 'Careers', href: '/careers' },
-              { label: 'Press', href: '/press' },
-              { label: 'Contact', href: '/contact' },
-            ]}
-          />
-
-          <NavCol
-            title="Resources"
-            links={[
-              { label: 'Blog', href: '/blog' },
-              { label: 'Community', href: '/community' },
-              { label: 'Partner with us', href: '/partners' },
-              { label: 'Help Center', href: '/help' },
-            ]}
-          />
-
-          <NavCol
+           <NavCol
             title="Legal"
             links={[
-              { label: 'Terms', href: '/terms' },
-              { label: 'Privacy', href: '/privacy' },
-              { label: 'Refunds', href: '/refunds' },
-              { label: 'Cookies', href: '/cookies' },
+              { label: 'Terms', href: '/terms-and-conditions' },
+              { label: 'Privacy', href: '/privacy-policy' },
+              { label: 'Cookies', href: '/cookies' }
             ]}
           />
-        </div>
 
-        {/* bottom bar */}
-        <div className="flex flex-col gap-6 border-t border-white/10 py-8 md:flex-row md:items-center md:justify-between">
+        </div>
+        <div className="flex flex-col mx-auto justify-center items-center gap-4 border-t border-white/10 pt-8 mb-4">
+          <h5 className="text-xs font-semibold uppercase tracking-widest text-white/60">Follow us</h5>
+          
           <div className="flex items-center gap-4">
             <Social href="https://instagram.com" label="Instagram">
-              <Instagram className="h-5 w-5" />
+              <HugeiconsIcon icon={InstagramFreeIcons} className="h-5 w-5" />
             </Social>
             <Social href="https://twitter.com" label="Twitter">
-              <Twitter className="h-5 w-5" />
+              <HugeiconsIcon icon={Linkedin01FreeIcons} className="h-5 w-5" />
             </Social>
             <Social href="https://youtube.com" label="YouTube">
-              <Youtube className="h-5 w-5" />
+              <HugeiconsIcon icon={YoutubeFreeIcons} className="h-5 w-5" />
             </Social>
-            <Social href="https://facebook.com" label="Facebook">
-              <Facebook className="h-5 w-5" />
-            </Social>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/60">
-            <p>© {new Date().getFullYear()} MicTale. All rights reserved.</p>
-            <div className="hidden h-4 w-px bg-white/10 md:block" />
-            <div className="flex items-center gap-4">
-              <LangBadge code="EN" />
-              <a className="link-underline" href="/sitemap">Sitemap</a>
-              <a className="link-underline" href="/accessibility">Accessibility</a>
-            </div>
           </div>
 
           <BackToTop />
         </div>
+         <p className='text-xs md:text-sm items-center text-center mb-4 justify-center mx-auto'>© {new Date().getFullYear()} MicTale. All rights reserved.</p>
       </div>
     </footer>
   )
@@ -213,7 +166,7 @@ function BackToTop() {
       onClick={() => {
         try { window.scrollTo({ top: 0, behavior: 'smooth' }) } catch {}
       }}
-      className="inline-flex items-center gap-2 self-start rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition hover:bg-white/10 md:self-auto"
+      className="hidden items-center gap-2 self-start rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition hover:bg-white/10 md:self-auto"
       aria-label="Back to top"
     >
       <ChevronUp className="h-4 w-4" />

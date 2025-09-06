@@ -1,174 +1,19 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Link from 'next/link'
 import Footer from '@/app/components/Footer'
+import html2canvas from 'html2canvas'
 import { HugeiconsIcon } from '@hugeicons/react'
-import {
-  Download01FreeIcons,
-  Share01FreeIcons
-} from '@hugeicons/core-free-icons/index'
-
-function SherSelectionModal({ shers, onSelect, onClose, title, author }) {
-  const [selectedShers, setSelectedShers] = useState([])
-
-  const toggleSher = (index) => {
-    setSelectedShers(prev => {
-      if (prev.includes(index)) {
-        return prev.filter(i => i !== index)
-      } else if (prev.length < 5) {
-        return [...prev, index].sort((a, b) => a - b)
-      }
-      return prev
-    })
-  }
-
-  const handleDownload = () => {
-    const selectedSherData = selectedShers.map(index => shers[index])
-    onSelect(selectedSherData)
-    onClose()
-  }
-
-  return (
-    <div className="fixed inset-0 backdrop-blur-2xl bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-900 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-        <div className="p-6 border-b border-slate-700">
-          <h2 className="text-xl font-medium text-white rozha-class mb-2">{title}</h2>
-          <p className="text-yellow-500 text-sm mb-4">by {author}</p>
-          <p className="text-slate-300 text-sm">
-            Select up to 5 shers for your download ({selectedShers.length}/5 selected)
-          </p>
-        </div>
-        
-        <div className="p-6 space-y-4">
-          {shers.map((sher, index) => (
-            <div
-              key={index}
-              className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                selectedShers.includes(index)
-                  ? 'border-yellow-500 bg-yellow-500/10'
-                  : 'border-slate-700 hover:border-slate-600'
-              }`}
-              onClick={() => toggleSher(index)}
-            >
-              <div className="text-white text-sm space-y-1">
-                <div className="rozha-class">{sher.first}</div>
-                {sher.second && <div className="rozha-class">{sher.second}</div>}
-              </div>
-            </div>
-          ))}
-        </div>
-        
-        <div className="p-6 border-t border-slate-700 flex justify-between">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-slate-400 hover:text-slate-300 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleDownload}
-            disabled={selectedShers.length === 0}
-            className="px-6 py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Download Selected ({selectedShers.length})
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Function to create and download the image
-function createGhazalImage(shersToDownload, title, author) {
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')
-  
-  // Calculate dynamic height based on content
-  const baseHeight = 400
-  const sherHeight = 80 // space per sher
-  const calculatedHeight = baseHeight + (shersToDownload.length * sherHeight)
-  
-  canvas.width = 800
-  canvas.height = Math.max(800, calculatedHeight)
-  
-  // Background gradient
-  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height)
-  gradient.addColorStop(0, '#0f172a') // slate-950
-  gradient.addColorStop(1, '#1e293b') // slate-800
-  ctx.fillStyle = gradient
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
-  
-  // Set font properties
-  ctx.fillStyle = '#ffffff'
-  ctx.textAlign = 'center'
-  
-  let yPosition = 80
-  
-  // Title
-  ctx.font = 'bold 32px serif'
-  ctx.fillText(title, canvas.width / 2, yPosition)
-  yPosition += 60
-  
-  // Author
-  ctx.fillStyle = '#eab308' // yellow-500
-  ctx.font = 'italic 20px serif'
-  ctx.fillText(`— ${author}`, canvas.width / 2, yPosition)
-  yPosition += 80
-  
-  // Decorative line
-  ctx.strokeStyle = '#64748b' // slate-500
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  ctx.moveTo(canvas.width * 0.2, yPosition)
-  ctx.lineTo(canvas.width * 0.8, yPosition)
-  ctx.stroke()
-  yPosition += 60
-  
-  // Shers
-  ctx.fillStyle = '#ffffff'
-  ctx.font = '24px serif'
-  ctx.textAlign = 'center'
-  
-  shersToDownload.forEach((sher, index) => {
-    // First line of sher
-    ctx.fillText(sher.first, canvas.width / 2, yPosition)
-    yPosition += 40
-    
-    // Second line of sher (if exists)
-    if (sher.second) {
-      ctx.fillText(sher.second, canvas.width / 2, yPosition)
-      yPosition += 40
-    }
-    
-    // Add space between shers (except for the last one)
-    if (index < shersToDownload.length - 1) {
-      yPosition += 30
-    }
-  })
-  
-  // Convert canvas to blob and download
-  canvas.toBlob((blob) => {
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_ghazal.png`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }, 'image/png')
-}
+import { Download01FreeIcons, Share01FreeIcons } from '@hugeicons/core-free-icons/index'
 
 function renderLineAsWords (line) {
-  const words = String(line || '')
-    .split(/\s+/)
-    .filter(Boolean)
+  const words = String(line || '').split(/\s+/).filter(Boolean)
   return (
     <div
       style={{
         maxWidth: '712px',
-        width: '95%',
+        width: '90%',
         display: 'flex',
         justifyContent: 'space-between',
         whiteSpace: 'nowrap'
@@ -178,7 +23,7 @@ function renderLineAsWords (line) {
       {words.map((word, index) => (
         <span
           key={index}
-          className='text-[20px] sm:text-2xl md:text-3xl text-center inline-block text-white rozha-class'
+          className='text-lg sm:text-xl md:text-2xl text-center inline-block text-white tiro-class'
         >
           {word}
         </span>
@@ -187,27 +32,111 @@ function renderLineAsWords (line) {
   )
 }
 
-export default function PoemPageClient({ poem, similar }) {
+function renderLineForExport (line) {
+  const words = String(line || '').split(/\s+/).filter(Boolean)
+  return (
+    <div
+      style={{
+        maxWidth: '712px',
+        width: '95%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        whiteSpace: 'nowrap',
+        margin: '0 auto'
+      }}
+    >
+      {words.map((word, index) => (
+        <span
+          key={index}
+          className='tiro-class'
+          style={{
+            fontSize: 36,
+            lineHeight: 1.2,
+            textAlign: 'center',
+            display: 'inline-block',
+            color: '#ffffff'
+          }}
+        >
+          {word}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+export default function PoemPageClient ({ poem, similar }) {
+  const { title, author, content, isGhazal, shers = [] } = poem
+
   const [showModal, setShowModal] = useState(false)
-  
-  const { title, author, category, content, isGhazal, shers } = poem
+  const [selectedShers, setSelectedShers] = useState([])
+  const [exportIndices, setExportIndices] = useState(null)
+  const captureRef = useRef(null)
+
+  const toggleSher = (index) => {
+    setSelectedShers(prev => {
+      if (prev.includes(index)) return prev.filter(i => i !== index)
+      if (prev.length >= 5) return prev
+      return [...prev, index]
+    })
+  }
 
   const downloadGhazal = () => {
-    if (!isGhazal) {
-      alert('Download functionality is currently only available for ghazals.')
-      return
-    }
-    
-    if (shers.length > 5) {
+    if (isGhazal && shers.length > 5) {
       setShowModal(true)
     } else {
-      createGhazalImage(shers, title, author)
+      const idxs = isGhazal ? shers.map((_, i) => i) : []
+      startExport(idxs)
     }
   }
-  
-  const handleSherSelection = (selectedShers) => {
-    createGhazalImage(selectedShers, title, author)
+
+  const startExport = async (indices) => {
+    setExportIndices(indices)       
+    setShowModal(false)
+    await new Promise(r => setTimeout(r, 0))
+    await exportAsImage()
+    setExportIndices(null)         
   }
+
+  const exportAsImage = async () => {
+    const node = captureRef.current
+    if (!node) return
+
+    const canvas = await html2canvas(node, {
+      backgroundColor: '#0f172a',
+      useCORS: true,
+      scale: Math.max(2, window.devicePixelRatio || 2),
+      onclone: (doc) => {
+        const style = doc.createElement('style')
+        style.textContent = `
+          /* prevent global gradients/variables from bleeding in */
+          #export-capture * {
+            text-shadow: none !important;
+            box-shadow: none !important;
+          }
+        `
+        doc.head.appendChild(style)
+      }
+    })
+
+    const dataUrl = canvas.toDataURL('image/png')
+    const a = document.createElement('a')
+    a.href = dataUrl
+    a.download = `${title || 'poem'}.png`
+    a.click()
+  }
+
+  const sharePoem = async () => {
+   try {
+        const shareData = {
+          title: title || 'Poem',
+          text: `${title || 'Untitled'} by ${author || 'Unknown'}`,
+          url: window.location.href
+        }
+        await navigator.share(shareData)
+      } catch (error) {
+        console.error('Error sharing:', error)
+      } 
+  } 
 
   return (
     <>
@@ -230,9 +159,7 @@ export default function PoemPageClient({ poem, similar }) {
                   {shers.map((sher, sherIndex) => (
                     <div key={sherIndex} className='space-y-1 md:space-y-5'>
                       <div>{renderLineAsWords(sher.first)}</div>
-                      {sher.second && (
-                        <div>{renderLineAsWords(sher.second)}</div>
-                      )}
+                      {sher.second && <div>{renderLineAsWords(sher.second)}</div>}
                     </div>
                   ))}
                 </section>
@@ -245,52 +172,45 @@ export default function PoemPageClient({ poem, similar }) {
               )}
 
               <div className='flex items-center gap-6 mt-6 md:mt-20 pt-8 border-t border-slate-800/30'>
-                <button 
+                <button
                   onClick={downloadGhazal}
                   className='flex cursor-pointer items-center gap-2 text-slate-400 hover:text-slate-300 transition-colors'
                 >
                   <HugeiconsIcon icon={Download01FreeIcons} className='w-4 h-4' />
                   <span className='text-sm'>Download</span>
                 </button>
-                <button className='flex cursor-pointer items-center gap-2 text-slate-400 hover:text-slate-300 transition-colors'>
+                <button 
+                onClick={sharePoem}
+                className='flex cursor-pointer items-center gap-2 text-slate-400 hover:text-slate-300 transition-colors'>
                   <HugeiconsIcon icon={Share01FreeIcons} className='w-4 h-4' />
                   <span className='text-sm'>Share</span>
                 </button>
               </div>
             </div>
+
             <aside className='md:col-span-1'>
               <div className='sticky top-24'>
                 <div className='border-l border-slate-800 pl-8'>
                   <h3 className='text-slate-300 font-medium mb-6 text-sm uppercase tracking-wider'>
                     Related
                   </h3>
-
                   {similar.length === 0 ? (
-                    <p className='text-slate-500 text-sm'>
-                      No related poems found.
-                    </p>
+                    <p className='text-slate-500 text-sm'>No related poems found.</p>
                   ) : (
                     <div className='space-y-6'>
                       {similar.map(s => (
-                        <Link
-                          key={s.slug}
-                          href={`/poem/${s.slug}`}
-                          className='block group'
-                        >
+                        <Link key={s.slug} href={`/poem/${s.slug}`} className='block group'>
                           <div className='pb-4 border-b border-slate-800/40 last:border-b-0'>
                             <h4
                               className="relative text-white text-sm font-medium mb-2 leading-snug
-             after:content-[''] after:absolute after:left-0 after:bottom-0
-             after:w-0 after:h-[1px] after:bg-white after:transition-all after:duration-300
-             hover:after:w-full"
+                              after:content-[''] after:absolute after:left-0 after:bottom-0
+                              after:w-0 after:h-[1px] after:bg-white after:transition-all after:duration-300
+                              hover:after:w-full"
                             >
                               {s.title || 'Untitled'}
                             </h4>
-
                             <div className='flex items-center justify-between'>
-                              <p className='text-slate-400 text-xs'>
-                                {s.author || 'Unknown'}
-                              </p>
+                              <p className='text-slate-400 text-xs'>{s.author || 'Unknown'}</p>
                             </div>
                           </div>
                         </Link>
@@ -304,15 +224,132 @@ export default function PoemPageClient({ poem, similar }) {
         </div>
       </main>
 
-      {showModal && (
-        <SherSelectionModal
-          shers={shers}
-          title={title}
-          author={author}
-          onSelect={handleSherSelection}
-          onClose={() => setShowModal(false)}
-        />
+      {exportIndices !== null && (
+        <div
+          id='export-capture'
+          ref={captureRef}
+          style={{
+            position: 'fixed',
+            left: '-10000px',
+            top: 0,
+            width: '1080px',
+            height: '1350px',   display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      padding: '48px',
+            backgroundColor: '#0f172a', // slate-950 hex
+            color: '#ffffff',
+            fontFamily: 'inherit',
+            boxSizing: 'border-box',
+          }}
+        >
+          {isGhazal ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+              {exportIndices.map((i) => {
+                const sher = shers[i]
+                return (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {renderLineForExport(sher.first)}
+                    {sher.second ? renderLineForExport(sher.second) : null}
+                  </div>
+                )
+              })}
+              <div
+                style={{
+                  textAlign: 'center',
+                  marginTop: '36px',
+                  fontSize: 28,
+                  color: '#eab308'
+                }}
+              >
+                {author}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div
+                style={{
+                  color: '#e5e7eb',
+                  whiteSpace: 'pre-wrap',
+                  fontSize: 20,
+                  lineHeight: 1.7
+                }}
+              >
+                {content}
+              </div>
+              <div
+                style={{
+                  textAlign: 'center',
+                  marginTop: '36px',
+                  fontSize: 28,
+                  color: '#eab308'
+                }}
+              >
+                — {author}
+              </div>
+            </div>
+          )}
+        </div>
       )}
+
+     {showModal && (
+  <div className='fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4'>
+    <div className='bg-slate-900 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] flex flex-col'>
+      <h2 className='text-white text-xl font-semibold mb-4 text-center'>
+        Select exactly 5 shers
+      </h2>
+
+      <div className='flex-1 overflow-y-auto space-y-3 pr-1'>
+        {shers.map((sher, i) => {
+          const active = selectedShers.includes(i)
+          return (
+            <button
+              key={i}
+              type='button'
+              onClick={() => toggleSher(i)}
+              className={`w-full text-left p-4 rounded-xl border transition text-sm sm:text-base
+                ${active ? 'bg-slate-700 border-slate-500' : 'bg-slate-800 border-slate-700'}
+              `}
+            >
+              <p className='text-white leading-snug'>{sher.first}</p>
+              {sher.second && (
+                <p className='text-slate-300 leading-snug mt-1'>{sher.second}</p>
+              )}
+            </button>
+          )
+        })}
+      </div>
+
+      <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-6'>
+        <button
+          onClick={() => setShowModal(false)}
+          className='w-full sm:w-auto px-4 py-2 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700'
+        >
+          Cancel
+        </button>
+
+        <div className='flex flex-col sm:flex-row gap-3 w-full sm:w-auto'>
+          <button
+            onClick={() =>
+              setSelectedShers([0, 1, 2, 3, 4].filter(i => i < shers.length))
+            }
+            className='px-4 py-2 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 w-full sm:w-auto'
+          >
+            Use first 5
+          </button>
+          <button
+            disabled={selectedShers.length !== 5}
+            onClick={() => startExport(selectedShers)}
+            className='px-4 py-2 rounded-lg bg-yellow-500 text-black font-semibold disabled:opacity-50 w-full sm:w-auto'
+          >
+            Download
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
 
       <Footer />
     </>

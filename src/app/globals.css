@@ -186,6 +186,17 @@ body {
   src: url('fonts/Helvetica.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'Tiro';
+  src: url('fonts/Tiro.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.tiro-class {
+  font-family: 'Tiro', serif;
+}
+
 .helvetica-class {
   font-family: 'Helvetica', serif;
   font-weight: lighter;
