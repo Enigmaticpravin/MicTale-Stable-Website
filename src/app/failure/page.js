@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import Footer from '../../components/Footer';
 import FailurePageClient from './FailurePageClient';
+import Footer from '../components/Footer';
 
 export default function FailurePage() {
   return (

@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import Footer from '../../components/Footer';
 import SuccessPageClient from './SuccessPageClient';
+import Footer from '../components/Footer';
 
 export default function SuccessPage() {
   return (
