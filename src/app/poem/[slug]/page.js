@@ -1,7 +1,5 @@
 import React from 'react'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import Footer from '@/app/components/Footer'
 import { getPoemBySlug } from '@/app/lib/poems'
 import {
   db,
@@ -13,26 +11,65 @@ import {
   getDocs
 } from '@/app/lib/firebase'
 import PoemPageClient from './PoemPageClient'
+import Script from 'next/script'
 
 export const revalidate = 60
 
-export async function generateMetadata ({ params }) {
+export async function generateMetadata({ params }) {
   const { slug } = params
   const poem = await getPoemBySlug(slug)
   if (!poem) return { title: 'Poem not found' }
 
-  const title = `${poem.title} — ${poem.author} (${poem.category})`
+  const title = `${poem.title} by ${poem.author} | ${poem.category} Poem`
   const url = `${process.env.NEXT_PUBLIC_BASE_URL || ''}/poem/${slug}`
-  const description = poem.excerpt || poem.lines?.slice(0, 2).join(' ')
+  const description = poem.excerpt || poem.lines?.slice(0, 3).join(' ')
 
   return {
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { title, description, url },
-    twitter: { card: 'summary_large_image', title, description }
+    keywords: [
+      poem.title,
+      poem.author,
+      poem.category,
+      `${poem.title} ${poem.author}`,
+      `${poem.author} poetry`,
+      `${poem.category} poem`
+    ],
+    authors: [{ name: poem.author }],
+    robots: {
+      index: true,
+      follow: true,
+      maxSnippet: -1,
+      maxImagePreview: 'large',
+      maxVideoPreview: -1
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: 'article',
+      siteName: 'MicTale',
+      authors: [poem.author],
+      publishedTime: poem.createdAt || undefined,
+      images: [
+        {
+          url: 'https://i.imgur.com/YFpScQU.png',
+          width: 1200,
+          height: 630,
+          alt: `${poem.title} by ${poem.author}`
+        }
+      ]
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: 'https://i.imgur.com/YFpScQU.png'
+    }
   }
 }
+
 
 function buildShersFromContent (content = '') {
   if (!content) return []
@@ -162,7 +199,8 @@ export default async function PoemPage ({ params }) {
   })
 
   return (
-    <PoemPageClient 
+    <>
+     <PoemPageClient 
       poem={{
         title,
         author,
@@ -173,5 +211,27 @@ export default async function PoemPage ({ params }) {
       }}
       similar={similar}
     />
+      <Script id="ld-json" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Poem",
+          "name": title,
+          "author": {
+            "@type": "Person",
+            "name": author
+          },
+          "genre": category,
+          "inLanguage": "hi",
+          "datePublished": poem.createdAt || "",
+          "url": `${process.env.NEXT_PUBLIC_BASE_URL}/poem/${slug}`,
+          "publisher": {
+            "@type": "Organization",
+            "name": "MicTale",
+            "url": process.env.NEXT_PUBLIC_BASE_URL
+          },
+          "text": content
+        })}
+      </Script>
+    </>
   )
 }
