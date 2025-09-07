@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 
 const TopPerformers = () => {
@@ -58,9 +59,12 @@ const TopPerformers = () => {
               onMouseEnter={() => setHoveredCard(performer.id)}
               onMouseLeave={() => setHoveredCard(null)}
             >
-              <img
+              <Image
                 src={performer.image}
                 alt={performer.name}
+                width={400}
+                height={400}
+                priority={false}
                 className="w-full h-34 md:h-88 object-cover"
               />
 

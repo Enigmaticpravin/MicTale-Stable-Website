@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
 import show from '@/../public/images/first.png'
 import InfiniteMarquee from '@/app/components/InfiniteMarquee'
 
@@ -22,8 +21,6 @@ const SoloShow = () => {
 
   const imageWrapperRef = useRef(null)
   const [imageHeight, setImageHeight] = useState(0)
-  const containerRef = useRef(null)
-  const isInView = useInView(containerRef, { once: true, margin: '-100px' })
 
   useEffect(() => {
     const updateHeight = () => {
@@ -39,16 +36,11 @@ const SoloShow = () => {
   const duplicatedImages = [...images, ...images]
 
   return (
-    <motion.div
-      ref={containerRef}
-      initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 1, ease: 'easeOut' }}
+    <div
       className="block items-center justify-center overflow-hidden"
     >
       <div className="md:flex md:flex-row md:justify-center md:items-start">
         <div
-          ref={imageWrapperRef}
           className="w-full md:w-[60%] px-2 py-2 md:px-0 bg-slate-900 md:mx-auto md:m-5 md:mb-5"
         >
           <Image
@@ -113,7 +105,7 @@ const SoloShow = () => {
           }
         }
       `}</style>
-    </motion.div>
+    </div>
   )
 }
 
