@@ -1,6 +1,13 @@
+'use client'
+
 import React from 'react';
 
 export default function MetallicFeatureCard() {
+
+const handleSubmit = () => {
+  alert('Feature coming soon!');
+}
+
   return (
     <div className="flex items-center justify-center max-w-6xl md:mb-5 mx-auto p-4 relative overflow-hidden">
       <div className="relative z-10 w-full">
@@ -22,8 +29,8 @@ export default function MetallicFeatureCard() {
             </div>
             
             <div className="text-center">
-              <button 
-              onClick={() => alert('Feature coming soon!')}
+              <button
+              onClick={handleSubmit}
               className="cursor-pointer group relative px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 text-gray-900 font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-500"></div>
                 
