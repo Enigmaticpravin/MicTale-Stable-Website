@@ -5,10 +5,16 @@ import Link from 'next/link'
 import Footer from '@/app/components/Footer'
 import html2canvas from 'html2canvas'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { Download01FreeIcons, Share01FreeIcons } from '@hugeicons/core-free-icons/index'
+import {
+  Download01FreeIcons,
+  Share01FreeIcons
+} from '@hugeicons/core-free-icons/index'
+import Image from 'next/image'
 
 function renderLineAsWords (line) {
-  const words = String(line || '').split(/\s+/).filter(Boolean)
+  const words = String(line || '')
+    .split(/\s+/)
+    .filter(Boolean)
   return (
     <div
       style={{
@@ -33,11 +39,13 @@ function renderLineAsWords (line) {
 }
 
 function renderLineForExport (line) {
-  const words = String(line || '').split(/\s+/).filter(Boolean)
+  const words = String(line || '')
+    .split(/\s+/)
+    .filter(Boolean)
   return (
     <div
       style={{
-        maxWidth: '712px',
+        maxWidth: '800px',
         width: '95%',
         display: 'flex',
         justifyContent: 'space-between',
@@ -72,7 +80,7 @@ export default function PoemPageClient ({ poem, similar }) {
   const [exportIndices, setExportIndices] = useState(null)
   const captureRef = useRef(null)
 
-  const toggleSher = (index) => {
+  const toggleSher = index => {
     setSelectedShers(prev => {
       if (prev.includes(index)) return prev.filter(i => i !== index)
       if (prev.length >= 5) return prev
@@ -89,12 +97,12 @@ export default function PoemPageClient ({ poem, similar }) {
     }
   }
 
-  const startExport = async (indices) => {
-    setExportIndices(indices)       
+  const startExport = async indices => {
+    setExportIndices(indices)
     setShowModal(false)
     await new Promise(r => setTimeout(r, 0))
     await exportAsImage()
-    setExportIndices(null)         
+    setExportIndices(null)
   }
 
   const exportAsImage = async () => {
@@ -105,7 +113,7 @@ export default function PoemPageClient ({ poem, similar }) {
       backgroundColor: '#0f172a',
       useCORS: true,
       scale: Math.max(2, window.devicePixelRatio || 2),
-      onclone: (doc) => {
+      onclone: doc => {
         const style = doc.createElement('style')
         style.textContent = `
           /* prevent global gradients/variables from bleeding in */
@@ -126,17 +134,17 @@ export default function PoemPageClient ({ poem, similar }) {
   }
 
   const sharePoem = async () => {
-   try {
-        const shareData = {
-          title: title || 'Poem',
-          text: `${title || 'Untitled'} by ${author || 'Unknown'}`,
-          url: window.location.href
-        }
-        await navigator.share(shareData)
-      } catch (error) {
-        console.error('Error sharing:', error)
-      } 
-  } 
+    try {
+      const shareData = {
+        title: title || 'Poem',
+        text: `${title || 'Untitled'} by ${author || 'Unknown'}`,
+        url: window.location.href
+      }
+      await navigator.share(shareData)
+    } catch (error) {
+      console.error('Error sharing:', error)
+    }
+  }
 
   return (
     <>
@@ -159,7 +167,9 @@ export default function PoemPageClient ({ poem, similar }) {
                   {shers.map((sher, sherIndex) => (
                     <div key={sherIndex} className='space-y-1 md:space-y-5'>
                       <div>{renderLineAsWords(sher.first)}</div>
-                      {sher.second && <div>{renderLineAsWords(sher.second)}</div>}
+                      {sher.second && (
+                        <div>{renderLineAsWords(sher.second)}</div>
+                      )}
                     </div>
                   ))}
                 </section>
@@ -176,12 +186,16 @@ export default function PoemPageClient ({ poem, similar }) {
                   onClick={downloadGhazal}
                   className='flex cursor-pointer items-center gap-2 text-slate-400 hover:text-slate-300 transition-colors'
                 >
-                  <HugeiconsIcon icon={Download01FreeIcons} className='w-4 h-4' />
+                  <HugeiconsIcon
+                    icon={Download01FreeIcons}
+                    className='w-4 h-4'
+                  />
                   <span className='text-sm'>Download</span>
                 </button>
-                <button 
-                onClick={sharePoem}
-                className='flex cursor-pointer items-center gap-2 text-slate-400 hover:text-slate-300 transition-colors'>
+                <button
+                  onClick={sharePoem}
+                  className='flex cursor-pointer items-center gap-2 text-slate-400 hover:text-slate-300 transition-colors'
+                >
                   <HugeiconsIcon icon={Share01FreeIcons} className='w-4 h-4' />
                   <span className='text-sm'>Share</span>
                 </button>
@@ -195,11 +209,17 @@ export default function PoemPageClient ({ poem, similar }) {
                     Related
                   </h3>
                   {similar.length === 0 ? (
-                    <p className='text-slate-500 text-sm'>No related poems found.</p>
+                    <p className='text-slate-500 text-sm'>
+                      No related poems found.
+                    </p>
                   ) : (
                     <div className='space-y-6'>
                       {similar.map(s => (
-                        <Link key={s.slug} href={`/poem/${s.slug}`} className='block group'>
+                        <Link
+                          key={s.slug}
+                          href={`/poem/${s.slug}`}
+                          className='block group'
+                        >
                           <div className='pb-4 border-b border-slate-800/40 last:border-b-0'>
                             <h4
                               className="relative text-white text-sm font-medium mb-2 leading-snug
@@ -210,7 +230,9 @@ export default function PoemPageClient ({ poem, similar }) {
                               {s.title || 'Untitled'}
                             </h4>
                             <div className='flex items-center justify-between'>
-                              <p className='text-slate-400 text-xs'>{s.author || 'Unknown'}</p>
+                              <p className='text-slate-400 text-xs'>
+                                {s.author || 'Unknown'}
+                              </p>
                             </div>
                           </div>
                         </Link>
@@ -233,22 +255,59 @@ export default function PoemPageClient ({ poem, similar }) {
             left: '-10000px',
             top: 0,
             width: '1080px',
-            height: '1350px',   display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      padding: '48px',
-            backgroundColor: '#0f172a', // slate-950 hex
+            height: '1350px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            padding: '48px',
+            backgroundColor: '#0f172a',
             color: '#ffffff',
             fontFamily: 'inherit',
-            boxSizing: 'border-box',
+            boxSizing: 'border-box'
           }}
         >
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <div
+              style={{
+                fontSize: 15,
+                color: '#e5e7eb',
+                margin: '0 auto 18px 0'
+              }}
+            >
+              PUBLISHED ON
+            </div>
+            <img
+              src='/images/footerlogo.png'
+              alt='Logo'
+              style={{ height: '60px', margin: '0 auto 20px' }}
+            />
+
+            <div
+              style={{
+                width: '100%',
+                height: '1px',
+                backgroundColor: '#e5e7eb',
+                opacity: 0.3,
+                marginTop: '25px'
+              }}
+            ></div>
+          </div>
+
           {isGhazal ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-              {exportIndices.map((i) => {
+            <div
+              style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}
+            >
+              {exportIndices.map(i => {
                 const sher = shers[i]
                 return (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div
+                    key={i}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '20px'
+                    }}
+                  >
                     {renderLineForExport(sher.first)}
                     {sher.second ? renderLineForExport(sher.second) : null}
                   </div>
@@ -292,64 +351,71 @@ export default function PoemPageClient ({ poem, similar }) {
         </div>
       )}
 
-     {showModal && (
-  <div className='fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4'>
-    <div className='bg-slate-900 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] flex flex-col'>
-      <h2 className='text-white text-xl font-semibold mb-4 text-center'>
-        Select exactly 5 shers
-      </h2>
+      {showModal && (
+        <div className='fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4'>
+          <div className='bg-slate-900 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] flex flex-col'>
+            <h2 className='text-white text-xl font-semibold mb-4 text-center'>
+              Select exactly 5 shers
+            </h2>
 
-      <div className='flex-1 overflow-y-auto space-y-3 pr-1'>
-        {shers.map((sher, i) => {
-          const active = selectedShers.includes(i)
-          return (
-            <button
-              key={i}
-              type='button'
-              onClick={() => toggleSher(i)}
-              className={`w-full text-left p-4 rounded-xl border transition text-sm sm:text-base
-                ${active ? 'bg-slate-700 border-slate-500' : 'bg-slate-800 border-slate-700'}
+            <div className='flex-1 overflow-y-auto space-y-3 pr-1'>
+              {shers.map((sher, i) => {
+                const active = selectedShers.includes(i)
+                return (
+                  <button
+                    key={i}
+                    type='button'
+                    onClick={() => toggleSher(i)}
+                    className={`w-full text-left p-4 rounded-xl border transition text-sm sm:text-base
+                ${
+                  active
+                    ? 'bg-slate-700 border-slate-500'
+                    : 'bg-slate-800 border-slate-700'
+                }
               `}
-            >
-              <p className='text-white leading-snug'>{sher.first}</p>
-              {sher.second && (
-                <p className='text-slate-300 leading-snug mt-1'>{sher.second}</p>
-              )}
-            </button>
-          )
-        })}
-      </div>
+                  >
+                    <p className='text-white leading-snug'>{sher.first}</p>
+                    {sher.second && (
+                      <p className='text-slate-300 leading-snug mt-1'>
+                        {sher.second}
+                      </p>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
 
-      <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-6'>
-        <button
-          onClick={() => setShowModal(false)}
-          className='w-full sm:w-auto px-4 py-2 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700'
-        >
-          Cancel
-        </button>
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-6'>
+              <button
+                onClick={() => setShowModal(false)}
+                className='w-full sm:w-auto px-4 py-2 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700'
+              >
+                Cancel
+              </button>
 
-        <div className='flex flex-col sm:flex-row gap-3 w-full sm:w-auto'>
-          <button
-            onClick={() =>
-              setSelectedShers([0, 1, 2, 3, 4].filter(i => i < shers.length))
-            }
-            className='px-4 py-2 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 w-full sm:w-auto'
-          >
-            Use first 5
-          </button>
-          <button
-            disabled={selectedShers.length !== 5}
-            onClick={() => startExport(selectedShers)}
-            className='px-4 py-2 rounded-lg bg-yellow-500 text-black font-semibold disabled:opacity-50 w-full sm:w-auto'
-          >
-            Download
-          </button>
+              <div className='flex flex-col sm:flex-row gap-3 w-full sm:w-auto'>
+                <button
+                  onClick={() =>
+                    setSelectedShers(
+                      [0, 1, 2, 3, 4].filter(i => i < shers.length)
+                    )
+                  }
+                  className='px-4 py-2 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-700 w-full sm:w-auto'
+                >
+                  Use first 5
+                </button>
+                <button
+                  disabled={selectedShers.length !== 5}
+                  onClick={() => startExport(selectedShers)}
+                  className='px-4 py-2 rounded-lg bg-yellow-500 text-black font-semibold disabled:opacity-50 w-full sm:w-auto'
+                >
+                  Download
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-)}
-
+      )}
 
       <Footer />
     </>
