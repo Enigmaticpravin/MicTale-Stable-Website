@@ -140,7 +140,7 @@ export default function BlogDisplayPageDark ({ blog, similarBlogs = [] }) {
           >
             <div
               className='text-slate-200 text-lg md:text-2xl leading-relaxed garamond-class text-justify
-             first-letter:float-left first-letter:mr-2 first-letter:mt-1
+             first-letter:float-left first-letter:mr-2 whitespace-pre-line first-letter:mt-1
              first-letter:text-6xl md:first-letter:text-7xl
              first-letter:leading-none first-letter:font-bold'
               dangerouslySetInnerHTML={{

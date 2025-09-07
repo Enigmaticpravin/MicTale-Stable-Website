@@ -44,102 +44,6 @@ export default function DualPublishingPage() {
     return () => document.removeEventListener("pointerdown", handlePointerDown)
   }, [])
 
-  // Markdown parsing function
-  const parseMarkdown = (text) => {
-    if (!text) return ""
-    
-    let html = text
-      // Headers
-      .replace(/^### (.*$)/gm, '<h3 class="text-xl font-semibold text-white mt-6 mb-3">$1</h3>')
-      .replace(/^## (.*$)/gm, '<h2 class="text-2xl font-semibold text-white mt-8 mb-4">$1</h2>')
-      .replace(/^# (.*$)/gm, '<h1 class="text-3xl font-bold text-white mt-8 mb-6">$1</h1>')
-      
-      // Bold and italic
-      .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em class="text-blue-300">$1</em></strong>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em class="text-blue-300 italic">$1</em>')
-      
-      // Code blocks
-      .replace(/```([\s\S]*?)```/g, '<pre class="bg-slate-800 border border-slate-600 rounded-lg p-4 my-4 overflow-x-auto"><code class="text-sm text-green-300 font-mono">$1</code></pre>')
-      .replace(/`([^`]+)`/g, '<code class="bg-slate-800 text-green-300 px-2 py-1 rounded text-sm font-mono">$1</code>')
-      
-      // Blockquotes
-      .replace(/^> (.*$)/gm, '<blockquote class="border-l-4 border-blue-500 pl-4 py-2 my-4 text-gray-300 italic bg-slate-800/30 rounded-r-lg">$1</blockquote>')
-      
-      // Lists
-      .replace(/^\* (.*$)/gm, '<li class="text-gray-300 mb-2">$1</li>')
-      .replace(/^- (.*$)/gm, '<li class="text-gray-300 mb-2">$1</li>')
-      .replace(/^\+ (.*$)/gm, '<li class="text-gray-300 mb-2">$1</li>')
-      
-      // Links
-      .replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2" class="text-blue-400 hover:text-blue-300 underline transition-colors duration-200" target="_blank" rel="noopener noreferrer">$1</a>')
-      
-      // Line breaks
-      .replace(/\n\n/g, '</p><p class="text-gray-300 leading-relaxed mb-4">')
-      .replace(/\n/g, '<br>')
-
-    html = html.replace(/(<li class="text-gray-300 mb-2">.*<\/li>)/gs, (match) => {
-      return `<ul class="list-disc list-inside space-y-2 my-4 ml-4">${match}</ul>`
-    })
-
-    if (!html.match(/^<[h1-6|ul|ol|blockquote|pre]/)) {
-      html = `<p class="text-gray-300 leading-relaxed mb-4">${html}</p>`
-    }
-
-    return html
-  }
-
-  const insertFormatting = (before, after = '') => {
-    const textarea = textareaRef.current
-    if (!textarea) return
-
-    const start = textarea.selectionStart
-    const end = textarea.selectionEnd
-    const selectedText = blogContent.substring(start, end)
-    const newText = blogContent.substring(0, start) + before + selectedText + after + blogContent.substring(end)
-    
-    setBlogContent(newText)
-    
-    // Reset cursor position
-    setTimeout(() => {
-      textarea.focus()
-      textarea.setSelectionRange(start + before.length, end + before.length)
-    }, 0)
-  }
-
-  const formatBold = () => insertFormatting('**', '**')
-  const formatItalic = () => insertFormatting('*', '*')
-  const formatQuote = () => {
-    const textarea = textareaRef.current
-    if (!textarea) return
-    
-    const start = textarea.selectionStart
-    const lineStart = blogContent.lastIndexOf('\n', start - 1) + 1
-    const newText = blogContent.substring(0, lineStart) + '> ' + blogContent.substring(lineStart)
-    setBlogContent(newText)
-    
-    setTimeout(() => {
-      textarea.focus()
-      textarea.setSelectionRange(start + 2, start + 2)
-    }, 0)
-  }
-
-  const formatList = () => {
-    const textarea = textareaRef.current
-    if (!textarea) return
-    
-    const start = textarea.selectionStart
-    const lineStart = blogContent.lastIndexOf('\n', start - 1) + 1
-    const newText = blogContent.substring(0, lineStart) + '• ' + blogContent.substring(lineStart)
-    setBlogContent(newText)
-    
-    setTimeout(() => {
-      textarea.focus()
-      textarea.setSelectionRange(start + 2, start + 2)
-    }, 0)
-  }
-
-  // Poem functions
   async function handlePoemSubmit(e) {
     e.preventDefault()
     setPoemLoading(true)
@@ -187,7 +91,6 @@ export default function DualPublishingPage() {
     }
   }
 
-  // Blog functions
   const generateSlug = (title) => {
     return title
       .toLowerCase()
@@ -270,7 +173,6 @@ export default function DualPublishingPage() {
       const data = await res.json()
       setBlogResult({ ok: true, slug: slug })
       
-      // Clear form on success
       setBlogTitle("")
       setBlogAuthor("")
       setBlogContent("")
@@ -290,7 +192,6 @@ export default function DualPublishingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-gray-100">
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-        {/* Header Section with Mode Switch */}
         <div className="mb-12">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-8">
             <div>
@@ -331,10 +232,8 @@ export default function DualPublishingPage() {
           </div>
         </div>
 
-        {/* Content Area */}
         <div className="bg-slate-900/30 backdrop-blur-sm border border-slate-800 rounded-2xl p-8 lg:p-12 shadow-2xl">
           {activeMode === 'poem' ? (
-            /* POEM FORM */
             <form onSubmit={handlePoemSubmit} className="space-y-8">
               <div className="flex items-center space-x-3 mb-6">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
@@ -637,85 +536,23 @@ export default function DualPublishingPage() {
                 
                 {!previewMode ? (
                   <>
-                    {/* Formatting Toolbar */}
-                    <div className="flex items-center space-x-2 p-3 bg-slate-800/50 border border-slate-700 rounded-t-xl border-b-0">
-                      <button
-                        type="button"
-                        onClick={formatBold}
-                        className="p-2 rounded-lg hover:bg-slate-700 transition-colors duration-200 text-gray-300 hover:text-white"
-                        title="Bold (**text**)"
-                      >
-                        <Bold className="w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={formatItalic}
-                        className="p-2 rounded-lg hover:bg-slate-700 transition-colors duration-200 text-gray-300 hover:text-white"
-                        title="Italic (*text*)"
-                      >
-                        <Italic className="w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={formatQuote}
-                        className="p-2 rounded-lg hover:bg-slate-700 transition-colors duration-200 text-gray-300 hover:text-white"
-                        title="Quote (> text)"
-                      >
-                        <Quote className="w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={formatList}
-                        className="p-2 rounded-lg hover:bg-slate-700 transition-colors duration-200 text-gray-300 hover:text-white"
-                        title="Bullet List (• text)"
-                      >
-                        <List className="w-4 h-4" />
-                      </button>
-                      <div className="h-6 w-px bg-slate-600 mx-2"></div>
-                      <div className="text-xs text-gray-500">
-                        <span className="font-mono">**bold**</span>
-                        <span className="mx-2">•</span>
-                        <span className="font-mono">*italic*</span>
-                        <span className="mx-2">•</span>
-                        <span className="font-mono"># heading</span>
-                        <span className="mx-2">•</span>
-                        <span className="font-mono">`code`</span>
-                      </div>
-                    </div>
-
                     <textarea
                       ref={textareaRef}
                       rows={12}
                       className="w-full bg-slate-800/50 border border-slate-700 rounded-b-xl px-4 py-4 text-gray-100 placeholder-gray-500 focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none transition-all duration-300 hover:border-slate-600 resize-none leading-relaxed font-mono text-sm"
                       value={blogContent}
                       onChange={(e) => setBlogContent(e.target.value)}
-                      placeholder={`Write your blog post content here using Markdown formatting...
-
-Examples:
-# Main Heading
-## Sub Heading
-**Bold text**
-*Italic text*
-• Bullet point
-> Quote block
-\`inline code\`
-
-\`\`\`
-code block
-\`\`\`
-
-[Link text](https://example.com)`}
+                      placeholder={`Write your blog post content here...`}
                       required
                     />
                   </>
                 ) : (
-                  /* Preview Mode */
                   <div className="min-h-[300px] bg-slate-800/30 border border-slate-700 rounded-xl p-6">
                     <div className="prose prose-invert max-w-none">
                       <div
                         className="blog-preview"
                         dangerouslySetInnerHTML={{
-                          __html: parseMarkdown(blogContent)
+                          __html: blogContent
                         }}
                       />
                       {!blogContent && (
@@ -743,7 +580,6 @@ code block
                 )}
               </button>
 
-              {/* Blog Result */}
               {blogResult && (
                 <div className="mt-6">
                   {blogResult.error ? (

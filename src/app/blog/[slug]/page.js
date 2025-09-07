@@ -262,7 +262,7 @@ export default async function BlogPage({ params }) {
               author: {
                 "@type": "Person",
                 name: blog.author,
-                url: `https://mictale.in/author/${blog.author.toLowerCase().replace(/\s+/g, '-')}`
+                url: `https://mictale.in/blog/${slug}`
               },
               publisher: {
                 "@type": "Organization",
@@ -270,7 +270,7 @@ export default async function BlogPage({ params }) {
                 url: "https://mictale.in",
                 logo: {
                   "@type": "ImageObject",
-                  url: "https://mictale.in/logo.png"
+                  url: "https://i.imgur.com/YFpScQU.png"
                 }
               },
               mainEntityOfPage: {
@@ -301,12 +301,6 @@ export default async function BlogPage({ params }) {
                 {
                   "@type": "ListItem",
                   position: 2,
-                  name: "Blog",
-                  item: "https://mictale.in/blog"
-                },
-                {
-                  "@type": "ListItem",
-                  position: 3,
                   name: blog.title,
                   item: `https://mictale.in/blog/${slug}`
                 }
