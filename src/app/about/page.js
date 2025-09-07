@@ -1,4 +1,3 @@
-// app/about/page.jsx
 import AboutClient from './AboutClient'
 
 export const metadata = {
@@ -9,11 +8,11 @@ export const metadata = {
     'Artist Growth', 'Mentorship', 'Creative Events', 'Performance Stage'
   ],
   authors: [{ name: 'MicTale' }],
-  alternates: { canonical: 'https://mictale.in/about' },
+  alternates: { canonical: 'https://www.mictale.in/about' },
   openGraph: {
-    title: 'About MicTale – Open Mic Platform for Performers & Creatives',
+    title: "About MicTale – India's Best Creative Platform",
     description: "Learn how MicTale is redefining India's open mic scene by providing artists with growth, exposure, and a powerful stage to perform.",
-    url: 'https://mictale.in/about',
+    url: 'https://www.mictale.in/about',
     siteName: 'MicTale',
     images: [
       {
@@ -25,17 +24,19 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "About MicTale – India's Best Platform for Open Mic Artists",
+    title: "About MicTale – India's Best Creative Platform",
     description: 'MicTale supports poets, storytellers, and performers with curated stages, mentorship, and a vibrant artist community.',
     images: ['https://i.imgur.com/WcNbK7B.png']
   },
-  icons: {
+    icons: {
     icon: [
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' }
+      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" }
     ],
-    apple: '/apple-touch-icon.png',
-    shortcut: '/favicon-32x32.png'
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }
+    ]
   }
 }
 
@@ -44,7 +45,7 @@ export default function AboutPage() {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "MicTale",
-    "url": "https://mictale.in",
+    "url": "https://www.mictale.in/about",
     "logo": "https://i.imgur.com/PgDBhIz.png",
     "description": "MicTale is an Open Mic platform offering stage opportunities, mentorship, and creative growth for emerging artists.",
     "foundingDate": "2024",
@@ -66,7 +67,6 @@ export default function AboutPage() {
     <>
       <script
         type="application/ld+json"
-        // server side JSON-LD injection
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <AboutClient />

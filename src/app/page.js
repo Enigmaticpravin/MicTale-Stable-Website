@@ -1,14 +1,14 @@
 import ClientHome from './ClientHome'
 
 export const metadata = {
-  title: "MicTale | India’s Leading Open Mic Platform",
+  title: "MicTale | India’s Best Creative Platform",
   description:
     "MicTale is India's leading open mic platform for poetry, comedy, storytelling, and music performances. Discover events, showcase your talent, and be part of a thriving artistic community.",
   keywords:
     "MicTale, poetry, poem, ghazal, nazm, hindi, urdu, comedy, music, open mic platform, poetry platform, Indian art, poetry events, creative performances, open mic events, artists in India",
   authors: [{ name: "MicTale" }],
   openGraph: {
-    title: "MicTale | India’s Leading Open Mic Platform",
+    title: "MicTale | India’s Best Creative Platform",
     description:
       "Join MicTale, a platform for artists, poets, and performers to share their creativity and redefine the dynamics of art and performance in India.",
     url: "https://www.mictale.in/",
@@ -24,7 +24,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "MicTale | India’s Leading Open Mic Platform",
+    title: "MicTale | India’s Best Creative Platform",
     description:
       "Discover MicTale, the new-age open mic platform redefining art and performance in India. A space for poetry, creativity, and connection.",
     images: ["https://i.imgur.com/YFpScQU.png"],
@@ -38,10 +38,13 @@ export const metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" }
     ],
-    apple: "/apple-touch-icon.png",
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }
+    ]
   },
   manifest: "/site.webmanifest",
 }

@@ -4,9 +4,9 @@ import ClientRoot from './components/ClientRoot'
 import { ToastProvider } from './components/ui/Toast'
 
 export const metadata = {
-  metadataBase: new URL("https://mictale.in"), // replace with your domain
+  metadataBase: new URL("https://mictale.in"),
   title: {
-    default: "MicTale | Open Mic Studio & Creative Community",
+    default: "MicTale - India's Best Creative Platform",
     template: "%s | MicTale"
   },
   description:
@@ -29,13 +29,13 @@ export const metadata = {
   openGraph: {
     type: "website",
     url: "https://mictale.in",
-    title: "MicTale | Open Mic Studio & Creative Community",
+    title: "MicTale | India’s Best Creative Platform",
     description:
-      "Step into MicTale, Noida’s open mic studio where poetry, music, comedy, and storytelling come alive. Perform, connect, and grow with a vibrant creative community.",
+      "Step into MicTale, Delhi's open mic studio where poetry, music, comedy, and storytelling come alive. Perform, connect, and grow with a vibrant creative community.",
     siteName: "MicTale",
     images: [
       {
-        url: "https://mictale.in/og-image.jpg", // replace with actual image
+        url: "https://i.imgur.com/YFpScQU.png",
         width: 1200,
         height: 630,
         alt: "MicTale Open Mic Stage"
@@ -44,19 +44,28 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "MicTale | Open Mic Studio & Creative Community",
+    title: "MicTale | India’s Best Creative Platform",
     description:
-      "A stage for poets, storytellers, comedians, and musicians. MicTale is Noida’s creative hub for open mic events.",
-    creator: "@mictale", // replace with your Twitter handle
-    images: ["https://mictale.in/og-image.jpg"] // same as OpenGraph
+      "A stage for poets, storytellers, comedians, and musicians. MicTale is Delhi's creative hub for open mic events.",
+    creator: "@mictale",
+    images: ["https://i.imgur.com/YFpScQU.png"]
   },
   alternates: {
     canonical: "https://mictale.in"
   },
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png"
-  },
+    icon: [
+      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" }
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }
+    ]
+  }
+}
+
+export const viewport = {
   themeColor: "#ffffff"
 }
 

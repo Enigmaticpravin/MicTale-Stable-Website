@@ -54,21 +54,40 @@ export default function Home () {
 
    
 const handleClick = event => {
-  const { clientX, target } = event
+  const { clientX, clientY, target } = event
   const imageWidth = target.clientWidth || 0
+  const imageHeight = target.clientHeight || 0
+  const isMobile = window.innerWidth < 768
 
-  const choice = clientX < imageWidth / 2
-    ? {
-        slug: 'he-is-a-hero-he-raped-by-anubhav-singh',
-        title: 'He is a Hero. He Raped!'
-      }
-    : {
-        slug: 'kaalikh-author-signed-paperback-by-pravin-gupta',
-        title: 'Kaalikh (Author-signed, Paperback)'
-      }
+  let choice
+
+  if (isMobile) {
+    choice =
+      clientY < imageHeight / 2
+        ? {
+            slug: 'kaalikh-author-signed-paperback-by-pravin-gupta',
+            title: 'Kaalikh (Author-signed, Paperback)'
+          }
+        : {
+            slug: 'he-is-a-hero-he-raped-by-anubhav-singh',
+            title: 'He is a Hero. He Raped!'
+          }
+  } else {
+    choice =
+      clientX < imageWidth / 2
+        ? {
+            slug: 'he-is-a-hero-he-raped-by-anubhav-singh',
+            title: 'He is a Hero. He Raped!'
+          }
+        : {
+            slug: 'kaalikh-author-signed-paperback-by-pravin-gupta',
+            title: 'Kaalikh (Author-signed, Paperback)'
+          }
+  }
 
   router.push(`/book/${encodeURIComponent(choice.slug)}`)
 }
+
 
   const goToNextSlide = () => {
     if (isAnimating) return

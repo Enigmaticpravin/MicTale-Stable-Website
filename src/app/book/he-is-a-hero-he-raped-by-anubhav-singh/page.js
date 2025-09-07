@@ -1,22 +1,21 @@
-// app/book/he-is-a-hero-he-raped/page.jsx
 import BookClient from '@/app/book/BookClient'
 
 export const metadata = {
   title: 'He is a Hero. He Raped! | Buy Online at MicTale',
   description: `He is a Hero. He Raped! by Anubhav Singh — fiction novel. Buy online.`,
-  alternates: { canonical: 'https://www.mictale.in/book/he-is-a-hero-he-raped' },
+  alternates: { canonical: 'https://www.mictale.in/book/he-is-a-hero-he-raped-by-anubhav-singh' },
   openGraph: {
     title: 'He is a Hero. He Raped! | MicTale',
     description: 'He is a Hero. He Raped! by Anubhav Singh — fiction novel. Buy online.',
-    url: 'https://www.mictale.in/book/he-is-a-hero-he-raped',
-    images: ['https://firebasestorage.googleapis.com/v0/b/cord-60823.appspot.com/o/Open%20Graph.png?alt=media'],
+    url: 'https://www.mictale.in/book/he-is-a-hero-he-raped-by-anubhav-singh',
+    images: ['https://res.cloudinary.com/drwvlsjzn/image/upload/v1757231888/front_n0va5b.png'],
     type: 'book'
   },
   twitter: {
     card: 'summary_large_image',
     title: 'He is a Hero. He Raped! | MicTale',
     description: 'He is a Hero. He Raped! by Anubhav Singh — fiction novel. Buy online.',
-    images: ['https://firebasestorage.googleapis.com/v0/b/cord-60823.appspot.com/o/Open%20Graph.png?alt=media']
+    images: ['https://res.cloudinary.com/drwvlsjzn/image/upload/v1757231888/front_n0va5b.png']
   }
 }
 
@@ -32,7 +31,7 @@ const book = {
   description:
     'Set in the fictitious village of Uttar Pradesh - Devpura, the lives of several individuals are turned upside down by a bizarre incident. The story focuses on 19-year-old Ashoka as he navigates adulthood and the complexities of relationships with his family and friends. The narrative takes a dark turn when his cousin Padma is abducted and assaulted by a powerful figure in their village. While others come to terms with the situation, Ashoka, with the help of his allies, decides to bravely fights against the crime. As the narrative unfolds, the novel delves into the themes of familial relationships, complex friendships, platonic love, societal norms and evilness.',
   inStock: true,
-  bookimage: 'https://firebasestorage.googleapis.com/v0/b/cord-60823.appspot.com/o/Open%20Graph.png?alt=media ',
+  bookimage: 'https://res.cloudinary.com/drwvlsjzn/image/upload/v1757231888/front_n0va5b.png',
   stockCount: 18
 }
 

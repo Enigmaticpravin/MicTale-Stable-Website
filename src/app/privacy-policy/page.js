@@ -36,7 +36,6 @@ export const metadata = {
 export default function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-gray-950">
-      {/* Background Elements */}
       <div className="fixed inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-red-600 rounded-full filter blur-3xl opacity-20"></div>
         <div className="absolute top-1/2 -left-40 w-96 h-96 bg-blue-700 rounded-full filter blur-3xl opacity-20"></div>
