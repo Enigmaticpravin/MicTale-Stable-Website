@@ -1,5 +1,16 @@
-// lib/poems.js
-import { db, collection, doc, getDoc, getDocs, setDoc, query, orderBy, limit, where } from '@/app/lib/firebase'
+// app/lib/poems.js
+import { db } from '@/app/lib/firebase'
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  query,
+  orderBy,
+  limit,
+  where,
+} from 'firebase/firestore'
 import { toPlain } from '@/app/lib/firestorePlain'
 
 const poemsCol = collection(db, 'poems')
@@ -15,13 +26,13 @@ export async function getPoemBySlug(slug) {
 }
 
 export async function listPoemSlugs(max = 5000) {
-  const q = query(poemsCol, orderBy('updatedAt', 'desc'), limit(max))
+  const q = query(poemsCol, orderBy('createdAt', 'desc'), limit(max))
   const snap = await getDocs(q)
   return snap.docs.map(d => {
     const data = d.data()
     return {
       slug: String(data.slug || d.id),
-      updatedAt: toPlain(data.updatedAt) || new Date().toISOString(),
+      updatedAt: toPlain(data.createdAt) || new Date().toISOString(),
     }
   })
 }

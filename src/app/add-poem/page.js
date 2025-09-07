@@ -78,12 +78,10 @@ export default function DualPublishingPage() {
       .replace(/\n\n/g, '</p><p class="text-gray-300 leading-relaxed mb-4">')
       .replace(/\n/g, '<br>')
 
-    // Wrap lists in ul tags
     html = html.replace(/(<li class="text-gray-300 mb-2">.*<\/li>)/gs, (match) => {
       return `<ul class="list-disc list-inside space-y-2 my-4 ml-4">${match}</ul>`
     })
 
-    // Wrap content in paragraph if it doesn't start with a block element
     if (!html.match(/^<[h1-6|ul|ol|blockquote|pre]/)) {
       html = `<p class="text-gray-300 leading-relaxed mb-4">${html}</p>`
     }
@@ -91,7 +89,6 @@ export default function DualPublishingPage() {
     return html
   }
 
-  // Formatting functions
   const insertFormatting = (before, after = '') => {
     const textarea = textareaRef.current
     if (!textarea) return
