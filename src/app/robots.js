@@ -3,7 +3,7 @@ export default function robots() {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin/', '/api/', '/private/', '/success', '/failure', '/add-poem', '/lib'],
+      disallow: ['/admin/', '/api/', '/private/', '/success', '/failure', '/add-poem', '/lib', '/add-poet'],
     },
     sitemap: 'https://mictale.in/sitemap.xml',
     host: 'https://mictale.in'
