@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
 import Image from 'next/image';
 import mobilelogo from '@/app/images/logo.png';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { auth, db } from '@/app/lib/firebase';
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  GoogleAuthProvider, 
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
   signInWithPopup,
   updateProfile,
   sendPasswordResetEmail
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function BentoSocialAuth() {
   const [email, setEmail] = useState('');
@@ -21,32 +21,25 @@ export default function BentoSocialAuth() {
   const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
-  
-    const router = useRouter();
 
-const redirect = router.query?.redirect || '/';
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get('redirect') || '/';
 
-  const [mounted, setMounted] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [isFlipping, setIsFlipping] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [googleloading, setgoogleLoading] = useState(false);
+  const [googleloading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [success, setSuccess] = useState('');
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const switchCard = () => {
     setIsFlipping(true);
     setTimeout(() => {
       setIsLogin(!isLogin);
       setError('');
-      setTimeout(() => {
-        setIsFlipping(false);
-      }, 300);
+      setTimeout(() => setIsFlipping(false), 300);
     }, 300);
   };
 
@@ -69,9 +62,9 @@ const redirect = router.query?.redirect || '/';
           lastLogin: createdAt,
           ...additionalData
         });
-      } catch (error) {
-        console.error("Error creating user document", error);
-        throw error;
+      } catch (err) {
+        console.error('Error creating user document', err);
+        throw err;
       }
     } else {
       await setDoc(userRef, { lastLogin: serverTimestamp() }, { merge: true });
@@ -88,10 +81,10 @@ const redirect = router.query?.redirect || '/';
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       await createUserDocument(userCredential.user);
-    router.push(redirect || "/");
-    } catch (error) {
-      console.error("Error signing in", error);
-      setError(getAuthErrorMessage(error.code));
+      router.push(redirectPath);
+    } catch (err) {
+      console.error('Error signing in', err);
+      setError(getAuthErrorMessage(err.code));
     } finally {
       setLoading(false);
     }
@@ -110,21 +103,19 @@ const redirect = router.query?.redirect || '/';
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
- 
-      await updateProfile(userCredential.user, {
-        name: name
-      });
-      
-      await createUserDocument(userCredential.user, { 
-        name: name,
+
+      await updateProfile(userCredential.user, { displayName: name });
+
+      await createUserDocument(userCredential.user, {
+        name,
         isNewUser: true,
         preferences: { notifications: true, theme: 'dark' }
       });
-      
-    router.push(redirect || "/");
-    } catch (error) {
-      console.error("Error signing up", error);
-      setError(getAuthErrorMessage(error.code));
+
+      router.push(redirectPath);
+    } catch (err) {
+      console.error('Error signing up', err);
+      setError(getAuthErrorMessage(err.code));
     } finally {
       setLoading(false);
     }
@@ -146,12 +137,10 @@ const redirect = router.query?.redirect || '/';
     try {
       await sendPasswordResetEmail(auth, resetEmail);
       setSuccess('Password reset email sent! Check your inbox.');
-      setTimeout(() => {
-        setShowForgotPassword(false);
-      }, 5000); 
-    } catch (error) {
-      console.error("Error sending password reset email", error);
-      setError(getAuthErrorMessage(error.code));
+      setTimeout(() => setShowForgotPassword(false), 5000);
+    } catch (err) {
+      console.error('Error sending reset email', err);
+      setError(getAuthErrorMessage(err.code));
     } finally {
       setLoading(false);
     }
@@ -159,26 +148,26 @@ const redirect = router.query?.redirect || '/';
 
   const handleGoogleSignIn = async () => {
     setError('');
-    setgoogleLoading(true);
-    
+    setGoogleLoading(true);
+
     const provider = new GoogleAuthProvider();
-    
+
     try {
       const userCredential = await signInWithPopup(auth, provider);
       const isNewUser = userCredential._tokenResponse.isNewUser;
-      
-      await createUserDocument(userCredential.user, { 
+
+      await createUserDocument(userCredential.user, {
         isNewUser,
         authProvider: 'google',
         preferences: isNewUser ? { notifications: true, theme: 'dark' } : {}
       });
-      
-    router.push(redirect || "/");
-    } catch (error) {
-      console.error("Error with Google sign in", error);
-      setError(getAuthErrorMessage(error.code));
+
+      router.push(redirectPath);
+    } catch (err) {
+      console.error('Error with Google sign in', err);
+      setError(getAuthErrorMessage(err.code));
     } finally {
-      setgoogleLoading(false);
+      setGoogleLoading(false);
     }
   };
 
@@ -193,22 +182,15 @@ const redirect = router.query?.redirect || '/';
       case 'auth/wrong-password':
         return 'Incorrect password.';
       case 'auth/email-already-in-use':
-        return 'This email is already in use.';console.log('handleSignIn');
-console.log('handleSignUp');
-console.log('handlePasswordReset');
-console.log('handleGoogleSignIn');
-console.log('createUserDocument');
-console.log('getAuthErrorMessage');
-console.log('switchCard');
-console.log('toggleForgotPassword');
+        return 'This email is already in use.';
       case 'auth/weak-password':
         return 'Password should be at least 6 characters.';
       case 'auth/operation-not-allowed':
         return 'Operation not allowed.';
       case 'auth/account-exists-with-different-credential':
-        return 'An account already exists with the same email address but different sign-in credentials.';
+        return 'Account exists with different sign-in method.';
       case 'auth/popup-closed-by-user':
-        return 'Sign-in popup was closed before completing the sign in.';
+        return 'Sign-in popup was closed.';
       default:
         return 'An error occurred. Please try again.';
     }
@@ -254,7 +236,7 @@ console.log('toggleForgotPassword');
         </div>
       </div>
 
-      <div className={`w-full mx-4 md:mx-0 md:max-w-md z-10 transition-all duration-1000 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'} perspective`}>
+      <div className={`w-full mx-4 md:mx-0 md:max-w-md z-10 transition-all duration-1000 transform translate-y-0 opacity-100 perspective`}>
         <div 
           className={`relative transition-all duration-500 preserve-3d ${
             isFlipping ? 'scale-95 opacity-90' : 'scale-100 opacity-100'
@@ -506,7 +488,7 @@ console.log('toggleForgotPassword');
           </div>
         </div>
 
-        <div className={`mt-16 hidden text-center text-gray-400 transition-all duration-1000 delay-300 transform ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+        <div className={`mt-16 hidden text-center text-gray-400 transition-all duration-1000 delay-300 transform translate-y-0 opacity-100}`}>
           <p className="mb-4">Join over <span className="text-blue-400 font-medium">2M</span> global social media users</p>
           
           <div className="flex justify-center -space-x-2">

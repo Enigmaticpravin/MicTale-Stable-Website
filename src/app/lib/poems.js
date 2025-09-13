@@ -1,4 +1,3 @@
-// app/lib/poems.js
 import { db } from '@/app/lib/firebase'
 import {
   collection,

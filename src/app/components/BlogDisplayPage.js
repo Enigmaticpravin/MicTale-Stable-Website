@@ -50,10 +50,6 @@ export default function BlogDisplayPageDark ({ blog, similarBlogs = [] }) {
     }
   }
 
-  const toggleBookmark = () => {
-    setIsBookmarked(!isBookmarked)
-  }
-
   const poppinsStyle = {
     fontFamily: 'Poppins, sans-serif'
   }
@@ -68,11 +64,6 @@ export default function BlogDisplayPageDark ({ blog, similarBlogs = [] }) {
     } catch (e) {
       return dateString
     }
-  }
-
-  const calculateReadingTime = content => {
-    const wordCount = (content || '').split(/\s+/).filter(Boolean).length
-    return Math.max(1, Math.ceil(wordCount / 200))
   }
 
   if (!blog) return null
@@ -124,7 +115,7 @@ export default function BlogDisplayPageDark ({ blog, similarBlogs = [] }) {
               <Image
                 src={blog.coverImage}
                 alt={blog.title}
-                className='w-[900px] rounded-xl h-[430px] object-cover transition-transform duration-700 group-hover:scale-105'
+                className='rounded-xl object-cover transition-transform duration-700 group-hover:scale-105'
                 loading='eager'
                 width={900}
                 height={430}

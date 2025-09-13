@@ -10,14 +10,9 @@ export const revalidate = 3600 // ISR: revalidate every hour
 // If you want Next to statically generate known paths at build time
 export async function generateStaticParams() {
   try {
-    const showsSnapshot = await getDocs(collection(getDocs.__db || (await import('@/app/lib/firebase')).db, 'shows'))
-    // NOTE: above is a defensive import — if your lib/firebase exports db directly, replace with: await getDocs(collection(db, 'shows'))
-    // But for simplicity and compatibility, below we'll try common pattern:
   } catch (e) {
-    // ignore — we'll fallback to dynamic rendering if fetching static params fails
   }
 
-  // simpler safe implementation: try to import db and fetch
   try {
     const { db } = await import('@/app/lib/firebase')
     const snaps = await getDocs(collection(db, 'shows'))
@@ -32,7 +27,6 @@ export async function generateStaticParams() {
 
     return params
   } catch (err) {
-    // If anything fails, return empty so pages will be rendered on demand
     return []
   }
 }
@@ -40,7 +34,6 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const slug = params.slug
 
-  // fetch show by slug
   const { db } = await import('@/app/lib/firebase')
   const snaps = await getDocs(collection(db, 'shows'))
   const matched = snaps.docs.find(d => d.data().slug === slug)
@@ -101,12 +94,10 @@ export default async function ShowPage({ params }) {
   const slug = params.slug
 
   const { db } = await import('@/app/lib/firebase')
-  // fetch list and find the doc with matching slug (mirrors your pages logic)
   const snaps = await getDocs(collection(db, 'shows'))
   const matched = snaps.docs.find(d => d.data().slug === slug)
 
   if (!matched) {
-    // show not found: return 404 page
     notFound()
   }
 

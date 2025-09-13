@@ -1,8 +1,11 @@
 import { notFound } from 'next/navigation'
-import { Metadata } from 'next'
 import { db, doc, getDoc, collection, query, where, orderBy, limit, getDocs } from '@/app/lib/firebase'
 import BlogDisplayPage from '@/app/components/BlogDisplayPage'
 
+// ✅ Helper for Firestore date fields
+function safeDate(dateField) {
+  return dateField?.toDate?.()?.toISOString?.() || new Date().toISOString()
+}
 
 function makeAbsoluteUrl(path) {
   if (!path) return null
@@ -12,24 +15,21 @@ function makeAbsoluteUrl(path) {
   return `${base}/${path.replace(/^\//, '')}`
 }
 
+// ✅ Fetch similar blogs
 async function getSimilarBlogs(currentBlog, currentBlogId) {
   try {
-    console.log('Fetching similar blogs for:', currentBlogId)
     const similarBlogs = []
-    
+
     if (currentBlog.tags && Array.isArray(currentBlog.tags) && currentBlog.tags.length > 0) {
       try {
-        console.log('Searching by tags:', currentBlog.tags.slice(0, 2))
         const tagQuery = query(
           collection(db, 'blogs'),
           where('tags', 'array-contains-any', currentBlog.tags.slice(0, 2)),
           orderBy('createdAt', 'desc'),
           limit(8)
         )
-        
         const tagQuerySnapshot = await getDocs(tagQuery)
-        console.log('Found blogs by tags:', tagQuerySnapshot.size)
-        
+
         tagQuerySnapshot.forEach((docSnap) => {
           if (docSnap.id !== currentBlogId) {
             const blogData = docSnap.data()
@@ -38,8 +38,8 @@ async function getSimilarBlogs(currentBlog, currentBlogId) {
                 id: docSnap.id,
                 slug: docSnap.id,
                 ...blogData,
-                createdAt: blogData.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-                updatedAt: blogData.updatedAt?.toDate?.()?.toISOString() || blogData.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+                createdAt: safeDate(blogData.createdAt),
+                updatedAt: safeDate(blogData.updatedAt || blogData.createdAt)
               })
             }
           }
@@ -48,29 +48,26 @@ async function getSimilarBlogs(currentBlog, currentBlogId) {
         console.warn('Tag query failed:', tagError.message)
       }
     }
-    
+
     if (similarBlogs.length < 4) {
       try {
-        console.log('Fetching recent blogs to fill remaining slots')
         const recentQuery = query(
           collection(db, 'blogs'),
           orderBy('createdAt', 'desc'),
           limit(10)
         )
-        
         const recentSnapshot = await getDocs(recentQuery)
-        console.log('Found recent blogs:', recentSnapshot.size)
-        
+
         recentSnapshot.forEach((docSnap) => {
           if (docSnap.id !== currentBlogId && !similarBlogs.some(blog => blog.id === docSnap.id)) {
             const blogData = docSnap.data()
-            if (blogData.published !== false && similarBlogs.length < 4) { // Only include published blogs
+            if (blogData.published !== false && similarBlogs.length < 4) {
               similarBlogs.push({
                 id: docSnap.id,
                 slug: docSnap.id,
                 ...blogData,
-                createdAt: blogData.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-                updatedAt: blogData.updatedAt?.toDate?.()?.toISOString() || blogData.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+                createdAt: safeDate(blogData.createdAt),
+                updatedAt: safeDate(blogData.updatedAt || blogData.createdAt)
               })
             }
           }
@@ -79,28 +76,22 @@ async function getSimilarBlogs(currentBlog, currentBlogId) {
         console.warn('Recent blogs query failed:', recentError.message)
       }
     }
-    
+
     if (similarBlogs.length === 0) {
       try {
-        console.log('Using fallback: simple collection query')
-        const fallbackQuery = query(
-          collection(db, 'blogs'),
-          limit(6)
-        )
-        
+        const fallbackQuery = query(collection(db, 'blogs'), limit(6))
         const fallbackSnapshot = await getDocs(fallbackQuery)
-        console.log('Found fallback blogs:', fallbackSnapshot.size)
-        
+
         fallbackSnapshot.forEach((docSnap) => {
           if (docSnap.id !== currentBlogId && similarBlogs.length < 4) {
             const blogData = docSnap.data()
-            if (blogData.published !== false) { // Only include published blogs
+            if (blogData.published !== false) {
               similarBlogs.push({
                 id: docSnap.id,
                 slug: docSnap.id,
                 ...blogData,
-                createdAt: blogData.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-                updatedAt: blogData.updatedAt?.toDate?.()?.toISOString() || blogData.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+                createdAt: safeDate(blogData.createdAt),
+                updatedAt: safeDate(blogData.updatedAt || blogData.createdAt)
               })
             }
           }
@@ -109,11 +100,8 @@ async function getSimilarBlogs(currentBlog, currentBlogId) {
         console.warn('Fallback query failed:', fallbackError.message)
       }
     }
-    
-    const result = similarBlogs.slice(0, 4)
-    console.log('Returning similar blogs count:', result.length)
-    return result
-    
+
+    return similarBlogs.slice(0, 4)
   } catch (error) {
     console.error('Error fetching similar blogs:', error)
     return []
@@ -135,26 +123,20 @@ export async function generateMetadata({ params }) {
     }
 
     const blog = docSnap.data()
-
     const siteUrl = (process.env.SITE_URL || 'https://mictale.in').replace(/\/$/, '')
     const pageUrl = `${siteUrl}/blog/${slug}`
-    const publishedTime =
-      blog.createdAt?.toDate?.()?.toISOString?.() || new Date().toISOString()
-    const modifiedTime =
-      blog.updatedAt?.toDate?.()?.toISOString?.() || publishedTime
-    const description =
-      blog.excerpt ??
-      (blog.content ? blog.content.substring(0, 160).trim() + '...' : '')
+    const publishedTime = safeDate(blog.createdAt)
+    const modifiedTime = safeDate(blog.updatedAt || blog.createdAt)
+    const description = blog.content ? blog.content.substring(0, 160).trim() + '...' : ''
 
     let cover = null
     try {
       cover = makeAbsoluteUrl(blog.coverImage)
-    } catch (e) {
-      console.error('[generateMetadata] cover parse error', e)
+    } catch {
       cover = null
     }
 
-    const metadata = {
+    return {
       title: `${blog.title} | Mictale`,
       description: description,
       keywords: blog.tags ? blog.tags.join(', ') : '',
@@ -166,8 +148,8 @@ export async function generateMetadata({ params }) {
         type: 'article',
         title: blog.title,
         description: description,
-        publishedTime: publishedTime,
-        modifiedTime: modifiedTime,
+        publishedTime,
+        modifiedTime,
         authors: blog.author ? [blog.author] : [],
         url: pageUrl,
         siteName: 'Mictale',
@@ -184,17 +166,7 @@ export async function generateMetadata({ params }) {
         images: cover ? [cover] : []
       },
 
-      other: {
-        'article:published_time': publishedTime,
-        'article:modified_time': modifiedTime,
-        'article:author': blog.author ?? 'Mictale',
-        'article:section': 'Blog',
-        'article:tag': blog.tags ? blog.tags.join(', ') : ''
-      },
-
-      alternates: {
-        canonical: pageUrl
-      },
+      alternates: { canonical: pageUrl },
 
       robots: {
         index: blog.published !== false,
@@ -208,8 +180,6 @@ export async function generateMetadata({ params }) {
         }
       }
     }
-
-    return metadata
   } catch (error) {
     console.error('[generateMetadata] error', error)
     return {
@@ -219,33 +189,27 @@ export async function generateMetadata({ params }) {
   }
 }
 
-
 export default async function BlogPage({ params }) {
   const { slug } = params
-  
+
   try {
     const docRef = doc(db, 'blogs', slug)
     const docSnap = await getDoc(docRef)
-    
-    if (!docSnap.exists()) {
-      notFound()
-    }
-    
+
+    if (!docSnap.exists()) notFound()
+
     const blogData = docSnap.data()
-    
     const blog = {
       id: docSnap.id,
       ...blogData,
-      createdAt: blogData.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-      updatedAt: blogData.updatedAt?.toDate?.()?.toISOString() || blogData.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+      createdAt: safeDate(blogData.createdAt),
+      updatedAt: safeDate(blogData.updatedAt || blogData.createdAt)
     }
-    
-    if (blog.published === false) {
-      notFound()
-    }
-    
+
+    if (blog.published === false) notFound()
+
     const similarBlogs = await getSimilarBlogs(blog, docSnap.id)
-    
+
     return (
       <>
         <script
@@ -259,11 +223,7 @@ export default async function BlogPage({ params }) {
               image: blog.coverImage ? [blog.coverImage] : [],
               datePublished: blog.createdAt,
               dateModified: blog.updatedAt,
-              author: {
-                "@type": "Person",
-                name: blog.author,
-                url: `https://mictale.in/blog/${slug}`
-              },
+              author: { "@type": "Person", name: blog.author },
               publisher: {
                 "@type": "Organization",
                 name: "Mictale",
@@ -284,7 +244,7 @@ export default async function BlogPage({ params }) {
             })
           }}
         />
-        
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -292,23 +252,30 @@ export default async function BlogPage({ params }) {
               "@context": "https://schema.org",
               "@type": "BreadcrumbList",
               itemListElement: [
-                {
-                  "@type": "ListItem",
-                  position: 1,
-                  name: "Home",
-                  item: "https://mictale.in"
-                },
-                {
-                  "@type": "ListItem",
-                  position: 2,
-                  name: blog.title,
-                  item: `https://mictale.in/blog/${slug}`
-                }
+                { "@type": "ListItem", position: 1, name: "Home", item: "https://mictale.in" },
+                { "@type": "ListItem", position: 2, name: blog.title, item: `https://mictale.in/blog/${slug}` }
               ]
             })
           }}
         />
-        
+
+        {similarBlogs.length > 0 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                itemListElement: similarBlogs.map((b, i) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  url: `https://mictale.in/blog/${b.slug}`
+                }))
+              })
+            }}
+          />
+        )}
+
         <BlogDisplayPage blog={blog} similarBlogs={similarBlogs} />
       </>
     )
@@ -320,8 +287,16 @@ export default async function BlogPage({ params }) {
 
 export async function generateStaticParams() {
   try {
-    return []
-  } catch (error) {
+    const snapshot = await getDocs(collection(db, 'blogs'))
+    const paths = []
+    snapshot.forEach((docSnap) => {
+      const blog = docSnap.data()
+      if (blog.published !== false) {
+        paths.push({ slug: docSnap.id })
+      }
+    })
+    return paths
+  } catch {
     return []
   }
 }
