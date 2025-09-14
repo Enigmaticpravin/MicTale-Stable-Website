@@ -5,39 +5,14 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import {
-  Instagram,
-  Twitter,
-  Youtube,
-  Facebook,
-  Mail,
-  Phone,
-  MapPin,
-  ArrowRight,
   ChevronUp
 } from 'lucide-react'
-import { useToast } from './ui/Toast'
 import { Call02FreeIcons, InstagramFreeIcons, Linkedin01FreeIcons, LocationIconFreeIcons, Mail01FreeIcons, YoutubeFreeIcons } from '@hugeicons/core-free-icons/index'
 import { HugeiconsIcon } from '@hugeicons/react'
 
 
 export default function Footer() {
-    const { success, error, warning, info, toast } = useToast();
 
-  const handleSuccess = () => {
-    success('Operation completed successfully!');
-  };
-
-  const handleError = () => {
-    error('Something went wrong. Please try again.');
-  };
-
-  const handleWarning = () => {
-    warning('This action cannot be undone.');
-  };
-
-  const handleInfo = () => {
-    info('New update available.');
-  };
   return (
     <footer className="relative z-10 overflow-hidden m-1 md:m-5 rounded-2xl border-t border-white/10 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white">
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -48,7 +23,7 @@ export default function Footer() {
 
         <div>
           <Image
-            src="/images/footerlogo.png"
+            src="/images/footerlogo.webp"
             alt="MicTale Logo"
             className='w-40 h-10 my-10 mx-auto'
             height={400}

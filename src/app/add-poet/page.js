@@ -42,7 +42,6 @@ export default function AddPoetPage() {
 
       const imageUrl = uploadData.url
 
-      // 2. Save poet
       const res = await fetch('/api/poets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

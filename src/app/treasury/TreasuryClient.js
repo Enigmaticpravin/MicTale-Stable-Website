@@ -17,7 +17,7 @@ import {
 import MatlaDisplay from '../components/MatlaDisplay'
 const PAGE_SIZE = 10
 
-export default function TreasuryClient ({ initialPoems = [] }) {
+export default function TreasuryClient ({ initialPoems = [], initialGhazals = [] }) {
   const [poems, setPoems] = useState(initialPoems)
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
@@ -92,9 +92,9 @@ export default function TreasuryClient ({ initialPoems = [] }) {
   return (
     <>
       <main>
-        <MatlaDisplay />
+        <MatlaDisplay initialGhazals={initialGhazals} />
         <div className='bg-gradient-to-b from-transparent to-slate-900 h-10'></div>
-        <div className='relative z-10 mx-auto px-4 bg-slate-900 py-10'>
+        <div className='relative z-10 mx-auto px-4 bg-slate-900 md:py-10'>
           <div className='max-w-5xl mx-auto'>
             <div className='justify-center items-center flex flex-col mb-3 md:mb-10'>
               <p

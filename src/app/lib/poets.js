@@ -28,3 +28,19 @@ export async function addPoet({ name, bio, image }) {
 
   return { id: docRef.id, slug }
 }
+
+export async function listPoetSlugs() {
+  const poetsCol = collection(db, "poets")
+  const snapshot = await getDocs(poetsCol)
+
+  return snapshot.docs.map(doc => {
+    const data = doc.data()
+    const createdAt = data.createdAt?.toDate?.() || null
+    const updatedAt = data.createdAt?.toDate?.() || null
+    return {
+      slug: data.slug || doc.id,
+      createdAt: createdAt || new Date(),
+      updatedAt: updatedAt || new Date()
+    }
+  })
+}

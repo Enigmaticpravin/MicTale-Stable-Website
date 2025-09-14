@@ -220,12 +220,12 @@ body {
 }
 
 .slick-dots li button:before {
-  color: white !important;
+  color: black !important;
   opacity: 0.6;
 }
 
 .slick-dots li.slick-active button:before {
-  color: white !important;
+  color: black !important;
   opacity: 1;
 }
 

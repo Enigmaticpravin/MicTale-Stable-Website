@@ -1,9 +1,8 @@
-'use client'
-
 import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
 import show from '@/../public/images/first.png'
-import InfiniteMarquee from '@/app/components/InfiniteMarquee'
+import InfiniteMarquee from './InfiniteMarquee'
 
 const SoloShow = () => {
   const images = [
@@ -16,10 +15,13 @@ const SoloShow = () => {
     '/images/three.png',
     '/images/two.png',
     '/images/six.png',
-    '/images/four.png',
+    '/images/four.png'
   ]
 
   const imageWrapperRef = useRef(null)
+  const containerRef = useRef(null)
+  const isInView = useInView(containerRef, { once: true, margin: '-100px' })
+
   const [imageHeight, setImageHeight] = useState(0)
 
   useEffect(() => {
@@ -36,54 +38,56 @@ const SoloShow = () => {
   const duplicatedImages = [...images, ...images]
 
   return (
-    <div
-      className="block items-center justify-center overflow-hidden"
+    <motion.div
+      ref={containerRef}
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 1, ease: 'easeOut' }}
+      className="block items-center justify-center overflow-hidden md:bg-slate-900"
     >
-      <div className="md:flex md:flex-row md:justify-center md:items-start">
+      <div className="md:flex md:flex-row md:justify-center md:items-center">
+        {/* Main featured image */}
         <div
+          ref={imageWrapperRef}
           className="w-full md:w-[60%] px-2 py-2 md:px-0 bg-slate-900 md:mx-auto md:m-5 md:mb-5"
         >
           <Image
             src={show}
             alt="show"
             className="rounded-2xl w-full h-auto relative z-10 shadow-[0_0_12px_2px_rgba(255,255,255,0.2)]"
-            layout="responsive"
             width={800}
             height={600}
             priority
           />
         </div>
 
+        {/* Vertical scrolling images for desktop */}
         {imageHeight > 0 && (
           <div
-            className="md:relative w-full md:w-[30%] overflow-hidden mx-auto hidden md:block"
+            className="md:relative w-full md:w-[30%] overflow-hidden mx-auto md:flex md:flex-col mt-0 hidden"
             style={{ height: `${imageHeight}px` }}
           >
+            {/* Top & bottom gradient overlay */}
             <div className="pointer-events-none absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-slate-900 to-transparent z-20" />
             <div className="pointer-events-none absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-slate-900 to-transparent z-20" />
 
+            {/* Scrolling images with GPU-accelerated transform */}
             <div
               key={imageHeight}
-              className="flex flex-col"
+              className="flex flex-col min-h-[200%]"
               style={{
-                animation: 'verticalScroll 20s linear infinite',
+                animation: 'verticalScrollGPU 30s linear infinite',
+                transform: 'translate3d(0, 0, 0)',
+                willChange: 'transform'
               }}
             >
               {duplicatedImages.map((image, index) => (
-                <div
-                  key={`img-${index}`}
-                  className="p-2 flex-shrink-0"
-                >
-                  <div className="w-full rounded-lg overflow-hidden shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl relative h-full">
-                    <Image
-                      src={image}
-                      alt={`Gallery image ${(index % images.length) + 1}`}
-                      width={500}
-                      height={500}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                  </div>
+                <div key={`img-${index}`} className="p-1 flex-shrink-0">
+                  <img
+                    src={image}
+                    alt={`Gallery image ${(index % images.length) + 1}`}
+                    className="w-full h-auto object-cover rounded-lg"
+                  />
                 </div>
               ))}
             </div>
@@ -91,21 +95,23 @@ const SoloShow = () => {
         )}
       </div>
 
+      {/* Mobile view: Infinite marquee */}
       <div className="md:hidden">
         <InfiniteMarquee />
       </div>
 
+      {/* Animation keyframes with GPU transform */}
       <style jsx global>{`
-        @keyframes verticalScroll {
+        @keyframes verticalScrollGPU {
           0% {
-            transform: translateY(0);
+            transform: translate3d(0, 0, 0);
           }
           100% {
-            transform: translateY(-50%);
+            transform: translate3d(0, -50%, 0);
           }
         }
       `}</style>
-    </div>
+    </motion.div>
   )
 }
 

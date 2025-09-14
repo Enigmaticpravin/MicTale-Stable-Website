@@ -146,6 +146,15 @@ export default function PoemPageClient ({ poem, similar }) {
     }
   }
 
+  function slugify (text) {
+    return String(text)
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w\-]+/g, '')
+      .replace(/\-\-+/g, '-')
+  }
+
   return (
     <>
       <main className='mb-1 md:mr-5 md:ml-5 md:mb-5 rounded-b-2xl md:rounded-2xl min-h-screen bg-slate-950'>
@@ -156,10 +165,14 @@ export default function PoemPageClient ({ poem, similar }) {
                 <h1 className='text-3xl md:text-4xl rozha-class text-white font-medium mb-4'>
                   {title}
                 </h1>
-                <p className='text-yellow-500 text-base font-medium italic mb-6 md:mb-8'>
+                <Link
+                  href={`/poet/${slugify(author)}`}
+                  className='text-yellow-500 text-base font-medium italic'
+                >
                   {author}
-                </p>
-                <div className='h-px bg-gradient-to-r from-slate-700 via-slate-600 to-transparent' />
+                </Link>
+
+                <div className='h-px bg-gradient-to-r from-slate-700 via-slate-600 mt-10 to-transparent' />
               </header>
 
               {isGhazal ? (

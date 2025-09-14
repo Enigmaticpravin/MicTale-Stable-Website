@@ -1,4 +1,3 @@
-// app/api/poets/route.js
 import { addPoet } from '@/app/lib/poets'
 
 export async function POST(req) {
