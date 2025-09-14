@@ -22,9 +22,7 @@ export async function generateMetadata({ params }) {
 
   const title = `${poem.title} by ${poem.author} | ${poem.category} Poem`
   const url = `${process.env.NEXT_PUBLIC_BASE_URL || ''}/poem/${slug}`
-const description = poem.lines?.slice(0, 2).join(' ') 
-  || `${poem.title} by ${poem.author} | Read full poem at MicTale`
-
+const description = `${poem.title} by ${poem.author} | Read full poem at MicTale`
 
   return {
     title,
