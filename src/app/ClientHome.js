@@ -1,17 +1,17 @@
 'use client'
 
 import BookPoster from '@/app/images/bookcover.webp'
-import StoryboardGallery from './components/StoryboardGallery'
-import SoloShow from './components/SoloShow'
+import dynamic from 'next/dynamic'
+const SoloShow = dynamic(() => import('./components/SoloShow'), { ssr: false })
+const StoryboardGallery = dynamic(() => import('./components/StoryboardGallery'), { ssr: false })
 import originallogo from '@/../public/images/MicTale Originals.png'
-import TopPerformers from './components/TopPerformers'
+const TopPerformers = dynamic(() => import('./components/TopPerformers'), {ssr: false})
 import Image from 'next/image'
-import LogoMarquee from './components/LogoMarquee'
-import { motion } from 'framer-motion'
+const LogoMarquee = dynamic(() => import('./components/LogoMarquee'), {ssr: false})
 import { Youtube } from 'lucide-react'
-import YouTubeChannelComponent from './components/YouTubeChannelComponent'
-import ContactForm from './components/Contact'
-import Footer from './components/Footer'
+const YouTubeChannelComponent = dynamic(() => import('./components/YouTubeChannelComponent'), {ssr: false})
+const ContactForm = dynamic(() => import('./components/Contact'), {ssr: false})
+const Footer = dynamic(() => import('./components/Footer'), {ssr: false})
 import { useRouter } from 'next/navigation'
 
 export default function Home () {
@@ -73,7 +73,7 @@ export default function Home () {
             className='w-full h-auto cursor-pointer rounded-b-2xl md:hidden flex'
             height={600}
             width={300}
-            priority={true}
+            priority={false}
           />
         </div>
       </div>
@@ -115,9 +115,7 @@ export default function Home () {
           target='_blank'
           rel='noopener noreferrer'
         >
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+          <button
             className='relative cursor-pointer md:px-6 md:py-3 px-3 py-[2px] flex items-center gap-2 text-white text-base font-medium rounded-full bg-neutral-900 border border-white/20 backdrop-blur-sm overflow-hidden group transition-all duration-300'
           >
             <Youtube
@@ -128,24 +126,7 @@ export default function Home () {
             <span className='relative z-10 text-[10px] md:text-[16px]'>
               Subscribe Now
             </span>
-
-            <motion.div
-              className='absolute inset-0 rounded-full opacity-20 group-hover:opacity-30 transition duration-500'
-              animate={{
-                scale: [1, 1.03, 1],
-                opacity: [0.2, 0.3, 0.2]
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: 'easeInOut'
-              }}
-              style={{
-                background:
-                  'radial-gradient(circle at center, rgba(255,255,255,0.2), transparent 70%)'
-              }}
-            />
-          </motion.button>
+          </button>
         </a>
       </div>
       <TopPerformers />
