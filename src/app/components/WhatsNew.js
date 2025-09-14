@@ -81,7 +81,7 @@ const WhatsNew = ({ items = [] }) => {
                   }}
                   style={{ backgroundSize: '200% 100%' }}
                 >
-                  What's
+                  What&apos;s
                 </motion.span>
                 <motion.span
                   className='inline-block bg-gradient-to-r from-silver-300 via-gray-200 to-silver-400 bg-clip-text text-transparent font-extralight ml-1'
