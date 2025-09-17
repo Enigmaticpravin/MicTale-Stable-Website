@@ -290,7 +290,7 @@ export default function PoemPageClient ({ poem, similar }) {
               PUBLISHED ON
             </div>
             <img
-              src='/images/footerlogo.png'
+              src='/images/footerlogo.webp'
               alt='Logo'
               style={{ height: '60px', margin: '0 auto 20px' }}
             />

@@ -9,12 +9,7 @@ const SoloShow = () => {
     '/images/eight.webp',
     '/images/eleven.webp',
     '/images/ten.webp',
-    '/images/nine.webp',
-    '/images/seven.webp',
-    '/images/three.webp',
-    '/images/two.webp',
-    '/images/six.webp',
-    '/images/four.webp'
+    '/images/nine.webp'
   ]
 
   const imageWrapperRef = useRef(null)

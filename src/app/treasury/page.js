@@ -1,7 +1,6 @@
-// app/treasury/page.js  (replace your existing Treasury page file)
+// app/treasury/page.js
 import TreasuryClient from './TreasuryClient'
-import { db } from '@/app/lib/firebase'
-import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore'
+import { adminDb } from '@/app/lib/firebaseAdmin' // <-- using Admin SDK db
 import { toPlain } from '../lib/firestorePlain'
 import LatestBlogsShowcase from '../components/LatestBlogsShowcase'
 import InstagramGrid from '../components/InstagramGrid'
@@ -95,28 +94,20 @@ const breadcrumb = {
   ]
 }
 
-/**
- * Server-side helper: safe millis extractor for createdAt/updatedAt fields
- */
+// --- helpers ---
 function toMillis(v) {
   if (!v) return 0
-  // Firestore Timestamp has toDate()
   if (typeof v?.toDate === 'function') {
     try {
       return v.toDate().getTime()
-    } catch (e) {
+    } catch {
       return 0
     }
   }
-  // string or number
   const ms = Date.parse(v)
   return Number.isFinite(ms) ? ms : 0
 }
 
-/**
- * Server-side helper: same extraction logic as your client MatlaDisplay
- * returns null if not valid (less than two lines)
- */
 function extractMatlaFromDoc(data) {
   let lines = []
   if (Array.isArray(data.lines)) {
@@ -132,49 +123,48 @@ function extractMatlaFromDoc(data) {
   return [first, second]
 }
 
+// --- main page ---
 export default async function TreasuryPage() {
-  // fetch latest poems (used by TreasuryClient)
-  const poemsRef = collection(db, 'poems')
-  const poemsQ = query(poemsRef, orderBy('createdAt', 'desc'), limit(10))
+  const poemsRef = adminDb.collection('poems')
 
-  // also fetch a window of recent poems (bigger limit) so we can filter ghazals server-side
-  const ghazalsWindowLimit = 20 // fetch a few extra and filter to get latest ghazals
-  const ghazalsQ = query(poemsRef, orderBy('createdAt', 'desc'), limit(ghazalsWindowLimit))
+  // latest poems
+  const poemsSnap = await poemsRef.orderBy('createdAt', 'desc').limit(10).get()
 
-  // run both queries concurrently
-  const [poemsSnap, ghazalsSnap] = await Promise.all([getDocs(poemsQ), getDocs(ghazalsQ)])
+  // ghazals window
+  const ghazalsWindowLimit = 20
+  const ghazalsSnap = await poemsRef.orderBy('createdAt', 'desc').limit(ghazalsWindowLimit).get()
 
-  // prepare initial poems (use your toPlain helper so you keep same shape as before)
   const initialPoems = poemsSnap.docs.map(d => toPlain({ id: d.id, ...d.data() }))
 
-  // prepare initial ghazals (apply same rules as MatlaDisplay)
   const ghazalCandidates = ghazalsSnap.docs.map(d => ({ id: d.id, data: d.data() }))
 
   const ghazalsProcessed = ghazalCandidates.reduce((acc, doc) => {
     const data = doc.data || {}
     const category = String(data.category || '').toLowerCase()
-    if (category !== 'ghazal') return acc // skip non-ghazals
+    if (category !== 'ghazal') return acc
 
     const matla = extractMatlaFromDoc(data)
-    if (!matla) return acc // skip if can't extract matla
+    if (!matla) return acc
 
     const createdAtMs = toMillis(data.createdAt) || toMillis(data.updatedAt)
     acc.push({
       id: doc.id,
       slug: data.slug || doc.id,
       poet: data.author || data.poet || 'Unknown',
-      createdAt: data.createdAt ? (typeof data.createdAt.toDate === 'function' ? data.createdAt.toDate().toISOString() : String(data.createdAt)) : null,
+      createdAt: data.createdAt
+        ? (typeof data.createdAt.toDate === 'function'
+          ? data.createdAt.toDate().toISOString()
+          : String(data.createdAt))
+        : null,
       createdAtMs,
       matla
     })
     return acc
   }, [])
 
-  // sort by createdAtMs desc and pick top 4
   const initialGhazals = ghazalsProcessed
     .sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0))
     .slice(0, 4)
-    // strip createdAtMs as it's only internal
     .map(g => ({
       id: g.id,
       slug: g.slug,
@@ -195,9 +185,7 @@ export default async function TreasuryPage() {
       />
 
       <div className="bg-slate-950">
-        {/* pass both poems and ghazals to TreasuryClient */}
         <TreasuryClient initialPoems={initialPoems} initialGhazals={initialGhazals} />
-
         <LatestBlogsShowcase limit={7} />
         <div className="bg-gradient-to-b from-transparent to-slate-900 h-20"></div>
         <InstagramGrid />

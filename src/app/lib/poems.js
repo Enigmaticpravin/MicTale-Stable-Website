@@ -1,44 +1,37 @@
-import { db } from '@/app/lib/firebase'
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  setDoc,
-  query,
-  orderBy,
-  limit,
-  where,
-} from 'firebase/firestore'
-import { toPlain } from '@/app/lib/firestorePlain'
+import { adminDb } from "@/app/lib/firebaseAdmin";
+import { toPlain } from "@/app/lib/firestorePlain";
 
-const poemsCol = collection(db, 'poems')
+const poemsCol = adminDb.collection("poems");
 
 export async function getPoemBySlug(slug) {
-  const one = await getDoc(doc(poemsCol, slug))
-  if (one.exists()) return toPlain({ id: one.id, ...one.data() })
+  const docRef = poemsCol.doc(slug);
+  const one = await docRef.get();
+  if (one.exists) return toPlain({ id: one.id, ...one.data() });
 
-  const q = query(poemsCol, where('slug', '==', slug), limit(1))
-  const snap = await getDocs(q)
-  if (snap.empty) return null
-  return toPlain({ id: snap.docs[0].id, ...snap.docs[0].data() })
+  const snap = await poemsCol.where("slug", "==", slug).limit(1).get();
+  if (snap.empty) return null;
+
+  const d = snap.docs[0];
+  return toPlain({ id: d.id, ...d.data() });
 }
 
 export async function listPoemSlugs(max = 5000) {
-  const q = query(poemsCol, orderBy('createdAt', 'desc'), limit(max))
-  const snap = await getDocs(q)
-  return snap.docs.map(d => {
-    const data = d.data()
+  const snap = await poemsCol.orderBy("createdAt", "desc").limit(max).get();
+
+  return snap.docs.map((d) => {
+    const data = d.data();
     return {
       slug: String(data.slug || d.id),
       updatedAt: toPlain(data.createdAt) || new Date().toISOString(),
-    }
-  })
+    };
+  });
 }
 
 export async function upsertPoem(poem) {
-  const ref = doc(poemsCol, poem.slug)
-  await setDoc(ref, { ...poem }, { merge: true })
-  const fresh = await getDoc(ref)
-  return toPlain({ id: fresh.id, ...fresh.data() })
+  const ref = poemsCol.doc(poem.slug);
+
+  await ref.set({ ...poem }, { merge: true });
+
+  const fresh = await ref.get();
+  return toPlain({ id: fresh.id, ...fresh.data() });
 }

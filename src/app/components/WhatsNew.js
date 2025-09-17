@@ -13,7 +13,6 @@ const WhatsNew = ({ items = [] }) => {
       className="relative bg-gradient-to-r md:mx-4 md:rounded-b-2xl from-slate-900 via-gray-900 to-slate-900 text-white overflow-hidden cursor-pointer"
       onClick={() => setIsExpanded(!isExpanded)}
     >
-      {/* shimmer background (pure CSS now) */}
       <div className="absolute inset-0 bg-gradient-to-r from-silver-200/5 via-gray-300/10 to-slate-400/5"></div>
       <div className="absolute inset-0 shimmer-bg" />
 

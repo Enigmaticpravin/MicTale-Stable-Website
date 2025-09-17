@@ -1,28 +1,17 @@
-// app/components/LatestBlogsShowcase.js
-// SERVER component — don’t add 'use client'
 import React from 'react'
 import LatestBlogsClient from './LatestBlogsClient'
-import { db } from '@/app/lib/firebase'
-import {
-  collection,
-  query,
-  orderBy,
-  limit as fbLimit,
-  getDocs
-} from 'firebase/firestore'
+import { adminDb } from '@/app/lib/firebaseAdmin'
 
 export default async function LatestBlogsShowcase({ limit = 7 }) {
   try {
-    const colRef = collection(db, 'blogs')
+    const colRef = adminDb.collection('blogs')
+    const snap = await colRef.orderBy('createdAt', 'desc').limit(25).get()
 
-    const q = query(colRef, orderBy('createdAt', 'desc'), fbLimit(25))
-
-    const snap = await getDocs(q)
     const items = []
 
-    snap.forEach((doc) => {
+    snap.forEach(doc => {
       const d = doc.data()
-      if (!d?.published) return 
+      if (!d?.published) return
 
       items.push({
         id: doc.id,
@@ -31,8 +20,8 @@ export default async function LatestBlogsShowcase({ limit = 7 }) {
         excerpt: d?.excerpt || (d?.content ? d.content.substring(0, 180) + '...' : ''),
         coverImage: d?.coverImage || null,
         slug: d?.slug || doc.id,
-        author: d?.author || 'Mictale',
-        createdAt: d?.createdAt?.toDate?.()?.toISOString?.() || new Date().toISOString(),
+        author: d?.author || 'MicTale',
+        createdAt: d?.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toISOString() : String(d.createdAt)) : new Date().toISOString(),
         tags: d?.tags || []
       })
     })

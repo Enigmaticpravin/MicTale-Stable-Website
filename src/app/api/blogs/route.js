@@ -1,4 +1,3 @@
-// app/api/blogs/route.js
 import { setDoc, doc } from 'firebase/firestore'
 import { db } from '../../lib/firebase'
 

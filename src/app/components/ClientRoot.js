@@ -2,43 +2,58 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { AnimatePresence, motion } from 'framer-motion'
-
 import Navbar, { UserProvider, ShowsProvider } from '@/app/components/Navbar'
-import { auth } from '@/app/lib/firebase'
-import { onAuthStateChanged } from 'firebase/auth'
 
 export default function ClientRoot({ children }) {
   const pathname = usePathname()
   const router = useRouter()
   const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   const noNavbarRoutes = ['/login']
   const showNavbar = !noNavbarRoutes.includes(pathname)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user)
-        if (pathname === '/login') {
-          router.push('/')
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/me', {
+          method: 'GET',
+          credentials: 'include',
+        })
+
+        if (res.ok) {
+          const data = await res.json()
+          setUser(data.user)
+
+          if (pathname === '/login') {
+            router.push('/')
+          }
+        } else {
+          setUser(null)
+          if (pathname !== '/login') {
+router.push('/login')
+          }
         }
-      } else {
+      } catch (err) {
+        console.error('Error checking auth:', err)
         setUser(null)
+      } finally {
+        setLoading(false)
       }
-    })
+    }
 
-    return () => unsubscribe()
+    checkAuth()
+  }, [pathname, router])
 
-  }, [pathname])
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center">Loading...</div>
+  }
 
   return (
-    <UserProvider>
+    <UserProvider value={user}>
       <ShowsProvider>
         {showNavbar && <Navbar />}
-
-            {children}
-
+        {children}
       </ShowsProvider>
     </UserProvider>
   )

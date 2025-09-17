@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import mobilelogo from '@/app/images/logo.png';
 import { useState } from 'react';
-import { auth, db } from '@/app/lib/firebase';
+import { auth } from '@/app/lib/firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -12,7 +12,6 @@ import {
   updateProfile,
   sendPasswordResetEmail
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function LoginClient() {
@@ -43,34 +42,28 @@ export default function LoginClient() {
     }, 300);
   };
 
-  const createUserDocument = async (user, additionalData = {}) => {
-    if (!user) return;
+  const createSession = async (idToken, userData = {}) => {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          idToken,
+          userData 
+        }),
+      });
 
-    const userRef = doc(db, 'users', user.uid);
-    const userSnap = await getDoc(userRef);
-
-    if (!userSnap.exists()) {
-      const { displayName, email, photoURL } = user;
-      const createdAt = serverTimestamp();
-
-      try {
-        await setDoc(userRef, {
-          name: displayName || additionalData.displayName || '',
-          email,
-          profilePicture: photoURL || '',
-          createdAt,
-          lastLogin: createdAt,
-          ...additionalData
-        });
-      } catch (err) {
-        console.error('Error creating user document', err);
-        throw err;
+      if (!response.ok) {
+        throw new Error('Failed to create session');
       }
-    } else {
-      await setDoc(userRef, { lastLogin: serverTimestamp() }, { merge: true });
-    }
 
-    return userRef;
+      return await response.json();
+    } catch (error) {
+      console.error('Session creation error:', error);
+      throw error;
+    }
   };
 
   const handleSignIn = async (e) => {
@@ -80,7 +73,16 @@ export default function LoginClient() {
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      await createUserDocument(userCredential.user);
+      const idToken = await userCredential.user.getIdToken();
+      
+      await createSession(idToken, {
+        name: userCredential.user.displayName || '',
+        email: userCredential.user.email,
+        profilePicture: userCredential.user.photoURL || '',
+        isNewUser: false,
+        authProvider: 'email'
+      });
+      
       router.push(redirectPath);
     } catch (err) {
       console.error('Error signing in', err);
@@ -103,12 +105,16 @@ export default function LoginClient() {
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
       await updateProfile(userCredential.user, { displayName: name });
-
-      await createUserDocument(userCredential.user, {
+    
+      const idToken = await userCredential.user.getIdToken(true);
+      
+      await createSession(idToken, {
         name,
+        email: userCredential.user.email,
+        profilePicture: userCredential.user.photoURL || '',
         isNewUser: true,
+        authProvider: 'email',
         preferences: { notifications: true, theme: 'dark' }
       });
 
@@ -154,9 +160,13 @@ export default function LoginClient() {
 
     try {
       const userCredential = await signInWithPopup(auth, provider);
-      const isNewUser = userCredential._tokenResponse.isNewUser;
+      const isNewUser = userCredential._tokenResponse?.isNewUser || false;
+      const idToken = await userCredential.user.getIdToken();
 
-      await createUserDocument(userCredential.user, {
+      await createSession(idToken, {
+        name: userCredential.user.displayName || '',
+        email: userCredential.user.email,
+        profilePicture: userCredential.user.photoURL || '',
         isNewUser,
         authProvider: 'google',
         preferences: isNewUser ? { notifications: true, theme: 'dark' } : {}

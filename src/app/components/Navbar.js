@@ -1,16 +1,6 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
-import {
-  db,
-  collection,
-  query,
-  where,
-  orderBy,
-  getDocs,
-  auth,
-  signOut
-} from '@/app/lib/firebase'
 import Image from 'next/image'
 import {
   HelpCircle,
@@ -23,8 +13,6 @@ import logo from '@/app/images/logo.png'
 import mobilelogo from '@/app/images/mic transparent.png'
 import Link from 'next/link'
 import WhatsNew from '@/app/components/WhatsNew'
-import { doc, getDoc } from 'firebase/firestore'
-
 import { AnimatePresence, motion } from 'framer-motion'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
@@ -32,7 +20,6 @@ import {
   Menu01FreeIcons
 } from '@hugeicons/core-free-icons/index'
 import { usePathname, useRouter } from 'next/navigation'
-import { onAuthStateChanged } from 'firebase/auth'
 
 export const UserContext = createContext(null)
 export const ShowsContext = createContext([])
@@ -41,93 +28,48 @@ export function UserProvider ({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [authChecked, setAuthChecked] = useState(false)
-
+const pathname = usePathname()
   useEffect(() => {
     let mounted = true
 
-    const applyCached = (currentUser) => {
+    const fetchUserData = async () => {
       try {
-        const cached = currentUser?.uid ? localStorage.getItem(`userData_${currentUser.uid}`) : null
-        const ts = currentUser?.uid ? localStorage.getItem(`userDataTimestamp_${currentUser.uid}`) : null
-        if (cached && ts) {
-          const isRecent = Date.now() - parseInt(ts, 10) < 21600000 // 6 hours
-          if (isRecent) {
-            const parsed = JSON.parse(cached)
-            if (mounted) {
-              setUser(parsed)
-              setLoading(false)
-              setAuthChecked(true)
-            }
-            return true
-          }
-        }
-      } catch (e) {
-        console.warn('UserProvider: failed to read cache', e)
-      }
-      return false
-    }
+        const response = await fetch('/api/user', {
+          method: 'GET',
+          credentials: 'include',
+        })
 
-    try {
-      if (auth.currentUser) {
-        const basic = {
-          uid: auth.currentUser.uid,
-          email: auth.currentUser.email,
-          displayName: auth.currentUser.displayName,
-          profilePicture: auth.currentUser.photoURL || '/default-avatar.png'
+        if (!mounted) return
+        
+        if (response.ok) {
+          const userData = await response.json()
+          
+          if (userData.user) {
+            setUser(userData.user)
+          } else {
+            setUser(null)
+          }
+        } else {
+          setUser(null)
         }
-        const usedCache = applyCached(auth.currentUser)
-        if (!usedCache && mounted) {
-          setUser(basic)
+      } catch (error) {
+        if (mounted) {
+          setUser(null)
+        }
+      } finally {
+        if (mounted) {
           setLoading(false)
           setAuthChecked(true)
         }
-      } else {
       }
-    } catch (e) {
-      console.warn('UserProvider immediate read error', e)
     }
 
-    const unsub = onAuthStateChanged(auth, async (currentUser) => {
-      if (!mounted) return
-      if (currentUser) {
-        const basicUserInfo = {
-          uid: currentUser.uid,
-          email: currentUser.email,
-          name: currentUser.displayName || '',
-          profilePicture: currentUser.photoURL || '/default-avatar.png'
-        }
-
-        setUser(basicUserInfo)
-        setLoading(false)
-        setAuthChecked(true)
-
-        try {
-          const userRef = doc(db, 'users', currentUser.uid)
-          const snap = await getDoc(userRef)
-          if (snap.exists()) {
-            const userData = { ...basicUserInfo, ...snap.data() }
-            setUser(userData)
-            localStorage.setItem(`userData_${currentUser.uid}`, JSON.stringify(userData))
-            localStorage.setItem(`userDataTimestamp_${currentUser.uid}`, Date.now().toString())
-          } else {
-            localStorage.setItem(`userData_${currentUser.uid}`, JSON.stringify(basicUserInfo))
-            localStorage.setItem(`userDataTimestamp_${currentUser.uid}`, Date.now().toString())
-          }
-        } catch (err) {
-          console.error('UserProvider: failed to fetch user doc', err)
-        }
-      } else {
-        setUser(null)
-        setLoading(false)
-        setAuthChecked(true)
-      }
-    })
+    fetchUserData()
 
     return () => {
       mounted = false
-      try { unsub() } catch (e) {}
     }
-  }, [])
+  }, [pathname])
 
   return (
     <UserContext.Provider value={{ user, setUser, loading, authChecked }}>
@@ -144,13 +86,13 @@ export function ShowsProvider ({ children }) {
     let mounted = true
     const fetchUpcomingShows = async () => {
       try {
-        const showsRef = collection(db, 'shows')
-        const today = new Date().toISOString()
-        const showsQuery = query(showsRef, where('date', '>', today), orderBy('date', 'asc'))
-        const querySnapshot = await getDocs(showsQuery)
+        const response = await fetch('/api/shows/upcoming')
         if (!mounted) return
-        const shows = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }))
-        setUpcomingShows(shows)
+        
+        if (response.ok) {
+          const data = await response.json()
+          setUpcomingShows(data.shows || [])
+        }
       } catch (err) {
         console.error('ShowsProvider fetch error', err)
       } finally {
@@ -182,7 +124,7 @@ const Navbar = () => {
   const mobileMenuRef = useRef(null)
 
   const router = useRouter()
-  const { user } = useUser() || { user: null }
+  const { user, setUser } = useUser() || { user: null, setUser: () => {} }
   const { upcomingShows } = useShows() || { upcomingShows: [] }
   const pathname = usePathname()
   const isActive = path => pathname === path
@@ -228,14 +170,18 @@ const Navbar = () => {
 
   const confirmLogout = async () => {
     try {
-      await signOut(auth)
-      setShowLogoutConfirmation(false)
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('userData_') || key.startsWith('userDataTimestamp_')) {
-          localStorage.removeItem(key)
-        }
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
       })
-      router.push('/')
+
+      if (response.ok) {
+        setUser(null)
+        setShowLogoutConfirmation(false)
+        router.push('/')
+      } else {
+        console.error('Logout failed')
+      }
     } catch (error) {
       console.error('Error signing out:', error)
     }

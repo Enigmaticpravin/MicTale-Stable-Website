@@ -146,7 +146,6 @@ export default function Profile() {
         profilePicture: formData.profilePicture
       }
       
-      // Update in Firestore
       await updateDoc(userRef, updatedUserData)
 
       setUserData(prev => ({

@@ -1,24 +1,15 @@
-'use client'
-
-import { useState } from 'react';
+import Image from "next/image";
 
 export default function InfiniteMarquee() {
   const images = [
-    "/images/five.png",
-    "/images/eight.png",
-    "/images/eleven.png",
-    "/images/ten.png",
-    "/images/nine.png",
-    "/images/seven.png",
-    "/images/three.png",
-    "/images/two.png",
-    "/images/six.png",
-    "/images/four.png",
+    "/images/five.webp",
+    "/images/eight.webp",
+    "/images/eleven.webp",
+    "/images/ten.webp",
+    "/images/nine.webp"
   ];
 
   const duplicatedImages = [...images, ...images];
-
-  const [isPaused, setIsPaused] = useState(false);
 
   return (
     <div className="w-full overflow-hidden">
@@ -35,14 +26,16 @@ export default function InfiniteMarquee() {
                 animation: "marquee 47s linear infinite"
               }}
              >
-              {/* First copy of images */}
               {duplicatedImages.map((image, index) => (
                 <div key={`img-${index}`} className="inline-block px-2 pb-2 md:pb-0">
                   <div className="w-60 md:w-80 h-fit rounded-lg overflow-hidden shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl">
-                    <img 
+                    <Image 
                       src={image} 
                       alt={`Gallery image ${(index % images.length) + 1}`} 
                       className="w-full h-full object-cover"
+                      height={500}
+                      width={700}
+                      
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
                       <div className="absolute bottom-4 left-4 text-white">
