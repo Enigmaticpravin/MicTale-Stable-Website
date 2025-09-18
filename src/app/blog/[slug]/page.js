@@ -1,11 +1,7 @@
 import { notFound } from 'next/navigation'
-import { adminDb } from '@/app/lib/firebaseAdmin' // Admin SDK
 import BlogDisplayPage from '@/app/components/BlogDisplayPage'
+import { getBlogBySlug, getSimilarBlogs, getAllPublishedBlogSlugs } from '@/app/lib/database';
 
-// ✅ Helper for Firestore date fields
-function safeDate(dateField) {
-  return dateField?.toDate?.()?.toISOString?.() || new Date().toISOString()
-}
 
 function makeAbsoluteUrl(path) {
   if (!path) return null
@@ -15,87 +11,15 @@ function makeAbsoluteUrl(path) {
   return `${base}/${path.replace(/^\//, '')}`
 }
 
-async function getSimilarBlogs(currentBlog, currentBlogId) {
-  const similarBlogs = []
-
-  try {
-    const blogsRef = adminDb.collection('blogs')
-
-    // 1️⃣ Try to fetch blogs that match at least 1 tag from current blog
-    const tagQuerySnap =
-      currentBlog.tags?.length > 0
-        ? await blogsRef
-            .where('tags', 'array-contains-any', currentBlog.tags.slice(0, 2))
-            .orderBy('createdAt', 'desc')
-            .limit(8)
-            .get()
-        : { docs: [] }
-
-    tagQuerySnap.forEach(docSnap => {
-      if (docSnap.id !== currentBlogId) {
-        const blogData = docSnap.data()
-        if (blogData.published !== false) {
-          similarBlogs.push({
-            id: docSnap.id,
-            slug: docSnap.id,
-            ...blogData,
-            createdAt: safeDate(blogData.createdAt),
-            updatedAt: safeDate(blogData.updatedAt || blogData.createdAt)
-          })
-        }
-      }
-    })
-
-    // 2️⃣ Fill remaining slots with recent blogs if less than 4
-    if (similarBlogs.length < 4) {
-      const remaining = 4 - similarBlogs.length
-
-      const recentSnap = await blogsRef
-        .orderBy('createdAt', 'desc')
-        .limit(10 + (currentBlog.tags?.length > 0 ? 8 : 0)) // fetch more if tag query was done
-        .get()
-
-      recentSnap.forEach(docSnap => {
-        if (
-          docSnap.id !== currentBlogId &&
-          !similarBlogs.some(b => b.id === docSnap.id) &&
-          similarBlogs.length < 4
-        ) {
-          const blogData = docSnap.data()
-          if (blogData.published !== false) {
-            similarBlogs.push({
-              id: docSnap.id,
-              slug: docSnap.id,
-              ...blogData,
-              createdAt: safeDate(blogData.createdAt),
-              updatedAt: safeDate(blogData.updatedAt || blogData.createdAt)
-            })
-          }
-        }
-      })
-    }
-
-    return similarBlogs.slice(0, 4)
-  } catch (err) {
-    console.error('Error fetching similar blogs:', err)
-    return []
-  }
+function safeDate(dateField) {
+  return dateField?.toDate?.().toISOString?.() || new Date().toISOString();
 }
-
 
 export async function generateMetadata({ params }) {
  const resolvedParams = await params;
   const { slug } = resolvedParams;
   try {
-    const docSnap = await adminDb.collection('blogs').doc(slug).get()
-    if (!docSnap.exists) {
-      return {
-        title: 'Blog Not Found | Mictale',
-        description: 'The requested blog post could not be found.'
-      }
-    }
-
-    const blog = docSnap.data()
+  const blog = await getBlogBySlug(params.slug);
     const siteUrl = (process.env.SITE_URL || 'https://mictale.in').replace(/\/$/, '')
     const pageUrl = `${siteUrl}/blog/${slug}`
     const publishedTime = safeDate(blog.createdAt)
@@ -156,20 +80,9 @@ export default async function BlogPage({ params }) {
   const { slug } = params
 
   try {
-    const docSnap = await adminDb.collection('blogs').doc(slug).get()
-    if (!docSnap.exists) notFound()
+    const blog = await getBlogBySlug(params.slug);
 
-    const blogData = docSnap.data()
-    const blog = {
-      id: docSnap.id,
-      ...blogData,
-      createdAt: safeDate(blogData.createdAt),
-      updatedAt: safeDate(blogData.updatedAt || blogData.createdAt)
-    }
-
-    if (blog.published === false) notFound()
-
-    const similarBlogs = await getSimilarBlogs(blog, docSnap.id)
+  const similarBlogs = await getSimilarBlogs(blog, blog.id);
 
     return (
       <>
@@ -238,17 +151,5 @@ export default async function BlogPage({ params }) {
 }
 
 export async function generateStaticParams() {
-  try {
-    const snapshot = await adminDb.collection('blogs').get()
-    const paths = []
-    snapshot.forEach(docSnap => {
-      const blog = docSnap.data()
-      if (blog.published !== false) {
-        paths.push({ slug: docSnap.id })
-      }
-    })
-    return paths
-  } catch {
-    return []
-  }
+ return getAllPublishedBlogSlugs();
 }

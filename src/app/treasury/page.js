@@ -1,7 +1,6 @@
 // app/treasury/page.js
 import TreasuryClient from './TreasuryClient'
-import { adminDb } from '@/app/lib/firebaseAdmin' // <-- using Admin SDK db
-import { toPlain } from '../lib/firestorePlain'
+import { getLatestGhazals, getLatestPoems } from '../lib/database'
 import LatestBlogsShowcase from '../components/LatestBlogsShowcase'
 import InstagramGrid from '../components/InstagramGrid'
 import MetallicFeatureCard from '../components/SubmitPoetry'
@@ -94,83 +93,10 @@ const breadcrumb = {
   ]
 }
 
-function toMillis(v) {
-  if (!v) return 0
-  if (typeof v?.toDate === 'function') {
-    try {
-      return v.toDate().getTime()
-    } catch {
-      return 0
-    }
-  }
-  const ms = Date.parse(v)
-  return Number.isFinite(ms) ? ms : 0
-}
-
-function extractMatlaFromDoc(data) {
-  let lines = []
-  if (Array.isArray(data.lines)) {
-    lines = data.lines
-  } else if (typeof data.lines === 'string') {
-    lines = data.lines.split('\n')
-  } else if (typeof data.content === 'string') {
-    lines = data.content.split('। ')
-  }
-  const first = (lines[0] || '').trim()
-  const second = (lines[1] || '').trim()
-  if (!first || !second) return null
-  return [first, second]
-}
 
 export default async function TreasuryPage() {
-  const poemsRef = adminDb.collection('poems')
-
-  // latest poems
-  const poemsSnap = await poemsRef.orderBy('createdAt', 'desc').limit(10).get()
-
-  // ghazals window
-  const ghazalsWindowLimit = 20
-  const ghazalsSnap = await poemsRef.orderBy('createdAt', 'desc').limit(ghazalsWindowLimit).get()
-
-  const initialPoems = poemsSnap.docs.map(d => toPlain({ id: d.id, ...d.data() }))
-
-  const ghazalCandidates = ghazalsSnap.docs.map(d => ({ id: d.id, data: d.data() }))
-
-  const ghazalsProcessed = ghazalCandidates.reduce((acc, doc) => {
-    const data = doc.data || {}
-    const category = String(data.category || '').toLowerCase()
-    if (category !== 'ghazal') return acc
-
-    const matla = extractMatlaFromDoc(data)
-    if (!matla) return acc
-
-    const createdAtMs = toMillis(data.createdAt) || toMillis(data.updatedAt)
-    acc.push({
-      id: doc.id,
-      slug: data.slug || doc.id,
-      poet: data.author || data.poet || 'Unknown',
-      createdAt: data.createdAt
-        ? (typeof data.createdAt.toDate === 'function'
-          ? data.createdAt.toDate().toISOString()
-          : String(data.createdAt))
-        : null,
-      createdAtMs,
-      matla
-    })
-    return acc
-  }, [])
-
-  const initialGhazals = ghazalsProcessed
-    .sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0))
-    .slice(0, 4)
-    .map(g => ({
-      id: g.id,
-      slug: g.slug,
-      poet: g.poet,
-      createdAt: g.createdAt,
-      matla: g.matla
-    }))
-
+  const initialPoems = await getLatestPoems(10);
+  const initialGhazals = await getLatestGhazals(4);
   return (
     <>
       <script

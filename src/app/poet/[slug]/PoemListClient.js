@@ -1,17 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import {
-  Book01FreeIcons,
-  Location01FreeIcons,
   Share01Icon,
-  HeartAddIcon,
-  EyeFreeIcons
+  HeartAddIcon
 } from '@hugeicons/core-free-icons/index'
 import { HugeiconsIcon } from '@hugeicons/react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 
 export default function PoemListClient ({ poems, author }) {
   const [query, setQuery] = useState('')
