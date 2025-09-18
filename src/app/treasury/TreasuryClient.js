@@ -1,89 +1,13 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState} from 'react'
 import Link from 'next/link'
-import Footer from '@/app/components/Footer'
-import PoetrySubmissionForm from '@/app/components/PoetrySubmissionForm'
-import { db } from '@/app/lib/firebase'
-import {
-  collection,
-  query,
-  orderBy,
-  startAfter,
-  limit,
-  getDocs,
-  Timestamp
-} from 'firebase/firestore'
 import MatlaDisplay from '../components/MatlaDisplay'
 const PAGE_SIZE = 10
 
-export default function TreasuryClient ({ initialPoems = [], initialGhazals = [] }) {
+export default function TreasuryClient ({ initialPoems, initialGhazals }) {
   const [poems, setPoems] = useState(initialPoems)
-  const [loading, setLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(true)
 
-  const cursorRef = useRef(null)
-  useEffect(() => {
-    if (initialPoems.length > 0) {
-      const last = initialPoems[initialPoems.length - 1]
-      const iso = last?.createdAt
-      if (iso) cursorRef.current = Timestamp.fromMillis(Date.parse(iso))
-    }
-  }, [initialPoems])
-
-  const mergeUnique = useCallback((prev, next) => {
-    const map = new Map()
-    for (const p of prev) map.set(p.id ?? p.slug, p)
-    for (const p of next) map.set(p.id ?? p.slug, p)
-    return Array.from(map.values())
-  }, [])
-
-  const loadMore = useCallback(async () => {
-    if (loading || !hasMore) return
-    setLoading(true)
-
-    const base = collection(db, 'poems')
-    let q = query(base, orderBy('createdAt', 'desc'), limit(PAGE_SIZE))
-
-    if (cursorRef.current) {
-      q = query(
-        base,
-        orderBy('createdAt', 'desc'),
-        startAfter(cursorRef.current),
-        limit(PAGE_SIZE)
-      )
-    }
-
-    const snap = await getDocs(q)
-    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-
-    const lastDoc = snap.docs[snap.docs.length - 1]
-    if (lastDoc) {
-      const ts = lastDoc.get('createdAt')
-      cursorRef.current = ts || cursorRef.current
-    }
-
-    setPoems(prev => mergeUnique(prev, docs))
-    setHasMore(docs.length === PAGE_SIZE)
-    setLoading(false)
-  }, [loading, hasMore, mergeUnique])
-
-  useEffect(() => {
-    let ticking = false
-    const onScroll = () => {
-      if (ticking) return
-      ticking = true
-      requestAnimationFrame(() => {
-        const nearBottom =
-          window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 200
-        if (nearBottom) loadMore()
-        ticking = false
-      })
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [loadMore])
 
   const poppinsStyle = {
     fontFamily: 'Poppins, sans-serif'

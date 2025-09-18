@@ -7,7 +7,7 @@ import InstagramGrid from '../components/InstagramGrid'
 import MetallicFeatureCard from '../components/SubmitPoetry'
 import Footer from '../components/Footer'
 
-export const revalidate = 60 // ISR: rebuild every 60s
+export const revalidate = 60
 
 export const metadata = {
   title: 'Treasury: The Home of Finest Poetry | MicTale',
@@ -94,7 +94,6 @@ const breadcrumb = {
   ]
 }
 
-// --- helpers ---
 function toMillis(v) {
   if (!v) return 0
   if (typeof v?.toDate === 'function') {
@@ -123,7 +122,6 @@ function extractMatlaFromDoc(data) {
   return [first, second]
 }
 
-// --- main page ---
 export default async function TreasuryPage() {
   const poemsRef = adminDb.collection('poems')
 
