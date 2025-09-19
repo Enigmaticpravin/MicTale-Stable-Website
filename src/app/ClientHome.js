@@ -73,7 +73,7 @@ export default function Home () {
             className='w-full h-auto cursor-pointer rounded-b-2xl md:hidden flex'
             height={600}
             width={300}
-            priority={false}
+            priority={true}
           />
         </div>
       </div>

@@ -1,6 +1,4 @@
-// app/privacy-policy/page.js
 import React from "react";
-import { Metadata } from "next";
 import Footer from "../components/Footer";
 
 export const metadata = {

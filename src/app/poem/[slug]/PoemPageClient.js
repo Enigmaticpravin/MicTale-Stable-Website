@@ -9,7 +9,6 @@ import {
   Download01FreeIcons,
   Share01FreeIcons
 } from '@hugeicons/core-free-icons/index'
-import Image from 'next/image'
 
 function renderLineAsWords (line) {
   const words = String(line || '')

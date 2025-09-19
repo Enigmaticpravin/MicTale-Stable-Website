@@ -13,7 +13,6 @@ const StoryboardGallery = () => {
     { id: 8, src: 'https://i.imgur.com/5pR4f2Z.jpeg', title: 'Highlight', description: 'The interplay of light and shadow' }
   ];
 
-
   const poppinsStyle = {
     fontFamily: 'Poppins, sans-serif'
   };
@@ -32,20 +31,23 @@ const StoryboardGallery = () => {
               key={image.id} 
               className="cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
             >
-              <div className="bg-gray-800/40 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden shadow-lg">
-                <Image 
-                  src={image.src} 
-                  priority={false}
-                  width={600}
-                  height={600} 
-                  alt={image.title} 
-                    loading="lazy"
-                  className="w-full h-48 md:h-52 object-cover object-center opacity-100 hover:opacity-80 transition-opacity"
-                />
-                <div className="p-4 text-white justify-center items-center flex flex-col">
-                  <h3 className="text-sm">{image.title}</h3>
-                </div>
-              </div>
+<div className="bg-gray-800/40 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden shadow-lg">
+  
+  <div className="relative w-full h-48 md:h-52">
+    <Image 
+      src={image.src} 
+      alt={image.title} 
+      fill
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      className="object-cover object-center opacity-100 hover:opacity-80 transition-opacity"
+    />
+  </div>
+
+  <div className="p-4 text-white justify-center items-center flex flex-col">
+    <h3 className="text-sm">{image.title}</h3>
+  </div>
+
+</div>
             </div>
           ))}
         </div>

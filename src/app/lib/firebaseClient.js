@@ -20,5 +20,5 @@ export async function signInWithGoogle() {
     body: JSON.stringify({ idToken }),
   });
 
-  window.location.reload(); // reload to set cookie-based auth
+  window.location.reload();
 }

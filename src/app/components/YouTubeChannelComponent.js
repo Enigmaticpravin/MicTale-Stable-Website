@@ -191,7 +191,7 @@ Experience the magic of words, emotions, and rhythm. Let the verses speak to you
                 </div>
 
                 <p
-                  className='text-gray-400 text-sm md:text-lg leading-relaxed text-center'
+                  className='text-gray-400 text-sm md:text-lg leading-relaxed md:text-left text-center'
                   style={poppinsStyle}
                 >
                   Experience the magic of words, emotions, and rhythm through
@@ -313,7 +313,6 @@ Experience the magic of words, emotions, and rhythm. Let the verses speak to you
         </div>
       </div>
 
-      {/* Modal */}
       {selectedVideo && (
         <div className='fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50'>
           <div className='bg-gray-800/90 backdrop-blur-lg rounded-xl border border-gray-700/50 p-6 max-w-lg w-full'>

@@ -170,3 +170,64 @@ export async function getAllPublishedBlogSlugs() {
         return [];
     }
 }
+
+export async function fetchSimilarPoems({ author, category, excludeSlug, limit = 4 }) {
+  const poemsRef = adminDb.collection("poems");
+  const collected = new Map();
+
+  async function runAndCollect(q) {
+    try {
+      const snap = await q.get();
+      for (const doc of snap.docs) {
+        const data = doc.data();
+        const slug = data.slug || doc.id;
+        if (!slug || slug === excludeSlug) continue;
+        if (collected.has(slug)) continue;
+
+        const plain = toPlain({
+          id: doc.id,
+          slug,
+          title: data.title,
+          author: data.author || data.poet,
+          excerpt: data.excerpt,
+          createdAt: data.createdAt ?? null,
+        });
+        collected.set(slug, plain);
+        if (collected.size >= limit) break;
+      }
+    } catch (e) {
+      console.error("Error running Firestore query", e);
+    }
+  }
+
+  if (author) {
+    const qAuthor = poemsRef
+      .where("author", "==", author)
+      .orderBy("createdAt", "desc")
+      .limit(limit);
+    await runAndCollect(qAuthor);
+  }
+
+  if (collected.size < limit && category) {
+    const qCat = poemsRef
+      .where("category", "==", category)
+      .orderBy("createdAt", "desc")
+      .limit(limit);
+    await runAndCollect(qCat);
+  }
+
+  if (collected.size < limit) {
+    const qRecent = poemsRef.orderBy("createdAt", "desc").limit(limit * 2);
+    await runAndCollect(qRecent);
+  }
+
+  const arr = Array.from(collected.values())
+    .sort((a, b) => {
+      const aTs = a.createdAt ? Date.parse(a.createdAt) : 0;
+      const bTs = b.createdAt ? Date.parse(b.createdAt) : 0;
+      return bTs - aTs;
+    })
+    .slice(0, limit);
+
+  return arr;
+}

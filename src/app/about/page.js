@@ -1,7 +1,9 @@
 import AboutClient from './AboutClient'
 
 export const metadata = {
-  title: 'About Us – MicTale',
+ title: {
+    absolute: 'About Us – MicTale',
+  },
   description: "Learn about the vision, journey, and mission of MicTale – India’s leading open mic platform for poets, performers, and storytellers.",
   keywords: [
     'MicTale', 'Open Mic India', 'Poetry Platform', 'Spoken Word', 'Storytelling',

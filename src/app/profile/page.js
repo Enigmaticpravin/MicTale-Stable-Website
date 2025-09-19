@@ -132,7 +132,6 @@ export default function Profile() {
 
   const handleUpdateProfile = async () => {
     try {
-      // Update loading state
       setUserData(prev => ({ ...prev, isLoading: true }))
       
       const { formData } = userData

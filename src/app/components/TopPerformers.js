@@ -45,15 +45,15 @@ const TopPerformers = () => {
     key={performer.id}
     className="group relative rounded-2xl overflow-hidden border border-white/10 bg-gray-900 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
   >
-    <div className="aspect-[3/3] w-full relative p-2">
-      <Image
-        src={performer.image}
-        alt={performer.name}
-        fill
-        loading="lazy"
-        className="object-cover rounded-2xl"
-      />
-    </div>
+ <div className="aspect-[3/3] w-full relative p-2">
+  <Image
+    src={performer.image}
+    alt={performer.name}
+    fill
+    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+    className="object-cover rounded-2xl"
+  />
+</div>
 
     <div className="p-3 bg-gray-900 backdrop-blur-sm text-center">
       <h3 className="text-sm font-semibold text-white truncate">

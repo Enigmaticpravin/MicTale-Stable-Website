@@ -1,9 +1,9 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { getPoemBySlug } from "@/app/lib/poems";
-import { adminDb } from "@/app/lib/firebaseAdmin";
 import PoemPageClient from "./PoemPageClient";
 import Script from "next/script";
+import { fetchSimilarPoems } from "@/app/lib/database";
 
 export const revalidate = 60;
 
@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
   const poem = await getPoemBySlug(slug);
   if (!poem) return { title: "Poem not found" };
 
-  const title = `${poem.title} by ${poem.author} | ${poem.category} Poem`;
+  const title = `${poem.title} by ${poem.author} | ${poem.category}`;
   const url = `${process.env.NEXT_PUBLIC_BASE_URL || ""}/poem/${slug}`;
   const description = `${poem.title} by ${poem.author} | Read full poem at MicTale`;
 
@@ -79,88 +79,6 @@ function buildShersFromContent(content = "") {
     shers.push({ first, second });
   }
   return shers;
-}
-
-function toPlain(d) {
-  if (!d) return d;
-  const out = {};
-  for (const [k, v] of Object.entries(d)) {
-    if (v && typeof v.toDate === "function") {
-      try {
-        out[k] = v.toDate().toISOString();
-      } catch {
-        out[k] = String(v);
-      }
-    } else if (Array.isArray(v)) {
-      out[k] = v.map((x) =>
-        x && typeof x.toDate === "function" ? x.toDate().toISOString() : x
-      );
-    } else {
-      out[k] = v;
-    }
-  }
-  return out;
-}
-
-async function fetchSimilarPoems({ author, category, excludeSlug, limit = 4 }) {
-  const poemsRef = adminDb.collection("poems");
-  const collected = new Map();
-
-  async function runAndCollect(q) {
-    try {
-      const snap = await q.get();
-      for (const doc of snap.docs) {
-        const data = doc.data();
-        const slug = data.slug || doc.id;
-        if (!slug || slug === excludeSlug) continue;
-        if (collected.has(slug)) continue;
-
-     const plain = toPlain({
-  id: doc.id,
-  slug,
-  title: data.title,
-  author: data.author || data.poet,
-  excerpt: data.excerpt,
-  createdAt: data.createdAt ?? null
-});
-        collected.set(slug, plain);
-        if (collected.size >= limit) break;
-      }
-    } catch (e) {
-      console.error("Error running Firestore query", e);
-    }
-  }
-
-  if (author) {
-    const qAuthor = poemsRef
-      .where("author", "==", author)
-      .orderBy("createdAt", "desc")
-      .limit(limit);
-    await runAndCollect(qAuthor);
-  }
-
-  if (collected.size < limit && category) {
-    const qCat = poemsRef
-      .where("category", "==", category)
-      .orderBy("createdAt", "desc")
-      .limit(limit);
-    await runAndCollect(qCat);
-  }
-
-  if (collected.size < limit) {
-    const qRecent = poemsRef.orderBy("createdAt", "desc").limit(limit * 2);
-    await runAndCollect(qRecent);
-  }
-
-  const arr = Array.from(collected.values())
-    .sort((a, b) => {
-      const aTs = a.createdAt ? Date.parse(a.createdAt) : 0;
-      const bTs = b.createdAt ? Date.parse(b.createdAt) : 0;
-      return bTs - aTs;
-    })
-    .slice(0, limit);
-
-  return arr;
 }
 
 export default async function PoemPage({ params }) {

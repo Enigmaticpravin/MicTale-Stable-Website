@@ -30,9 +30,6 @@ export default function ClientRoot({ children }) {
           }
         } else {
           setUser(null)
-          if (pathname !== '/login') {
-router.push('/login')
-          }
         }
       } catch (err) {
         console.error('Error checking auth:', err)
@@ -46,7 +43,12 @@ router.push('/login')
   }, [pathname, router])
 
   if (loading) {
-    return <div className="flex h-screen items-center justify-center">Loading...</div>
+    return  <div className="flex items-center justify-center min-h-screen bg-gray-900">
+        <div className="relative w-16 h-16 animate-spin">
+          <div className="absolute border-t-4 border-blue-500 border-solid rounded-full inset-0"></div>
+          <div className="absolute border-t-4 border-solid rounded-full inset-0 border-l-4 border-blue-500"></div>
+        </div>
+      </div>
   }
 
   return (
