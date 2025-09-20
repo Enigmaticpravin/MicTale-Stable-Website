@@ -10,7 +10,7 @@ export async function generateMetadata({ params }) {
   const author = await getPoetBySlug(slug)
   if (!author) return { title: 'Poet not found' }
 
-  const title = `${author.name} — Poems, biography and collection`
+  const title = `${author.name} - Poems, biography and collection`
   const description = author.bio
     ? `${author.bio.slice(0, 140)}... Read poems and biography of ${author.name} on MicTale.`
     : `Read poems by ${author.name} on MicTale.`

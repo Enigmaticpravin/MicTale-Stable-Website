@@ -4,25 +4,25 @@ const TopPerformers = () => {
   const performers = [
     {
       id: 1,
-      name: 'Bharat V.',
+      name: 'Abhimanyu Tomar',
       category: 'Poetry',
-      image: 'https://i.imgur.com/HiENo3L.jpeg',
+      image: 'https://res.cloudinary.com/drwvlsjzn/image/upload/v1758368012/vlcsnap-2025-07-28-23h50m08s923_hwvxip.png',
       description:
         "Mesmerized the audience with a haunting rendition of 'The Phantom of the Opera'"
     },
     {
       id: 2,
-      name: 'Yati Sharma',
+      name: 'Tuhin Sarkar',
       category: 'Music',
-      image: 'https://i.imgur.com/srhGRdu.jpeg',
+      image: 'https://res.cloudinary.com/drwvlsjzn/image/upload/v1758368012/vlcsnap-2025-07-28-23h42m24s130_qaamak.png',
       description:
         "Delivered an emotionally charged contemporary piece to 'Running Up That Hill'"
     },
     {
       id: 3,
-      name: 'Gaurav',
-      category: 'Music',
-      image: 'https://i.imgur.com/oDKoXCj.jpeg',
+      name: 'Vikas Sehra',
+      category: 'Comedy',
+      image: 'https://res.cloudinary.com/drwvlsjzn/image/upload/v1758368012/vlcsnap-2025-07-28-23h47m04s339_qrmvhn.png',
       description: "Masterful interpretation of Chopin's Nocturne Op. 9 No. 2"
     }
   ];

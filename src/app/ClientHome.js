@@ -70,7 +70,7 @@ export default function Home () {
           <Image
             src='/images/mobilebanner.webp'
             alt='Book Cover'
-            className='w-full h-auto cursor-pointer rounded-b-2xl md:hidden flex'
+            className='w-full h-auto cursor-pointer rounded-2xl md:hidden flex'
             height={600}
             width={300}
             priority={true}

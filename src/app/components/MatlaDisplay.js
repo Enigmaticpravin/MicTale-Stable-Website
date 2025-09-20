@@ -164,7 +164,7 @@ const MatlaDisplay = ({ initialGhazals = [] }) => {
   if (!ghazals.length) return null
 
   return (
-    <div className="md:rounded-2xl rounded-b-2xl py-4 px-3 md:px-4 md:py-8 relative bg-cover bg-center bg-no-repeat md:mx-6"
+    <div className="md:rounded-2xl rounded-2xl py-4 px-3 md:px-4 md:py-8 relative bg-cover bg-center bg-no-repeat md:mx-6"
             style={{ backgroundImage: "url('/images/bg.webp')" }}>
       <div className="justify-center items-center flex flex-col mb-2 mt-2">
         <h2

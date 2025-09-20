@@ -159,7 +159,7 @@ export default function MicTalePremium() {
           ref={setRef('hero')}
           id="hero"
           style={getAnimationStyle('hero')}>
-          <a href={`/form/${upcomingShows[0]?.id}`} className='z-10 block md:px-6'>
+          <a className='z-10 block md:px-6'>
             <Image
               src={poster}
               alt='MicTale Official Banner'
@@ -168,7 +168,7 @@ export default function MicTalePremium() {
             <Image
               src={mobile}
               alt='MicTale Official Banner'
-              className='cursor-pointer w-full rounded-b-2xl md:hidden flex'
+              className='cursor-pointer w-full rounded-2xl md:hidden flex'
             />
           </a>
 

@@ -9,7 +9,7 @@ import {
   Mail,
   MapPin,
 } from 'lucide-react'
-import logo from '@/app/images/logo.png'
+import logo from '@/../public/images/logo.png'
 import mobilelogo from '@/app/images/mic transparent.png'
 import Link from 'next/link'
 import WhatsNew from '@/app/components/WhatsNew'

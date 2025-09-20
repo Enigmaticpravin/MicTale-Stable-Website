@@ -31,13 +31,3 @@ export default function Loader({ size = 48, color = "#ffffff" }) {
     </div>
   );
 }
-
-/*
-Usage:
-
-{loading ? <Loader /> : <Content />}
-
-Props:
-- size: diameter in px (default 48)
-- color: spinner color (default white)
-*/
