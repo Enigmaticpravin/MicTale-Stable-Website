@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import mobilelogo from '@/app/images/logo.png';
+import mobilelogo from '@/../public/images/logo.png'
 import { useState } from 'react';
 import { auth } from '@/app/lib/firebase';
 import {
