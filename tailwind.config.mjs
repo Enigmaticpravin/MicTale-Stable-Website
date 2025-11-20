@@ -93,22 +93,6 @@ export default {
 		  md: 'calc(var(--radius) - 2px)',
 		  sm: 'calc(var(--radius) - 4px)'
 		},
-		fontFamily: {
-		  hindi: ["'Rozha One'", "serif"],
-		  pro: ["'Tiro Devanagari Hindi'", "'Mukta'", "'Noto Serif Devanagari'", "serif"],
-		  englishPro: [
-			"'Playfair Display'",
-			"'Merriweather'",
-			"'Lora'",
-			"'Libre Baskerville'",
-			"'Poppins'",
-			"'Montserrat'",
-			"'Inter'",
-			"'Work Sans'",
-			"'Raleway'",
-			"sans-serif"
-		  ]
-		}
 	  }
 	},
 	plugins: [require("tailwindcss-animate")],

@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowUp01FreeIcons } from '@hugeicons/core-free-icons/index'
-import { HugeiconsIcon } from '@hugeicons/react'
+import { ArrowUp } from 'lucide-react'
 
 const WhatsNew = ({ items = [] }) => {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -53,7 +52,7 @@ const WhatsNew = ({ items = [] }) => {
             animate={{ rotate: isExpanded ? 180 : 0 }}
             transition={{ duration: 0.3 }}
           >
-            <HugeiconsIcon icon={ArrowUp01FreeIcons} height={12} width={12} />
+            <ArrowUp height={12} width={12} />
           </motion.div>
         </div>
       </div>

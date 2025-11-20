@@ -13,8 +13,7 @@ import {
   Info
 } from 'lucide-react'
 import { Gift, Star, Video, Megaphone } from 'lucide-react'
-import { getDoc, doc, db } from '@/app/lib/firebase'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { getDoc, doc, db } from '@/app/lib/firebase-db'
 import poster from '@/app/images/mobile.png'
 import Image from 'next/image'
 import BookingPopup from '@/app/components/BookingPopup'
@@ -28,37 +27,42 @@ const ShowDetails = ({ showid }) => {
   const [expanded, setExpanded] = useState(false)
 
   const router = useRouter()
-  const auth = getAuth()
 
   const maxLength = 150
   const toggleTerms = () => {
     setIsTermsOpen(!isTermsOpen)
   }
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      setCurrentUser(user)
+ useEffect(() => {
+  let unsubscribe = () => {};
+
+  async function loadAuth() {
+    const { getAuth, onAuthStateChanged } = await import("firebase/auth");
+    const auth = getAuth();
+
+    unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setCurrentUser(user);
+
       if (user) {
-         const fetchUserData = async () => {
-          try {
-            const userRef = doc(db, 'users', user?.uid)
-            const userSnap = await getDoc(userRef)
-            if (userSnap.exists()) {
-              const userData = userSnap.data()
-              setUser(userData)
-            }
-          } catch (error) {
-            setError('Failed to load user data')
-            setUser(null)
+        try {
+          const userRef = doc(db, "users", user.uid);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            setUser(userSnap.data());
           }
+        } catch (error) {
+          console.error("Failed to load user data");
+          setUser(null);
         }
-
-        fetchUserData()
       }
-    })
+    });
+  }
 
-    return () => unsubscribe()
-  }, [auth])
+  loadAuth();
+
+  return () => unsubscribe();
+}, []);
+
 
   useEffect(() => {
     const fetchShowDetails = async () => {

@@ -1,20 +1,17 @@
-// app/show/[slug]/page.js
-// Server component (NO "use client" here)
 
-import { getDocs, collection, doc, getDoc } from '@/app/lib/firebase'
+import { getDocs, collection, doc, getDoc } from '@/app/lib/firebase-db'
 import { notFound } from 'next/navigation'
 import ClientForm from '@/app/show/[slug]/ClientForm'
 
-export const revalidate = 3600 // ISR: revalidate every hour
+export const revalidate = 3600
 
-// If you want Next to statically generate known paths at build time
 export async function generateStaticParams() {
   try {
   } catch (e) {
   }
 
   try {
-    const { db } = await import('@/app/lib/firebase')
+    const { db } = await import('@/app/lib/firebase-db')
     const snaps = await getDocs(collection(db, 'shows'))
     const params = []
 
@@ -34,7 +31,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const slug = params.slug
 
-  const { db } = await import('@/app/lib/firebase')
+  const { db } = await import('@/app/lib/firebase-db')
   const snaps = await getDocs(collection(db, 'shows'))
   const matched = snaps.docs.find(d => d.data().slug === slug)
 
@@ -93,7 +90,7 @@ export async function generateMetadata({ params }) {
 export default async function ShowPage({ params }) {
   const slug = params.slug
 
-  const { db } = await import('@/app/lib/firebase')
+  const { db } = await import('@/app/lib/firebase-db')
   const snaps = await getDocs(collection(db, 'shows'))
   const matched = snaps.docs.find(d => d.data().slug === slug)
 

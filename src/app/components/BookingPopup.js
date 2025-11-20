@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { doc, updateDoc, arrayUnion, db } from '@/app/lib/firebase'
+import { doc, updateDoc, arrayUnion, db } from '@/app/lib/firebase-db'
 
 const BookingPopup = ({ isOpen, onClose, showId }) => {
   const [formData, setFormData] = useState({

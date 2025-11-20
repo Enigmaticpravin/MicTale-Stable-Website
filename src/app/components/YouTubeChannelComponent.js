@@ -106,7 +106,7 @@ Experience the magic of words, emotions, and rhythm. Let the verses speak to you
               </div>
 
               <div className='space-y-0 md:space-y-4 text-center md:text-left'>
-                <p className='md:text-xl uppercase text-sm text-gray-300 leading-relaxed garamond-class'>
+                <p className='md:text-xl uppercase text-sm text-gray-300 leading-relaxed tiro-class'>
                   A special segment where we shoot and produce
                   <span className='text-yellow-400 font-semibold'>
                     {' '}

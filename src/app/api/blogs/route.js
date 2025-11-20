@@ -1,5 +1,5 @@
 import { setDoc, doc } from 'firebase/firestore'
-import { db } from '../../lib/firebase'
+import { db } from '../../lib/firebase-db'
 
 export async function POST(request) {
   try {

@@ -1,6 +1,5 @@
 'use client'
 
-import Head from 'next/head'
 import { useState } from 'react'
 import {
   Truck,
@@ -16,13 +15,13 @@ import {
   Phone
 } from 'lucide-react'
 import Image from 'next/image'
-import { db, collection, addDoc } from '@/app/lib/firebase'
-import newspaper from '../../../public/images/newspaper.webp'
+import { db, collection, addDoc } from '@/app/lib/firebase-db'
 import first from '@/app/images/1.jpg'
 import second from '@/app/images/2.jpg'
 import third from '@/app/images/3.jpg'
 import Book3D from '@/app/components/Book3D'
 import Footer from '@/app/components/Footer'
+import LiteYouTube from '../components/LiteYouTube'
 
 export default function BookClient ({ book, error, url }) {
   const [quantity, setQuantity] = useState(1)
@@ -244,16 +243,16 @@ export default function BookClient ({ book, error, url }) {
             <div className='flex-1 flex justify-center lg:justify-start md:p-4'>
               {isSpecialBook ? (
                 <Book3D
-                  frontCover='/images/1.png'
-                  backCover='/images/2.png'
-                  spineCover='/images/spine.png'
+                  frontCover='/images/1.webp'
+                  backCover='/images/2.webp'
+                  spineCover='/images/spine.webp'
                   className='max-w-[150px] md:max-w-[300px] h-auto'
                 />
               ) : (
                 <Book3D
-                  backCover='/images/back.png'
-                  frontCover='/images/front.png'
-                  spineCover='/images/sspine.png'
+                  backCover='/images/back.webp'
+                  frontCover='/images/front.webp'
+                  spineCover='/images/sspine.webp'
                   className='max-w-[150px] md:max-w-[300px] h-auto'
                 />
               )}
@@ -490,15 +489,7 @@ export default function BookClient ({ book, error, url }) {
           {isSpecialBook && (
             <div className='relative flex w-full max-w-6xl mx-auto gap-4 mt-8'>
               <div className='md:w-1/2 aspect-video w-full'>
-                <iframe
-                  className='w-full h-full md:rounded-xl'
-                  src='https://www.youtube.com/embed/PqkjSkL_EBQ?si=8Jc9vyklbyKjh_4G'
-                  title='YouTube video player'
-                  frameBorder='0'
-                  allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                  referrerPolicy='strict-origin-when-cross-origin'
-                  allowFullScreen
-                ></iframe>
+              <LiteYouTube videoId="PqkjSkL_EBQ" />
               </div>
               <div className='md:w-1/2 md:flex items-center hidden'>
                 <Image
@@ -574,7 +565,7 @@ export default function BookClient ({ book, error, url }) {
                         onChange={handleInputChange}
                         required
                         placeholder='Type your full name here...'
-                        className='w-full px-4 py-3 border  placeholder-gray-500 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all'
+                        className='w-full px-4 py-3 border text-black placeholder-gray-500 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all'
                       />
                     </div>
 
@@ -593,7 +584,7 @@ export default function BookClient ({ book, error, url }) {
                         onChange={handleInputChange}
                         required
                         placeholder='your@email.com'
-                        className='w-full px-4 py-3 placeholder-gray-500 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all'
+                        className='w-full px-4 py-3 text-black placeholder-gray-500 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all'
                       />
                     </div>
                   </div>
@@ -617,7 +608,7 @@ export default function BookClient ({ book, error, url }) {
                         onChange={handleInputChange}
                         required
                         placeholder='+91 98765 43210'
-                        className='w-full pl-10 placeholder-gray-500 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent'
+                        className='w-full pl-10 text-black placeholder-gray-500 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent'
                       />
                     </div>
                   </div>
@@ -636,7 +627,7 @@ export default function BookClient ({ book, error, url }) {
                       onChange={handleInputChange}
                       required
                       placeholder='House/Flat No., Building Name, Street, Area, City, State, PIN Code'
-                      className='w-full px-4 placeholder-gray-500 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent'
+                      className='w-full px-4 text-black placeholder-gray-500 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent'
                       rows={3}
                     />
                   </div>

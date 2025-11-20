@@ -1,4 +1,4 @@
-import { db, getDocs } from './firebase'
+import { db, getDocs } from './firebase-db'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 
 function slugify(str) {

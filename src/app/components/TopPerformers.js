@@ -34,7 +34,7 @@ const TopPerformers = () => {
           <p className="uppercase text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-yellow-400 tracking-wide font-poppins">
             Meet our
           </p>
-          <h2 className="text-2xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-slate-200 to-white veronica-class">
+          <h2 className="text-2xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-slate-200 to-white elsie-regular">
             Top Performers
           </h2>
         </div>

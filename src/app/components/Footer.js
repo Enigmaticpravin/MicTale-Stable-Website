@@ -5,10 +5,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import {
-  ChevronUp
+  ChevronUp,
 } from 'lucide-react'
-import { Call02FreeIcons, InstagramFreeIcons, Linkedin01FreeIcons, LocationIconFreeIcons, Mail01FreeIcons, YoutubeFreeIcons } from '@hugeicons/core-free-icons/index'
-import { HugeiconsIcon } from '@hugeicons/react'
+import { PhoneCall, Instagram, Linkedin, Map, Mail, Youtube } from 'lucide-react'
 
 
 export default function Footer() {
@@ -35,15 +34,15 @@ export default function Footer() {
           <h5 className="mb-4 text-xs font-semibold uppercase tracking-widest text-white/60">Contact Us</h5>
             <ul className="mt-6 space-y-2 text-sm text-white/80">
               <li className="flex items-center gap-2">
-                <HugeiconsIcon icon={Mail01FreeIcons} className="h-4 w-4 text-white/60" />
+                <Mail className="h-4 w-4 text-white/60" />
                 <a href="mailto:contact@mictale.in" className="link-underline">contact@mictale.in</a>
               </li>
               <li className="flex items-center gap-2">
-                <HugeiconsIcon icon={Call02FreeIcons} className="h-4 w-4 text-white/60" />
+                <PhoneCall className="h-4 w-4 text-white/60" />
                 <a href="tel:+919667645676" className="link-underline">+919667645676</a>
               </li>
               <li className="flex items-center gap-2">
-                <HugeiconsIcon icon={LocationIconFreeIcons} className="h-4 w-4 text-white/60" />
+                <Map className="h-4 w-4 text-white/60" />
                 <span>Delhi, India</span>
               </li>
             </ul>
@@ -72,13 +71,13 @@ export default function Footer() {
           
           <div className="flex items-center gap-4">
             <Social href="https://instagram.com/mictale.in" label="Instagram">
-              <HugeiconsIcon icon={InstagramFreeIcons} className="h-5 w-5" />
+              <Instagram className="h-5 w-5" />
             </Social>
             <Social href="https://www.linkedin.com/company/mictale" label="Twitter">
-              <HugeiconsIcon icon={Linkedin01FreeIcons} className="h-5 w-5" />
+              <Linkedin className="h-5 w-5" />
             </Social>
             <Social href="https://www.youtube.com/@mictaleoriginals" label="YouTube">
-              <HugeiconsIcon icon={YoutubeFreeIcons} className="h-5 w-5" />
+              <Youtube className="h-5 w-5" />
             </Social>
           </div>
 

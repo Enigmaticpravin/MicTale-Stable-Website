@@ -6,7 +6,7 @@ import Link from 'next/link'
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Footer from '@/app/components/Footer'
-import { collection, getDocs, db, query, where, orderBy } from '@/app/lib/firebase'
+import { collection, getDocs, db, query, where, orderBy } from '@/app/lib/firebase-db'
 import ReactHead from 'next/head'
 import mobile from '../../../public/images/mobileabout.png'
 

@@ -1,6 +1,6 @@
 // app/lib/blogs.js
 import { collection, getDocs } from "firebase/firestore"
-import { db } from "./firebase"
+import { db } from "./firebase-db"
 
 export async function listBlogSlugs() {
   const blogsCol = collection(db, "blogs")

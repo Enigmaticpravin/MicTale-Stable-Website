@@ -1,7 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Ballet:opsz@16..72&family=Cherish&family=Elsie:wght@400;900&family=Laila:wght@300;400;500;600;700&family=Libre+Baskerville:ital@1&family=Monsieur+La+Doulaise&family=Rozha+One&family=Smooch&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet');
 @import "tailwindcss";
-
-
-
 :root {
   --background: #171717;
   --foreground: #ededed;
@@ -153,71 +151,105 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-@font-face {
-  font-family: 'Amsterdam Four';
-  src: url('fonts/Amsterdam 400.ttf') format('truetype');
-  font-weight: normal;
+.rozha-one-regular {
+  font-family: "Rozha One", serif;
+  font-weight: 400;
   font-style: normal;
 }
 
-@font-face {
-  font-family: 'Veronica';
-  src: url('fonts/Verona-Regular.otf') format('truetype');
-  font-weight: normal;
+.libre-baskerville-regular-italic {
+  font-family: "Libre Baskerville", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.laila-light {
+  font-family: "Laila", serif;
+  font-weight: 300;
   font-style: normal;
 }
 
-@font-face {
-  font-family: 'Rozha On';
-  src: url('fonts/RozhaOne-Regular.ttf') format('truetype');
-  font-weight: normal;
+.laila-regular {
+  font-family: "Laila", serif;
+  font-weight: 400;
   font-style: normal;
 }
 
-@font-face {
-  font-family: 'Garamond';
-  src: url('fonts/Garamond-Regular.otf') format('truetype');
-  font-weight: normal;
+.laila-medium {
+  font-family: "Laila", serif;
+  font-weight: 500;
   font-style: normal;
 }
 
-@font-face {
-  font-family: 'Helvetica';
-  src: url('fonts/Helvetica.ttf') format('truetype');
+.laila-semibold {
+  font-family: "Laila", serif;
+  font-weight: 600;
+  font-style: normal;
 }
 
-@font-face {
-  font-family: 'Tiro';
-  src: url('fonts/Tiro.ttf') format('truetype');
-  font-weight: normal;
+.laila-bold {
+  font-family: "Laila", serif;
+  font-weight: 700;
   font-style: normal;
 }
 
 .tiro-class {
-  font-family: 'Tiro', serif;
-}
-
-.helvetica-class {
-  font-family: 'Helvetica', serif;
-  font-weight: lighter;
+  font-family: "Tiro Devanagari Hindi", serif;
+  font-weight: 400;
   font-style: normal;
 }
 
-.garamond-class {
-  font-family: 'Garamond', serif;
+.tiro-devanagari-hindi-regular-italic {
+  font-family: "Tiro Devanagari Hindi", serif;
+  font-weight: 400;
+  font-style: italic;
 }
 
-.rozha-class {
-  font-family: 'Rozha On', serif;
+
+.monsieur-la-doulaise-regular {
+  font-family: "Monsieur La Doulaise", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
 
-.my-class {
-  font-family: 'Amsterdam Four', cursive;
+.ballet-class {
+  font-family: "Ballet", cursive;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 }
 
-.veronica-class {
-  font-family: 'Veronica', cursive;
+.cherish-regular {
+  font-family: "Cherish", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
+
+.cherish-regular {
+  font-family: "Cherish", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+.smooch-regular {
+  font-family: "Smooch", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.elsie-regular {
+  font-family: "Elsie", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.elsie-black {
+  font-family: "Elsie", serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
 
 .slick-dots li button:before {
   color: black !important;

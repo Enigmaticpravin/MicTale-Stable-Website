@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { auth, db, signOut } from '@/app/lib/firebase'
+import {db } from '@/app/lib/firebase-db'
+import { auth } from '@/app/lib/firebase-auth'
+import { signOut } from 'firebase/auth'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import { Edit2Icon, PhoneCall } from 'lucide-react'
 import imageCompression from 'browser-image-compression'

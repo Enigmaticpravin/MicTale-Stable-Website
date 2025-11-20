@@ -6,19 +6,16 @@ import {
   HelpCircle,
   Phone,
   Instagram,
+  Menu,
   Mail,
   MapPin,
+  X as CrossIcon,
 } from 'lucide-react'
 import logo from '@/../public/images/logo.png'
 import mobilelogo from '@/app/images/mic transparent.png'
 import Link from 'next/link'
 import WhatsNew from '@/app/components/WhatsNew'
 import { AnimatePresence, motion } from 'framer-motion'
-import { HugeiconsIcon } from '@hugeicons/react'
-import {
-  Cancel01FreeIcons,
-  Menu01FreeIcons
-} from '@hugeicons/core-free-icons/index'
 import { usePathname, useRouter } from 'next/navigation'
 
 export const UserContext = createContext(null)
@@ -331,7 +328,7 @@ const Navbar = () => {
             </div>
             <div className='md:hidden'>
               <button onClick={toggleMobileMenu} className='w-8 h-8 flex justify-center items-center text-white' aria-label='Toggle mobile menu'>
-                {mobileMenuOpen ? <HugeiconsIcon icon={Cancel01FreeIcons} size={24} /> : <HugeiconsIcon icon={Menu01FreeIcons} size={24} />}
+                {mobileMenuOpen ? <CrossIcon size={24} /> : <Menu size={24} />}
               </button>
             </div>
           </div>

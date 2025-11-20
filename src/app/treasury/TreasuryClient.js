@@ -27,7 +27,7 @@ export default function TreasuryClient ({ initialPoems, initialGhazals }) {
               >
                 Latest Added
               </p>
-              <p className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white veronica-class'>
+              <p className='text-transparent bg-clip-text bg-gradient-to-t text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white elsie-regular'>
                 Poems{' '}
               </p>
             </div>

@@ -13,7 +13,6 @@ import {
   Loader2
 } from 'lucide-react'
 import { getDoc, doc, db, addDoc, collection } from '@/app/lib/firebase'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { serverTimestamp } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 
@@ -25,7 +24,6 @@ const PoetrySubmissionForm = () => {
     content: ''
   })
   const router = useRouter()
-  const auth = getAuth()
   const [currentUser, setCurrentUser] = useState(null)
 
   const [submitted, setSubmitted] = useState(false)
@@ -43,31 +41,37 @@ const PoetrySubmissionForm = () => {
     }))
   }
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      setCurrentUser(user)
+useEffect(() => {
+  let unsubscribe = () => {};
+
+  async function loadAuth() {
+    const { getAuth, onAuthStateChanged } = await import("firebase/auth");
+    const auth = getAuth();
+
+    unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setCurrentUser(user);
+
       if (user) {
-        const fetchUserData = async () => {
-          try {
-            const userRef = doc(db, 'users', user?.uid)
-            const userSnap = await getDoc(userRef)
-            if (userSnap.exists()) {
-              const userData = userSnap.data()
-              setUser(userData)
-              console.log('User data loaded:', userData)
-            }
-          } catch (error) {
-            setError('Failed to load user data')
-            setUser(null)
+        try {
+          const userRef = doc(db, "users", user.uid);
+          const userSnap = await getDoc(userRef);
+
+          if (userSnap.exists()) {
+            setUser(userSnap.data());
           }
+        } catch (err) {
+          setError("Failed to load user data");
+          setUser(null);
         }
-
-        fetchUserData()
       }
-    })
+    });
+  }
 
-    return () => unsubscribe()
-  }, [auth])
+  loadAuth();
+
+  return () => unsubscribe();
+}, []);
+
 
   const handleSubmit = async () => {
     try {

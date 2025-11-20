@@ -66,7 +66,7 @@ const StoryboardGallery = () => {
           >
             get a glimpse from
           </p>
-          <p className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white veronica-class'>
+          <p className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white elsie-regular'>
             Our Latest Open Mic Show
           </p>
         </div>
@@ -78,15 +78,17 @@ const StoryboardGallery = () => {
               className='cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl'
             >
               <div className='bg-gray-800/40 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden shadow-lg'>
-                <div className='relative w-full h-48 md:h-52'>
-                  <Image
-                    src={image.src}
-                    alt={image.title}
-                    fill
-                    sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-                    className='object-cover object-center rounded-b-2xl opacity-100 hover:opacity-80 transition-opacity'
-                  />
-                </div>
+               <div className="relative w-full">
+  <Image
+    src={image.src}
+    alt={image.title}
+    width={300}     // exact display size
+    height={200}    // same aspect ratio as original
+    className="object-cover object-center rounded-b-2xl opacity-100 hover:opacity-80 transition-opacity"
+    sizes="(max-width:768px) 50vw, (max-width:1200px) 25vw, 200px"
+  />
+</div>
+
 
                 <div className='p-4 text-white justify-center items-center flex flex-col'>
                   <h3 className='text-sm'>{image.title}</h3>

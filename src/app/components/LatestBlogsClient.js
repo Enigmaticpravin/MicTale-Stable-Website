@@ -77,7 +77,7 @@ export default function LatestBlogsClient({ blogs = [] }) {
       A new way to
     </p>
     <p
-      className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white veronica-class'
+      className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white elsie-regular'
     >
       Change Your View{' '}
     </p>

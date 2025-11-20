@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 import show from '../../../public/images/first.webp'
@@ -38,14 +40,16 @@ const SoloShow = () => {
           ref={imageWrapperRef}
           className="w-full md:w-[60%] px-2 py-2 md:px-0 bg-slate-900 md:mx-auto md:m-5 md:mb-5"
         >
-          <Image
-            src={show}
-            alt="show"
-            className="rounded-2xl w-full h-auto relative z-10 shadow-[0_0_12px_2px_rgba(255,255,255,0.2)]"
-            width={800}
-            height={600}
-            priority
-          />
+         <Image
+  src={show}
+  alt="show"
+  width={600}
+  height={400}
+  priority
+  fetchPriority="high"
+  className="rounded-2xl w-full h-auto relative z-10 shadow-[0_0_12px_2px_rgba(255,255,255,0.2)]"
+/>
+
         </div>
 
         {imageHeight > 0 && (
@@ -67,11 +71,15 @@ const SoloShow = () => {
             >
               {duplicatedImages.map((image, index) => (
                 <div key={`img-${index}`} className="p-1 flex-shrink-0">
-                  <img
-                    src={image}
-                    alt={`Gallery image ${(index % images.length) + 1}`}
-                    className="w-full h-auto object-cover rounded-lg"
-                  />
+                 <Image
+  src={image}
+  alt={`Gallery image ${(index % images.length) + 1}`}
+  width={300}
+  height={200}
+  className="w-full h-auto object-cover rounded-lg"
+  sizes="200px"
+/>
+
                 </div>
               ))}
             </div>

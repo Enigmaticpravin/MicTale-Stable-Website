@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '@/app/lib/firebase';
+import { db } from '@/app/lib/firebase-db';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { 
   HelpCircle, 

@@ -139,7 +139,7 @@ export default function InstagramGrid({ limit = 50, max = 500 }) {
       our curated
     </p>
     <p
-      className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white veronica-class'
+      className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white elsie-regular'
     >
       Instagram Posts{' '}
     </p>

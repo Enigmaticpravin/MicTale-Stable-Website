@@ -1,9 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import mobilelogo from '@/../public/images/logo.png'
+import mobilelogo from '@/../public/images/logo.png';
 import { useState } from 'react';
-import { auth } from '@/app/lib/firebase';
+import { getFirebaseAuth } from '@/app/lib/firebase-auth';   // <-- FIXED
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -33,6 +33,18 @@ export default function LoginClient() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [success, setSuccess] = useState('');
 
+  const [authInstance, setAuthInstance] = useState(null);
+
+  // Load Firebase auth dynamically ONCE
+  async function loadAuth() {
+    if (!authInstance) {
+      const { auth } = await getFirebaseAuth();
+      setAuthInstance(auth);
+      return auth;
+    }
+    return authInstance;
+  }
+
   const switchCard = () => {
     setIsFlipping(true);
     setTimeout(() => {
@@ -49,15 +61,10 @@ export default function LoginClient() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          idToken,
-          userData 
-        }),
+        body: JSON.stringify({ idToken, userData }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to create session');
-      }
+      if (!response.ok) throw new Error('Failed to create session');
 
       return await response.json();
     } catch (error) {
@@ -72,6 +79,8 @@ export default function LoginClient() {
     setLoading(true);
 
     try {
+      const auth = await loadAuth();
+
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const idToken = await userCredential.user.getIdToken();
       
@@ -82,7 +91,7 @@ export default function LoginClient() {
         isNewUser: false,
         authProvider: 'email'
       });
-      
+
       router.push(redirectPath);
     } catch (err) {
       console.error('Error signing in', err);
@@ -104,11 +113,13 @@ export default function LoginClient() {
     }
 
     try {
+      const auth = await loadAuth();
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
-    
+
       const idToken = await userCredential.user.getIdToken(true);
-      
+
       await createSession(idToken, {
         name,
         email: userCredential.user.email,
@@ -141,6 +152,8 @@ export default function LoginClient() {
     setLoading(true);
 
     try {
+      const auth = await loadAuth();
+
       await sendPasswordResetEmail(auth, resetEmail);
       setSuccess('Password reset email sent! Check your inbox.');
       setTimeout(() => setShowForgotPassword(false), 5000);
@@ -156,9 +169,10 @@ export default function LoginClient() {
     setError('');
     setGoogleLoading(true);
 
-    const provider = new GoogleAuthProvider();
-
     try {
+      const auth = await loadAuth();
+      const provider = new GoogleAuthProvider();
+
       const userCredential = await signInWithPopup(auth, provider);
       const isNewUser = userCredential._tokenResponse?.isNewUser || false;
       const idToken = await userCredential.user.getIdToken();
@@ -169,7 +183,7 @@ export default function LoginClient() {
         profilePicture: userCredential.user.photoURL || '',
         isNewUser,
         authProvider: 'google',
-        preferences: isNewUser ? { notifications: true, theme: 'dark' } : {}
+        preferences: isNewUser ? { notifications: true, theme: 'dark' } : {},
       });
 
       router.push(redirectPath);
@@ -181,28 +195,18 @@ export default function LoginClient() {
     }
   };
 
-  const getAuthErrorMessage = (errorCode) => {
-    switch (errorCode) {
-      case 'auth/invalid-email':
-        return 'Invalid email address.';
-      case 'auth/user-disabled':
-        return 'This account has been disabled.';
+  const getAuthErrorMessage = (code) => {
+    switch (code) {
       case 'auth/user-not-found':
-        return 'No account found with this email.';
+        return 'No user found with this email';
       case 'auth/wrong-password':
-        return 'Incorrect password.';
+        return 'Incorrect password';
       case 'auth/email-already-in-use':
-        return 'This email is already in use.';
+        return 'This email is already registered';
       case 'auth/weak-password':
-        return 'Password should be at least 6 characters.';
-      case 'auth/operation-not-allowed':
-        return 'Operation not allowed.';
-      case 'auth/account-exists-with-different-credential':
-        return 'Account exists with different sign-in method.';
-      case 'auth/popup-closed-by-user':
-        return 'Sign-in popup was closed.';
+        return 'Password should be at least 6 characters';
       default:
-        return 'An error occurred. Please try again.';
+        return 'Something went wrong';
     }
   };
 

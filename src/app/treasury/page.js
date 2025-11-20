@@ -1,4 +1,3 @@
-// app/treasury/page.js
 import TreasuryClient from './TreasuryClient'
 import { getLatestGhazals, getLatestPoems } from '../lib/database'
 import LatestBlogsShowcase from '../components/LatestBlogsShowcase'
