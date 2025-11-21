@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import {db } from '@/app/lib/firebase-db'
-import { auth } from '@/app/lib/firebase-auth'
+import { db } from '@/app/lib/firebase-db'
+import { getFirebaseAuth } from '@/app/lib/firebase-auth'
 import { signOut } from 'firebase/auth'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import { Edit2Icon, PhoneCall } from 'lucide-react'
@@ -10,24 +10,12 @@ import imageCompression from 'browser-image-compression'
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  X,
-  Edit3,
-  Camera,
-  User,
-  Mail,
-  Calendar,
-  MapPin,
-  Briefcase,
-  Save,
-  Archive,
-  ChevronDown,
-  CheckCircle
-} from 'lucide-react'
+import { Mail, CheckCircle } from 'lucide-react'
 import Footer from '@/app/components/Footer'
 import Image from 'next/image'
 
 export default function Profile() {
+  const [auth, setAuth] = useState(null)   // NEW
   const [userData, setUserData] = useState({
     isLoading: true,
     user: null,
@@ -51,6 +39,15 @@ export default function Profile() {
   const [particles, setParticles] = useState([])
   const [cursorSpot, setCursorSpot] = useState([])
 
+  // Load firebase auth dynamically
+  useEffect(() => {
+    const loadAuth = async () => {
+      const { auth } = await getFirebaseAuth()
+      setAuth(auth)
+    }
+    loadAuth()
+  }, [])
+
   const handleMouseMove = useCallback(e => {
     const { clientX, clientY } = e
     setMousePosition({ x: clientX, y: clientY })
@@ -73,17 +70,20 @@ export default function Profile() {
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [handleMouseMove])
 
+  // Auth listener (only runs after auth loads)
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+    if (!auth) return
+
+    const unsubscribe = auth.onAuthStateChanged(async currentUser => {
       if (currentUser) {
         try {
           const userRef = doc(db, 'users', currentUser.uid)
           const userSnap = await getDoc(userRef)
-          
+
           if (userSnap.exists()) {
             const user = userSnap.data()
             const nameParts = (user.name || '').split(' ')
-            console.log('Fetched user data:', user)
+
             setUserData({
               isLoading: false,
               user,
@@ -108,7 +108,7 @@ export default function Profile() {
             isLoading: false,
             error: 'Failed to load user data'
           }))
-          
+
           setTimeout(() => {
             setUserData(prev => ({ ...prev, error: '' }))
           }, 3000)
@@ -119,7 +119,7 @@ export default function Profile() {
     })
 
     return () => unsubscribe()
-  }, [router])
+  }, [auth, router])
 
   const handleInputChange = e => {
     const { name, value } = e.target
@@ -133,12 +133,14 @@ export default function Profile() {
   }
 
   const handleUpdateProfile = async () => {
+    if (!auth?.currentUser) return
+
     try {
       setUserData(prev => ({ ...prev, isLoading: true }))
-      
+
       const { formData } = userData
       const userRef = doc(db, 'users', auth.currentUser.uid)
-      
+
       const updatedUserData = {
         name: `${formData.firstName} ${formData.lastName}`.trim(),
         email: formData.email,
@@ -146,7 +148,7 @@ export default function Profile() {
         phoneNumber: formData.phoneNumber,
         profilePicture: formData.profilePicture
       }
-      
+
       await updateDoc(userRef, updatedUserData)
 
       setUserData(prev => ({
@@ -168,7 +170,6 @@ export default function Profile() {
         isLoading: false,
         error: 'Failed to update profile'
       }))
-      
       setTimeout(() => {
         setUserData(prev => ({ ...prev, error: '' }))
       }, 3000)
@@ -177,10 +178,10 @@ export default function Profile() {
 
   const handleLogout = async () => {
     try {
+      const { auth } = await getFirebaseAuth()
       await signOut(auth)
       router.push('/login')
     } catch (error) {
-      console.error('Error logging out: ', error.message)
       setUserData(prev => ({
         ...prev,
         error: 'Failed to log out'

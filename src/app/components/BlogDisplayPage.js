@@ -82,7 +82,7 @@ export default function BlogDisplayPageDark ({ blog, similarBlogs = [] }) {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             className='md:mb-12 mb-5 max-w-4xl w-full mx-auto'
           >
-            <h1 className='text-2xl md:text-6xl font-bold tracking-tight leading-tight mb-6 bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent garamond-class text-center uppercase'>
+            <h1 className='text-2xl md:text-6xl font-bold tracking-tight leading-tight mb-6 bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent tiro-class text-center uppercase'>
               {blog.title}
             </h1>
 
@@ -130,7 +130,7 @@ export default function BlogDisplayPageDark ({ blog, similarBlogs = [] }) {
             className='max-w-5xl mx-auto mb-5 md:mb-20'
           >
             <div
-              className='text-slate-200 text-lg md:text-2xl leading-relaxed garamond-class text-justify
+              className='text-slate-200 text-lg md:text-2xl leading-relaxed eb-garamond-serial text-justify
              first-letter:float-left first-letter:mr-2 whitespace-pre-line first-letter:mt-1
              first-letter:text-6xl md:first-letter:text-7xl
              first-letter:leading-none first-letter:font-bold'
@@ -173,7 +173,7 @@ export default function BlogDisplayPageDark ({ blog, similarBlogs = [] }) {
                   >
                     Explore these
                   </p>
-                  <p className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white veronica-class'>
+                  <p className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white elsie-regular'>
                     Related Articles{' '}
                   </p>
                 </div>

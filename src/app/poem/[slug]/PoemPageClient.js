@@ -183,7 +183,7 @@ export default function PoemPageClient ({ poem, similar }) {
                 </section>
               ) : (
                 <article className='prose prose-invert prose-lg max-w-none'>
-                  <div className='text-slate-200 leading-relaxed whitespace-pre-wrap text-lg'>
+                  <div className='text-slate-200 leading-relaxed whitespace-pre-wrap tiro-class text-lg'>
                     {content}
                   </div>
                 </article>
