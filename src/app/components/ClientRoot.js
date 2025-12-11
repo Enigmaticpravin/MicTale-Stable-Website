@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Navbar, { UserProvider, ShowsProvider } from '@/app/components/Navbar'
+import Snowfall from './Snowfall'
 
 export default function ClientRoot({ children }) {
   const pathname = usePathname()
@@ -43,6 +44,7 @@ export default function ClientRoot({ children }) {
   return (
     <UserProvider value={user}>
       <ShowsProvider>
+        <Snowfall />
         {showNavbar && <Navbar user={user} />}
         {children}
       </ShowsProvider>

@@ -1,6 +1,12 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import Image from 'next/image'
 import {
   HelpCircle,
@@ -9,7 +15,7 @@ import {
   Menu,
   Mail,
   MapPin,
-  X as CrossIcon,
+  X as CrossIcon
 } from 'lucide-react'
 import logo from '@/../public/images/logo.png'
 import mobilelogo from '@/app/images/mic transparent.png'
@@ -25,7 +31,7 @@ export function UserProvider ({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [authChecked, setAuthChecked] = useState(false)
-const pathname = usePathname()
+  const pathname = usePathname()
   useEffect(() => {
     let mounted = true
 
@@ -33,14 +39,14 @@ const pathname = usePathname()
       try {
         const response = await fetch('/api/user', {
           method: 'GET',
-          credentials: 'include',
+          credentials: 'include'
         })
 
         if (!mounted) return
-        
+
         if (response.ok) {
           const userData = await response.json()
-          
+
           if (userData.user) {
             setUser(userData.user)
           } else {
@@ -85,7 +91,7 @@ export function ShowsProvider ({ children }) {
       try {
         const response = await fetch('/api/shows/upcoming')
         if (!mounted) return
-        
+
         if (response.ok) {
           const data = await response.json()
           setUpcomingShows(data.shows || [])
@@ -99,7 +105,9 @@ export function ShowsProvider ({ children }) {
 
     fetchUpcomingShows()
 
-    return () => { mounted = false }
+    return () => {
+      mounted = false
+    }
   }, [])
 
   return (
@@ -136,7 +144,7 @@ const Navbar = () => {
   }, [])
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       try {
         const target = event?.target
         if (menuRef.current && !menuRef.current.contains(target)) {
@@ -145,8 +153,7 @@ const Navbar = () => {
         if (mobileMenuRef.current && !mobileMenuRef.current.contains(target)) {
           if (mobileMenuOpen) setMobileMenuOpen(false)
         }
-      } catch (e) {
-      }
+      } catch (e) {}
     }
 
     document.addEventListener('mousedown', handleClickOutside)
@@ -156,7 +163,9 @@ const Navbar = () => {
   useEffect(() => {
     if (mobileMenuOpen) document.body.style.overflow = 'hidden'
     else document.body.style.overflow = ''
-    return () => { document.body.style.overflow = '' }
+    return () => {
+      document.body.style.overflow = ''
+    }
   }, [mobileMenuOpen])
 
   const handleLogout = () => {
@@ -169,7 +178,7 @@ const Navbar = () => {
     try {
       const response = await fetch('/api/auth/logout', {
         method: 'POST',
-        credentials: 'include',
+        credentials: 'include'
       })
 
       if (response.ok) {
@@ -188,33 +197,269 @@ const Navbar = () => {
   const toggleMobileMenu = () => setMobileMenuOpen(prev => !prev)
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const pushToProfile = () => router.push('/profile')
-  const handleLogin = () => { window.location.href = '/login' }
+  const handleLogin = () => {
+    window.location.href = '/login'
+  }
 
   return (
     <>
-    <WhatsNew />
+      <WhatsNew />
       <nav
-        className={`text-white bg-gradient-to-r from-gray-950 via-slate-900 to-gray-950 sticky top-0 z-50 transition-all duration-500 ${isScrolled ? 'bg-gradient-to-r from-gray-950 via-slate-900 to-gray-950' : 'm-0'}`}
+        className={`text-white bg-gradient-to-r from-gray-950 via-slate-900 to-gray-950 sticky top-0 z-50 transition-all duration-500 ${
+          isScrolled
+            ? 'bg-gradient-to-r from-gray-950 via-slate-900 to-gray-950'
+            : 'm-0'
+        }`}
       >
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 md:py-4 py-2 flex justify-between items-center'>
-          <div className='relative cursor-pointer' onClick={() => (window.location.href = '/')}>
-            <Image src={logo} className='hidden md:relative md:flex h-7 w-fit text-[#6c5ce7]' priority={true} alt='Logo' />
-            <Image src={mobilelogo} className='md:hidden h-14 w-fit' priority={true} alt='Mobile Logo' />
+          <div
+            className='relative cursor-pointer'
+            onClick={() => (window.location.href = '/')}
+          >
+            <Image
+              src={logo}
+              className='hidden md:relative md:flex h-7 w-fit text-[#6c5ce7]'
+              priority={true}
+              alt='Logo'
+            />
+            <Image
+              src={mobilelogo}
+              className='md:hidden h-14 w-fit'
+              priority={true}
+              alt='Mobile Logo'
+            />
           </div>
 
+          <Link
+            href='/treasury'
+            className={`md:hidden flex relative text-[13px] rounded-full px-3 py-1 transition-colors duration-200 ${
+              isActive('/treasury') ? 'text-black' : 'hover:text-white'
+            }`}
+          >
+            {!isActive('/treasury') && (
+              <span
+                className='absolute inset-0 rounded-full'
+                style={{
+                  background:
+                    'linear-gradient(90deg, #D4AF37, #FFD700, #FFC300, #B8860B, #FFD700, #D4AF37)',
+                  backgroundSize: '300% 300%',
+                  animation: 'goldFlow 4s linear infinite',
+                  padding: '2px'
+                }}
+              >
+                <span className='absolute inset-[2px] rounded-full bg-black'></span>
+                <style jsx>{`
+                  @keyframes goldFlow {
+                    0% {
+                      background-position: 0% 50%;
+                    }
+                    100% {
+                      background-position: 100% 50%;
+                    }
+                  }
+                `}</style>
+              </span>
+            )}
+            {isActive('/treasury') && (
+              <span
+                className='absolute inset-0 rounded-full p-[2px]'
+                style={{
+                  background:
+                    'linear-gradient(90deg, #D4AF37, #FFD700, #FFC300, #B8860B, #FFD700, #D4AF37)',
+                  backgroundSize: '300% 300%',
+                  animation: 'goldFlow 4s linear infinite'
+                }}
+              >
+                <style jsx>{`
+                  @keyframes goldFlow {
+                    0% {
+                      background-position: 0% 50%;
+                    }
+                    100% {
+                      background-position: 100% 50%;
+                    }
+                  }
+                `}</style>
+              </span>
+            )}
+            <span
+              className='relative z-10 rounded-full'
+              style={
+                !isActive('/treasury')
+                  ? {
+                      background:
+                        'linear-gradient(90deg, #D4AF37, #FFD700, #FFC300, #B8860B, #FFD700, #D4AF37)',
+                      backgroundSize: '300% 300%',
+                      animation: 'goldTextFlow 4s linear infinite',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    }
+                  : {}
+              }
+            >
+              Treasury
+              {!isActive('/treasury') && (
+                <style jsx>{`
+                  @keyframes goldTextFlow {
+                    0% {
+                      background-position: 0% 50%;
+                    }
+                    100% {
+                      background-position: 100% 50%;
+                    }
+                  }
+                `}</style>
+              )}
+            </span>
+          </Link>
+
           <div className='hidden md:flex bg-gradient-to-r from-gray-950 via-slate-900 to-gray-950 items-center space-x-4 border border-gray-800 rounded-full px-3 py-2'>
-            <Link href='/' className={`relative inline-block rounded-full px-3 py-1 transition-colors duration-200 ${isActive('/') ? 'text-black' : 'text-white hover:text-white'}`}>
-              {isActive('/') && <span className='absolute inset-0 rounded-full p-[2px]' style={{ background: 'linear-gradient(90deg, #D4AF37, #FFD700, #FFC300, #B8860B, #FFD700, #D4AF37)', backgroundSize: '300% 300%', animation: 'goldFlow 4s linear infinite' }}><style jsx>{`@keyframes goldFlow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }`}</style></span>}
+            <Link
+              href='/'
+              className={`relative inline-block rounded-full px-3 py-1 transition-colors duration-200 ${
+                isActive('/') ? 'text-black' : 'text-white hover:text-white'
+              }`}
+            >
+              {isActive('/') && (
+                <span
+                  className='absolute inset-0 rounded-full p-[2px]'
+                  style={{
+                    background:
+                      'linear-gradient(90deg, #D4AF37, #FFD700, #FFC300, #B8860B, #FFD700, #D4AF37)',
+                    backgroundSize: '300% 300%',
+                    animation: 'goldFlow 4s linear infinite'
+                  }}
+                >
+                  <style jsx>{`
+                    @keyframes goldFlow {
+                      0% {
+                        background-position: 0% 50%;
+                      }
+                      100% {
+                        background-position: 100% 50%;
+                      }
+                    }
+                  `}</style>
+                </span>
+              )}
               <span className='relative z-10 rounded-full'>Home</span>
             </Link>
 
-            <Link href='/treasury' className={`relative inline-block rounded-full px-3 py-1 transition-colors duration-200 ${isActive('/treasury') ? 'text-black' : 'text-white hover:text-white'}`}>
-              {isActive('/treasury') && <span className='absolute inset-0 rounded-full p-[2px]' style={{ background: 'linear-gradient(90deg, #D4AF37, #FFD700, #FFC300, #B8860B, #FFD700, #D4AF37)', backgroundSize: '300% 300%', animation: 'goldFlow 4s linear infinite' }} />}
-              <span className='relative z-10 rounded-full'>Treasury</span>
+            <Link
+              href='/treasury'
+              className={`relative inline-block rounded-full px-3 py-1 transition-colors duration-200 ${
+                isActive('/treasury') ? 'text-black' : 'hover:text-white'
+              }`}
+            >
+              {!isActive('/treasury') && (
+                <span
+                  className='absolute inset-0 rounded-full'
+                  style={{
+                    background:
+                      'linear-gradient(90deg, #D4AF37, #FFD700, #FFC300, #B8860B, #FFD700, #D4AF37)',
+                    backgroundSize: '300% 300%',
+                    animation: 'goldFlow 4s linear infinite',
+                    padding: '2px'
+                  }}
+                >
+                  <span className='absolute inset-[2px] rounded-full bg-black'></span>
+                  <style jsx>{`
+                    @keyframes goldFlow {
+                      0% {
+                        background-position: 0% 50%;
+                      }
+                      100% {
+                        background-position: 100% 50%;
+                      }
+                    }
+                  `}</style>
+                </span>
+              )}
+              {isActive('/treasury') && (
+                <span
+                  className='absolute inset-0 rounded-full p-[2px]'
+                  style={{
+                    background:
+                      'linear-gradient(90deg, #D4AF37, #FFD700, #FFC300, #B8860B, #FFD700, #D4AF37)',
+                    backgroundSize: '300% 300%',
+                    animation: 'goldFlow 4s linear infinite'
+                  }}
+                >
+                  <style jsx>{`
+                    @keyframes goldFlow {
+                      0% {
+                        background-position: 0% 50%;
+                      }
+                      100% {
+                        background-position: 100% 50%;
+                      }
+                    }
+                  `}</style>
+                </span>
+              )}
+              <span
+                className='relative z-10 rounded-full'
+                style={
+                  !isActive('/treasury')
+                    ? {
+                        background:
+                          'linear-gradient(90deg, #D4AF37, #FFD700, #FFC300, #B8860B, #FFD700, #D4AF37)',
+                        backgroundSize: '300% 300%',
+                        animation: 'goldTextFlow 4s linear infinite',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text'
+                      }
+                    : {}
+                }
+              >
+                Treasury
+                {!isActive('/treasury') && (
+                  <style jsx>{`
+                    @keyframes goldTextFlow {
+                      0% {
+                        background-position: 0% 50%;
+                      }
+                      100% {
+                        background-position: 100% 50%;
+                      }
+                    }
+                  `}</style>
+                )}
+              </span>
             </Link>
 
-            <Link href='/about' className={`relative inline-block rounded-full px-3 py-1 transition-colors duration-200 ${isActive('/about') ? 'text-black' : 'text-white hover:text-white'}`}>
-              {isActive('/about') && <span className='absolute inset-0 rounded-full p-[2px]' style={{ background: 'linear-gradient(90deg, #D4AF37, #FFD700, #FFC300, #B8860B, #FFD700, #D4AF37)', backgroundSize: '300% 300%', animation: 'goldFlow 4s linear infinite' }} />}
+            <Link
+              href='/about'
+              className={`relative inline-block rounded-full px-3 py-1 transition-colors duration-200 ${
+                isActive('/about')
+                  ? 'text-black'
+                  : 'text-white hover:text-white'
+              }`}
+            >
+              {isActive('/about') && (
+                <span
+                  className='absolute inset-0 rounded-full p-[2px]'
+                  style={{
+                    background:
+                      'linear-gradient(90deg, #D4AF37, #FFD700, #FFC300, #B8860B, #FFD700, #D4AF37)',
+                    backgroundSize: '300% 300%',
+                    animation: 'goldFlow 4s linear infinite'
+                  }}
+                >
+                  <style jsx>{`
+                    @keyframes goldFlow {
+                      0% {
+                        background-position: 0% 50%;
+                      }
+                      100% {
+                        background-position: 100% 50%;
+                      }
+                    }
+                  `}</style>
+                </span>
+              )}
               <span className='relative z-10 rounded-full'>About Us</span>
             </Link>
           </div>
@@ -225,14 +470,27 @@ const Navbar = () => {
                 <div className='flex items-center space-x-4'>
                   <div
                     onClick={toggleProfileMenu}
-                    onMouseEnter={() => window.innerWidth >= 768 ? setProfileMenuOpen(true) : null}
+                    onMouseEnter={() =>
+                      window.innerWidth >= 768 ? setProfileMenuOpen(true) : null
+                    }
                     className='h-10 w-10 rounded-full overflow-hidden border-2 border-gray-600 hover:border-white transition-colors duration-200 cursor-pointer'
                   >
-                    <Image src={user.profilePicture || '/default-avatar.png'} alt='Profile' width={40} height={40} className='object-cover w-full h-full' />
+                    <Image
+                      src={user.profilePicture || '/default-avatar.png'}
+                      alt='Profile'
+                      width={40}
+                      height={40}
+                      className='object-cover w-full h-full'
+                    />
                   </div>
 
                   {upcomingShows?.length > 0 && (
-                    <Link href={`/show/${encodeURIComponent(upcomingShows[0]?.slug)}`} passHref>
+                    <Link
+                      href={`/show/${encodeURIComponent(
+                        upcomingShows[0]?.slug
+                      )}`}
+                      passHref
+                    >
                       <button className='hidden cursor-pointer md:block px-4 py-2 md:px-6 md:py-2 text-[#e5e5e5] border border-[#5e5e5e] rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-sm md:text-base shadow-md hover:bg-[#ffffff1a] hover:shadow-[0_4px_15px_#ffffff26] transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#ffffff40]'>
                         Book Ticket
                       </button>
@@ -240,16 +498,21 @@ const Navbar = () => {
                   )}
                 </div>
               ) : (
-                <div className='hidden md:flex items-center md:space-x-2 border cursor-pointer w-fit md:px-4 md:py-1 border-orange-500 rounded-full transition-all duration-300 transform hover:bg-orange-500 hover:text-white shadow-[0_0_15px_3px_rgba(255,115,0,0.3)]'>
+                <div className='hidden md:flex items-center md:space-x-2 cursor-pointer w-fit hover:text-white'>
                   <Link href='/login' passHref>
-                    <button className='flex cursor-pointer items-center px-4 py-2 md:py-0 md:px-0 text-[#e5e5e5] rounded-full text-sm md:text-base '>
+                    <button className='flex cursor-pointer items-center px-4 py-2 md:py-2 md:px-4 text-white rounded-full text-sm md:text-base bg-gradient-to-br from-blue-400 via-blue-600 to-blue-900 shadow-[0_4px_20px_rgba(59,130,246,0.5),inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_30px_rgba(59,130,246,0.7),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-1px_0_rgba(0,0,0,0.3)] transition-all duration-300 transform hover:scale-105 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/20 before:via-transparent before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300'>
                       Sign Up
                     </button>
                   </Link>
 
                   {upcomingShows?.length > 0 && (
-                    <Link href={`/show/${encodeURIComponent(upcomingShows[0]?.slug)}`} passHref>
-                      <button className='px-2 cursor-pointer mr-1 md:mr-0 py-1 md:px-3 md:py-1 text-[#e5e5e5] border border-[#5e5e5e] rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-sm md:text-base shadow-md hover:bg-[#ffffff1a] hover:shadow-[0_4px_15px_#ffffff26] transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#ffffff40]'>
+                    <Link
+                      href={`/show/${encodeURIComponent(
+                        upcomingShows[0]?.slug
+                      )}`}
+                      passHref
+                    >
+                      <button className='px-2 cursor-pointer mr-1 md:mr-0 py-1 md:px-3 md:py-1 text-white border-none rounded-full bg-gradient-to-br from-blue-400 via-blue-600 to-blue-900 text-sm md:text-base shadow-[0_4px_20px_rgba(59,130,246,0.5),inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_30px_rgba(59,130,246,0.7),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-1px_0_rgba(0,0,0,0.3)] transition-all duration-300 transform hover:scale-105 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/20 before:via-transparent before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300'>
                         Book Ticket
                       </button>
                     </Link>
@@ -263,48 +526,122 @@ const Navbar = () => {
                     className='absolute right-0 mt-2 w-64 bg-gradient-to-b from-gray-900 to-gray-950 rounded-lg shadow-xl border border-gray-700 overflow-hidden z-50'
                     style={{ transformOrigin: 'top right' }}
                     initial={{ opacity: 0, y: -6, scale: 0.995 }}
-                    animate={{ opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 180, damping: 20 } }}
-                    exit={{ opacity: 0, y: -6, scale: 0.995, transition: { duration: 0.12 } }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      scale: 1,
+                      transition: {
+                        type: 'spring',
+                        stiffness: 180,
+                        damping: 20
+                      }
+                    }}
+                    exit={{
+                      opacity: 0,
+                      y: -6,
+                      scale: 0.995,
+                      transition: { duration: 0.12 }
+                    }}
                   >
                     <div className='p-4 border-b border-gray-700'>
                       <div className='flex items-center space-x-3'>
                         <div className='flex-shrink-0 h-12 w-12 rounded-full overflow-hidden border-2 border-gray-600'>
-                          <Image src={user.profilePicture || '/default-avatar.png'} alt='Profile' width={48} height={48} className='object-cover w-full h-full' />
+                          <Image
+                            src={user.profilePicture || '/default-avatar.png'}
+                            alt='Profile'
+                            width={48}
+                            height={48}
+                            className='object-cover w-full h-full'
+                          />
                         </div>
                         <div className='min-w-0'>
-                          <p className='text-white font-medium'>{user.name || user.displayName || 'User'}</p>
-                          <p className='text-gray-400 text-sm truncate'>{user.email}</p>
+                          <p className='text-white font-medium'>
+                            {user.name || user.displayName || 'User'}
+                          </p>
+                          <p className='text-gray-400 text-sm truncate'>
+                            {user.email}
+                          </p>
                         </div>
                       </div>
                     </div>
 
                     <div className='py-2'>
-                      {[{
-                        href: '/profile',
-                        label: 'My Profile',
-                        icon: (<svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5 mr-3' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' /></svg>),
-                        external: false
-                      },{
-                        href: 'profile/my-orders',
-                        label: 'Order History',
-                        icon: (<svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5 mr-3' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z' /></svg>),
-                        external: false
-                      },{
-                        href: 'https://www.instagram.com/mictale.in',
-                        label: 'Need Help?',
-                        icon: (<HelpCircle className='h-5 w-5 mr-3' />),
-                        external: true
-                      }].map((item, i) => (
+                      {[
+                        {
+                          href: '/profile',
+                          label: 'My Profile',
+                          icon: (
+                            <svg
+                              xmlns='http://www.w3.org/2000/svg'
+                              className='h-5 w-5 mr-3'
+                              fill='none'
+                              viewBox='0 0 24 24'
+                              stroke='currentColor'
+                            >
+                              <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                strokeWidth={2}
+                                d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
+                              />
+                            </svg>
+                          ),
+                          external: false
+                        },
+                        {
+                          href: 'profile/my-orders',
+                          label: 'Order History',
+                          icon: (
+                            <svg
+                              xmlns='http://www.w3.org/2000/svg'
+                              className='h-5 w-5 mr-3'
+                              fill='none'
+                              viewBox='0 0 24 24'
+                              stroke='currentColor'
+                            >
+                              <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                strokeWidth={2}
+                                d='M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z'
+                              />
+                            </svg>
+                          ),
+                          external: false
+                        },
+                        {
+                          href: 'https://www.instagram.com/mictale.in',
+                          label: 'Need Help?',
+                          icon: <HelpCircle className='h-5 w-5 mr-3' />,
+                          external: true
+                        }
+                      ].map((item, i) => (
                         <motion.a
                           key={item.href}
                           href={item.href}
                           target={item.external ? '_blank' : undefined}
                           className='block px-4 py-2 text-gray-200 hover:bg-gray-800 transition-colors duration-200'
                           initial={{ opacity: 0, y: 6 }}
-                          animate={{ opacity: 1, y: 0, transition: { type: 'spring', stiffness: 220, damping: 24, delay: 0.03 + i * 0.02 } }}
-                          exit={{ opacity: 0, y: 4, transition: { duration: 0.1 } }}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                            transition: {
+                              type: 'spring',
+                              stiffness: 220,
+                              damping: 24,
+                              delay: 0.03 + i * 0.02
+                            }
+                          }}
+                          exit={{
+                            opacity: 0,
+                            y: 4,
+                            transition: { duration: 0.1 }
+                          }}
                         >
-                          <span className='flex items-center'>{item.icon}{item.label}</span>
+                          <span className='flex items-center'>
+                            {item.icon}
+                            {item.label}
+                          </span>
                         </motion.a>
                       ))}
 
@@ -313,10 +650,32 @@ const Navbar = () => {
                           onClick={handleLogout}
                           className='w-full cursor-pointer text-left px-4 py-2 text-red-400 hover:bg-gray-800 transition-colors duration-200'
                           initial={{ opacity: 0, y: 6 }}
-                          animate={{ opacity: 1, y: 0, transition: { type: 'spring', stiffness: 220, damping: 24, delay: 0.12 } }}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                            transition: {
+                              type: 'spring',
+                              stiffness: 220,
+                              damping: 24,
+                              delay: 0.12
+                            }
+                          }}
                         >
                           <span className='flex items-center'>
-                            <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5 mr-3' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1' /></svg>
+                            <svg
+                              xmlns='http://www.w3.org/2000/svg'
+                              className='h-5 w-5 mr-3'
+                              fill='none'
+                              viewBox='0 0 24 24'
+                              stroke='currentColor'
+                            >
+                              <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                strokeWidth={2}
+                                d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1'
+                              />
+                            </svg>
                             Logout
                           </span>
                         </motion.button>
@@ -327,65 +686,178 @@ const Navbar = () => {
               </AnimatePresence>
             </div>
             <div className='md:hidden'>
-              <button onClick={toggleMobileMenu} className='w-8 h-8 flex justify-center items-center text-white' aria-label='Toggle mobile menu'>
+              <button
+                onClick={toggleMobileMenu}
+                className='w-8 h-8 flex justify-center items-center text-white'
+                aria-label='Toggle mobile menu'
+              >
                 {mobileMenuOpen ? <CrossIcon size={24} /> : <Menu size={24} />}
               </button>
             </div>
           </div>
         </div>
 
-        {!isScrolled && <div className='absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-gray-950 via-gray-600 to-gray-950' />}
+        {!isScrolled && (
+          <div className='absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-gray-950 via-gray-600 to-gray-950' />
+        )}
       </nav>
 
-      <div ref={mobileMenuRef} className={`fixed inset-0 z-50 md:hidden transition-transform duration-300 ease-in-out ${mobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
-        <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-100' : 'opacity-0'}`} onClick={closeMobileMenu} />
+      <div
+        ref={mobileMenuRef}
+        className={`fixed inset-0 z-50 md:hidden transition-transform duration-300 ease-in-out ${
+          mobileMenuOpen
+            ? 'translate-y-0 opacity-100'
+            : '-translate-y-full opacity-0'
+        }`}
+      >
+        <div
+          className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
+            mobileMenuOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={closeMobileMenu}
+        />
 
         <div className='fixed top-0 left-0 right-0 m-2 max-h-screen overflow-y-auto bg-gray-950 border border-gray-800 shadow-xl rounded-lg'>
           <div className='mx-auto max-w-md px-5'>
             <div className='flex items-center justify-between py-4 border-b border-gray-800'>
               <Image src={logo} alt='Logo' className='h-6 w-auto' priority />
-              <button onClick={closeMobileMenu} className='p-2 text-gray-400 hover:text-white transition-colors'>
-                <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+              <button
+                onClick={closeMobileMenu}
+                className='p-2 text-gray-400 hover:text-white transition-colors'
+              >
+                <svg
+                  className='w-6 h-6'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M6 18L18 6M6 6l12 12'
+                  />
                 </svg>
               </button>
             </div>
 
             <nav className='flex flex-row w-full py-4'>
-              <Link href='/' onClick={closeMobileMenu} className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${isActive('/') ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-900'}`}>Home</Link>
-              <Link href='/treasury' onClick={closeMobileMenu} className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${isActive('/treasury') ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-900'}`}>Treasury</Link>
-              <Link href='/about' onClick={closeMobileMenu} className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${isActive('/about') ? 'text-white bg-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-900'}`}>About Us</Link>
+              <Link
+                href='/'
+                onClick={closeMobileMenu}
+                className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${
+                  isActive('/')
+                    ? 'text-white bg-gray-800'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-900'
+                }`}
+              >
+                Home
+              </Link>
+              <Link
+                href='/treasury'
+                onClick={closeMobileMenu}
+                className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${
+                  isActive('/treasury')
+                    ? 'text-white bg-gray-800'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-900'
+                }`}
+              >
+                Treasury
+              </Link>
+              <Link
+                href='/about'
+                onClick={closeMobileMenu}
+                className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${
+                  isActive('/about')
+                    ? 'text-white bg-gray-800'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-900'
+                }`}
+              >
+                About Us
+              </Link>
             </nav>
 
             {user ? (
               <div className='py-6 border-t border-gray-800'>
                 <div className='flex items-center space-x-3'>
-                  <Image src={user?.profilePicture || '/default-avatar.png'} alt='User Avatar' width={40} height={40} className='rounded-full' />
+                  <Image
+                    src={user?.profilePicture || '/default-avatar.png'}
+                    alt='User Avatar'
+                    width={40}
+                    height={40}
+                    className='rounded-full'
+                  />
                   <div>
-                    <p className='text-white text-sm font-medium'>{user?.name || user?.displayName || 'User'}</p>
+                    <p className='text-white text-sm font-medium'>
+                      {user?.name || user?.displayName || 'User'}
+                    </p>
                     <p className='text-gray-400 text-xs'>{user?.email}</p>
                   </div>
                 </div>
 
                 <div className='mt-4 flex flex-row space-x-2'>
-                  <button onClick={() => { pushToProfile(); closeMobileMenu() }} className='flex-1 h-10 rounded-md bg-gray-800 px-4 text-sm font-medium text-white hover:bg-gray-700 transition'>Dashboard</button>
-                  <button onClick={() => { handleLogout(); closeMobileMenu() }} className='flex-1 h-10 rounded-md bg-red-600 px-4 text-sm font-medium text-white hover:bg-red-500 transition'>Logout</button>
+                  <button
+                    onClick={() => {
+                      pushToProfile()
+                      closeMobileMenu()
+                    }}
+                    className='flex-1 h-10 rounded-md bg-gray-800 px-4 text-sm font-medium text-white hover:bg-gray-700 transition'
+                  >
+                    Dashboard
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleLogout()
+                      closeMobileMenu()
+                    }}
+                    className='flex-1 h-10 rounded-md bg-red-600 px-4 text-sm font-medium text-white hover:bg-red-500 transition'
+                  >
+                    Logout
+                  </button>
                 </div>
               </div>
             ) : (
               <div className='py-6 border-t border-gray-800'>
-                <button onClick={() => { handleLogin(); closeMobileMenu() }} className='w-full cursor-pointer rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-200 border border-gray-700 hover:bg-gray-800 hover:text-white transition-colors'>Login</button>
+                <button
+                  onClick={() => {
+                    handleLogin()
+                    closeMobileMenu()
+                  }}
+                  className='w-full cursor-pointer rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-200 border border-gray-700 hover:bg-gray-800 hover:text-white transition-colors'
+                >
+                  Login
+                </button>
               </div>
             )}
 
             <div className='flex flex-col py-6 border-t mx-auto justify-center items-center border-gray-800'>
-              <h4 className='text-xs uppercase tracking-wide text-gray-500 mb-3'>Connect</h4>
+              <h4 className='text-xs uppercase tracking-wide text-gray-500 mb-3'>
+                Connect
+              </h4>
               <div className='flex items-center space-x-4 mb-4'>
-                <a href='https://www.instagram.com/mictale.in' className='text-gray-400 hover:text-white transition'><Instagram size={18} /></a>
-                <a href='mailto:contact@mictale.in' className='text-gray-400 hover:text-white transition'><Mail size={18} /></a>
-                <a href='tel:+919667645676' className='text-gray-400 hover:text-white transition'><Phone size={18} /></a>
+                <a
+                  href='https://www.instagram.com/mictale.in'
+                  className='text-gray-400 hover:text-white transition'
+                >
+                  <Instagram size={18} />
+                </a>
+                <a
+                  href='mailto:contact@mictale.in'
+                  className='text-gray-400 hover:text-white transition'
+                >
+                  <Mail size={18} />
+                </a>
+                <a
+                  href='tel:+919667645676'
+                  className='text-gray-400 hover:text-white transition'
+                >
+                  <Phone size={18} />
+                </a>
               </div>
-              <div className='flex items-center space-x-2 text-gray-400 text-xs'><MapPin size={14} /><span>Delhi, India</span></div>
+              <div className='flex items-center space-x-2 text-gray-400 text-xs'>
+                <MapPin size={14} />
+                <span>Delhi, India</span>
+              </div>
             </div>
           </div>
         </div>
@@ -394,26 +866,81 @@ const Navbar = () => {
       <AnimatePresence>
         {showLogoutConfirmation && (
           <>
-            <motion.button type='button' aria-label='Close dialog backdrop' className='fixed inset-0 z-40 bg-black/40 backdrop-blur-md' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowLogoutConfirmation(false)} />
+            <motion.button
+              type='button'
+              aria-label='Close dialog backdrop'
+              className='fixed inset-0 z-40 bg-black/40 backdrop-blur-md'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowLogoutConfirmation(false)}
+            />
             <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
-              <motion.div role='dialog' aria-modal='true' className='inline-block w-full max-w-lg overflow-hidden rounded-lg border border-gray-700 bg-gradient-to-b from-gray-800 to-gray-900 shadow-2xl' initial={{ opacity: 0, scale: 0.95, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 200, damping: 20 } }} exit={{ opacity: 0, scale: 0.98, y: 8, transition: { duration: 0.15 } }}>
+              <motion.div
+                role='dialog'
+                aria-modal='true'
+                className='inline-block w-full max-w-lg overflow-hidden rounded-lg border border-gray-700 bg-gradient-to-b from-gray-800 to-gray-900 shadow-2xl'
+                initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  y: 0,
+                  transition: { type: 'spring', stiffness: 200, damping: 20 }
+                }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.98,
+                  y: 8,
+                  transition: { duration: 0.15 }
+                }}
+              >
                 <div className='px-4 pt-5 pb-4 sm:p-6 sm:pb-4'>
                   <div className='sm:flex sm:items-start'>
                     <div className='mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10'>
-                      <svg xmlns='http://www.w3.org/2000/svg' className='h-6 w-6 text-red-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1' />
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        className='h-6 w-6 text-red-600'
+                        fill='none'
+                        viewBox='0 0 24 24'
+                        stroke='currentColor'
+                      >
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          strokeWidth={2}
+                          d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1'
+                        />
                       </svg>
                     </div>
                     <div className='mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left'>
-                      <h3 className='text-lg font-medium leading-6 text-white'>Sign out</h3>
-                      <div className='mt-2'><p className='text-sm text-gray-300'>Are you sure you want to sign out? You will need to sign in again to access your account.</p></div>
+                      <h3 className='text-lg font-medium leading-6 text-white'>
+                        Sign out
+                      </h3>
+                      <div className='mt-2'>
+                        <p className='text-sm text-gray-300'>
+                          Are you sure you want to sign out? You will need to
+                          sign in again to access your account.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 <div className='bg-gray-900 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6'>
-                  <button type='button' className='inline-flex cursor-pointer w-full justify-center rounded-md border border-transparent bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-base font-medium text-white shadow-sm transition-transform duration-200 hover:scale-105 hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm' onClick={confirmLogout}>Sign out</button>
-                  <button type='button' className='mt-3 cursor-pointer inline-flex w-full justify-center rounded-md border border-gray-600 bg-gray-800 px-4 py-2 text-base font-medium text-gray-300 shadow-sm transition-transform duration-200 hover:scale-105 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm' onClick={() => setShowLogoutConfirmation(false)}>Cancel</button>
+                  <button
+                    type='button'
+                    className='inline-flex cursor-pointer w-full justify-center rounded-md border border-transparent bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-base font-medium text-white shadow-sm transition-transform duration-200 hover:scale-105 hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm'
+                    onClick={confirmLogout}
+                  >
+                    Sign out
+                  </button>
+                  <button
+                    type='button'
+                    className='mt-3 cursor-pointer inline-flex w-full justify-center rounded-md border border-gray-600 bg-gray-800 px-4 py-2 text-base font-medium text-gray-300 shadow-sm transition-transform duration-200 hover:scale-105 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm'
+                    onClick={() => setShowLogoutConfirmation(false)}
+                  >
+                    Cancel
+                  </button>
                 </div>
               </motion.div>
             </div>

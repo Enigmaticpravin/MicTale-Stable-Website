@@ -67,7 +67,7 @@ const ContactForm = () => {
 
           <button
             type="submit"
-            className="w-full cursor-pointer bg-blue-600/50 hover:bg-blue-700/60 text-white py-3 rounded-xl transition-colors flex items-center justify-center space-x-2"
+            className="w-full cursor-pointer  text-white py-3 rounded-xl bg-gradient-to-br from-blue-400 via-blue-600 to-blue-900 shadow-[0_4px_20px_rgba(59,130,246,0.5),inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_30px_rgba(59,130,246,0.7),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-1px_0_rgba(0,0,0,0.3)] transition-all duration-300 transform hover:scale-3d hover:brightness-100 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/20 before:via-transparent before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 flex items-center justify-center space-x-2"
           >
             <Send size={20} />
             <span>Submit Feedback</span>

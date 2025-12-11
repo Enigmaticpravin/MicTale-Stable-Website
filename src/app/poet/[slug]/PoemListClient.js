@@ -87,7 +87,7 @@ export default function PoemListClient ({ poems, author }) {
             >
               explore
             </p>
-            <p className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white veronica-class'>
+            <p className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white elsie-regular'>
               Poetry Collection{' '}
             </p>
           </div>
@@ -130,11 +130,10 @@ export default function PoemListClient ({ poems, author }) {
                   <div className='flex items-center justify-between'>
                     <h3
                       style={poppinsStyle}
-                      className='text-sm md:text-lg font-medium text-gray-100 hover:text-amber-400 transition'
+                      className='text-sm md:text-lg font-medium text-gray-100'
                     >
                       <Link
                         href={`/poem/${poem.slug || poem.id}`}
-                        className='hover:underline'
                       >
                         {poem.title || 'Untitled'}
                       </Link>

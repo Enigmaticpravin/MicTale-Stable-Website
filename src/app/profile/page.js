@@ -15,7 +15,7 @@ import Footer from '@/app/components/Footer'
 import Image from 'next/image'
 
 export default function Profile() {
-  const [auth, setAuth] = useState(null)   // NEW
+  const [auth, setAuth] = useState(null)  
   const [userData, setUserData] = useState({
     isLoading: true,
     user: null,
@@ -39,7 +39,6 @@ export default function Profile() {
   const [particles, setParticles] = useState([])
   const [cursorSpot, setCursorSpot] = useState([])
 
-  // Load firebase auth dynamically
   useEffect(() => {
     const loadAuth = async () => {
       const { auth } = await getFirebaseAuth()
@@ -70,7 +69,6 @@ export default function Profile() {
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [handleMouseMove])
 
-  // Auth listener (only runs after auth loads)
   useEffect(() => {
     if (!auth) return
 
@@ -310,9 +308,7 @@ export default function Profile() {
             </button>
           </div>
 
-          {/* Profile content */}
           <div className='px-6 pb-6 -mt-12 relative'>
-            {/* Profile picture */}
             <div className='flex justify-between items-start mb-4'>
               <div
                 className='relative w-20 h-20 rounded-full bg-gray-800 border-4 border-black overflow-hidden group cursor-pointer'
@@ -333,7 +329,6 @@ export default function Profile() {
                   </div>
                 )}
 
-                {/* Hover icon */}
                 <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity'>
                   <Edit2Icon size={24} className='text-white' />
                 </div>
@@ -363,7 +358,6 @@ export default function Profile() {
             </div>
 
             <div className='space-y-6 mt-10'>
-              {/* Name fields */}
               <div className='text-sm'>
                 <label className='block text-gray-500 mb-1'>Name</label>
                 <div className='grid grid-cols-2 gap-4'>
@@ -385,8 +379,6 @@ export default function Profile() {
                   />
                 </div>
               </div>
-
-              {/* Email address */}
               <div className='text-sm'>
                 <label className='block text-gray-500 mb-1'>Email address</label>
                 <div className='relative'>
@@ -403,7 +395,6 @@ export default function Profile() {
                     disabled
                   />
                 </div>
-                {/* Verification badge */}
                 <div className='flex items-center gap-2 mt-2 text-xs text-gray-400'>
                   <CheckCircle size={14} className='text-blue-400' />
                   <span>VERIFIED 2 JAN, 2025</span>
@@ -411,7 +402,6 @@ export default function Profile() {
               </div>
 
               <div className="md:flex md:items-start md:gap-4">
-                {/* Phone Number */}
                 <div className="text-sm w-full md:w-1/2 mb-4 md:mb-0">
                   <label className="block text-gray-500 mb-1">Phone Number</label>
                   <div className="relative">
@@ -431,7 +421,6 @@ export default function Profile() {
                   </div>
                 </div>
 
-                {/* Username */}
                 <div className="text-sm w-full md:w-1/2">
                   <label className="block text-gray-500 mb-1">Username</label>
                   <div className="flex">
@@ -450,7 +439,6 @@ export default function Profile() {
                 </div>
               </div>
 
-              {/* Action buttons */}
               <div className='flex justify-end space-x-4 pt-4'>
                 <button
                   className='px-4 py-2 text-white bg-gray-800 rounded-lg hover:bg-gray-700'
@@ -477,7 +465,6 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Success message */}
         <AnimatePresence>
           {success && (
             <motion.div
@@ -490,8 +477,6 @@ export default function Profile() {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Error message */}
         <AnimatePresence>
           {error && (
             <motion.div
