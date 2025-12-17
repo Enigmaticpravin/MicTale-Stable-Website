@@ -186,7 +186,7 @@ const MeetupPopup = ({ isOpen, onClose, showId }) => {
               Registration Successful!
             </h3>
             <p className="text-gray-300 text-center">
-              We'll see you at the meetup. Check your email for details.
+              We will see you at the meetup. Details wikl be sent to you shortly.
             </p>
           </div>
         ) : (
@@ -194,7 +194,7 @@ const MeetupPopup = ({ isOpen, onClose, showId }) => {
             <div className="space-y-2">
               <label
                 htmlFor="fullName"
-                className="block text-sm font-medium text-gray-200"
+                className="block text-sm font-medium text-gray-200" 
               >
                 Name
               </label>
