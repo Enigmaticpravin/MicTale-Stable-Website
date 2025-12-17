@@ -484,18 +484,6 @@ const Navbar = () => {
                     />
                   </div>
 
-                  {upcomingShows?.length > 0 && (
-                    <Link
-                      href={`/show/${encodeURIComponent(
-                        upcomingShows[0]?.slug
-                      )}`}
-                      passHref
-                    >
-                      <button className='hidden cursor-pointer md:block px-4 py-2 md:px-6 md:py-2 text-[#e5e5e5] border border-[#5e5e5e] rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-sm md:text-base shadow-md hover:bg-[#ffffff1a] hover:shadow-[0_4px_15px_#ffffff26] transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#ffffff40]'>
-                        Book Ticket
-                      </button>
-                    </Link>
-                  )}
                 </div>
               ) : (
                 <div className='hidden md:flex items-center md:space-x-2 cursor-pointer w-fit hover:text-white'>
@@ -505,18 +493,7 @@ const Navbar = () => {
                     </button>
                   </Link>
 
-                  {upcomingShows?.length > 0 && (
-                    <Link
-                      href={`/show/${encodeURIComponent(
-                        upcomingShows[0]?.slug
-                      )}`}
-                      passHref
-                    >
-                      <button className='px-2 cursor-pointer mr-1 md:mr-0 py-1 md:px-3 md:py-1 text-white border-none rounded-full bg-gradient-to-br from-blue-400 via-blue-600 to-blue-900 text-sm md:text-base shadow-[0_4px_20px_rgba(59,130,246,0.5),inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_30px_rgba(59,130,246,0.7),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-1px_0_rgba(0,0,0,0.3)] transition-all duration-300 transform hover:scale-105 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/20 before:via-transparent before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300'>
-                        Book Ticket
-                      </button>
-                    </Link>
-                  )}
+                  
                 </div>
               )}
 

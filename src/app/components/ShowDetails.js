@@ -14,10 +14,10 @@ import {
 } from 'lucide-react'
 import { Gift, Star, Video, Megaphone } from 'lucide-react'
 import { getDoc, doc, db } from '@/app/lib/firebase-db'
-import poster from '@/app/images/mobile.png'
+import poster from '@/../public/images/mobile.webp'
 import Image from 'next/image'
-import BookingPopup from '@/app/components/BookingPopup'
 import { useRouter } from 'next/navigation'
+import MeetupPopup from './MeetupPopup'
 const ShowDetails = ({ showid }) => {
   const [showDetails, setShowDetails] = useState(null)
   const [isTermsOpen, setIsTermsOpen] = useState(false)
@@ -33,36 +33,35 @@ const ShowDetails = ({ showid }) => {
     setIsTermsOpen(!isTermsOpen)
   }
 
- useEffect(() => {
-  let unsubscribe = () => {};
+  useEffect(() => {
+    let unsubscribe = () => {}
 
-  async function loadAuth() {
-    const { getAuth, onAuthStateChanged } = await import("firebase/auth");
-    const auth = getAuth();
+    async function loadAuth () {
+      const { getAuth, onAuthStateChanged } = await import('firebase/auth')
+      const auth = getAuth()
 
-    unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
+      unsubscribe = onAuthStateChanged(auth, async user => {
+        setCurrentUser(user)
 
-      if (user) {
-        try {
-          const userRef = doc(db, "users", user.uid);
-          const userSnap = await getDoc(userRef);
-          if (userSnap.exists()) {
-            setUser(userSnap.data());
+        if (user) {
+          try {
+            const userRef = doc(db, 'users', user.uid)
+            const userSnap = await getDoc(userRef)
+            if (userSnap.exists()) {
+              setUser(userSnap.data())
+            }
+          } catch (error) {
+            console.error('Failed to load user data')
+            setUser(null)
           }
-        } catch (error) {
-          console.error("Failed to load user data");
-          setUser(null);
         }
-      }
-    });
-  }
+      })
+    }
 
-  loadAuth();
+    loadAuth()
 
-  return () => unsubscribe();
-}, []);
-
+    return () => unsubscribe()
+  }, [])
 
   useEffect(() => {
     const fetchShowDetails = async () => {
@@ -103,11 +102,11 @@ const ShowDetails = ({ showid }) => {
   const show = {
     title: showDetails?.name || 'Loading...',
     date: formattedDate,
-    location: 'Comedy County by Hitchin',
+    location: 'Bansera Park, Delhi',
     address: showDetails?.location || 'Noida, India',
     availableSpots: showDetails?.seats || 30,
     remainingSpots: 30,
-    registrationFee: 350,
+    registrationFee: 0,
     description: showDetails?.description || 'Loading...',
     benefits: [
       'Free professional video recording of your exhibition space',
@@ -123,13 +122,12 @@ const ShowDetails = ({ showid }) => {
     ]
   }
 
-const benefitIcons = [
-  <Gift key="gift" className="text-yellow-400 w-8 h-8" />,
-  <Star key="star" className="text-yellow-400 w-8 h-8" />,
-  <Video key="video" className="text-yellow-400 w-8 h-8" />,
-  <Megaphone key="megaphone" className="text-yellow-400 w-8 h-8" />
-]
-
+  const benefitIcons = [
+    <Gift key='gift' className='text-yellow-400 w-8 h-8' />,
+    <Star key='star' className='text-yellow-400 w-8 h-8' />,
+    <Video key='video' className='text-yellow-400 w-8 h-8' />,
+    <Megaphone key='megaphone' className='text-yellow-400 w-8 h-8' />
+  ]
 
   const poppinsStyle = {
     fontFamily: 'Poppins, sans-serif'
@@ -155,12 +153,12 @@ const benefitIcons = [
               <div className='space-y-4'>
                 <div className='flex items-center gap-3'>
                   <Tag className='w-6 h-6' />
-                  <span>Mixed Mic Event</span>
+                  <span>Open-environment Meetup</span>
                 </div>
 
                 <div className='flex items-center gap-3'>
                   <Calendar className='w-6 h-6' />
-                  <span>{show.date} | 03 PM</span>
+                  <span>{show.date} | 02 PM</span>
                 </div>
 
                 <div className='flex items-center gap-3'>
@@ -174,16 +172,16 @@ const benefitIcons = [
                 <div className='w-[50%] bg-gradient-to-r from-white via-gray-700 to-gray-800 rounded-full bg-black h-[2px] mb-2'></div>
                 <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3'>
                   <div className='flex flex-wrap items-center gap-2 mb-2 md:mb-0'>
-                    <span className='text-2xl font-bold'>
-                      ₹{show.registrationFee}
+                    <span className='md:text-2xl text-sm px-3 py-1 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold'>
+                      Free
                     </span>
-                    <span className='inline-block bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide whitespace-nowrap'>
+                    <span className='hidden bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide whitespace-nowrap'>
                       Early Bird Offer
                     </span>
                   </div>
                   <button
                     onClick={handleRegistrationClick}
-                    className='relative cursor-pointer overflow-hidden m-auto w-full md:w-fit md:m-0 bg-gradient-to-r from-orange-500 to-red-600 text-white px-6 py-2 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl hover:from-red-600 hover:to-orange-500 before:absolute before:inset-0 before:bg-white/20 before:scale-0 before:transition-transform before:duration-500 hover:before:scale-150 animate-glow'
+                    className='cursor-pointer  m-auto w-full md:w-fit md:m-0 text-white px-6 py-2 rounded-full shadow-lg transition-all duration-300 ease-in-out bg-gradient-to-br from-blue-400 via-blue-600 to-blue-900 shadow-[0_4px_20px_rgba(59,130,246,0.5),inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_30px_rgba(59,130,246,0.7),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-1px_0_rgba(0,0,0,0.3)] transition-all duration-300 transform hover:scale-105 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/20 before:via-transparent before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300'
                   >
                     Register to Attend
                   </button>
@@ -207,7 +205,7 @@ const benefitIcons = [
                 </div>
                 <div>
                   <p className='text-gray-500 text-sm'>Duration</p>
-                  <p className='font-medium'>3 Hours</p>
+                  <p className='font-medium'>2 Hours</p>
                 </div>
               </div>
 
@@ -269,7 +267,7 @@ const benefitIcons = [
               </div>
               <div>
                 <p className='text-gray-500 text-sm'>Duration</p>
-                <p className='font-medium'>3 Hours</p>
+                <p className='font-medium'>2 Hours</p>
               </div>
             </div>
 
@@ -286,7 +284,6 @@ const benefitIcons = [
 
           <h2 className='text-xl font-bold mb-4'>Venue</h2>
           <div className='border border-gray-200 flex flex-col rounded-lg p-4 mb-6'>
-
             <div className='flex justify-between items-start mb-4'>
               <div>
                 <h3 className='text-lg font-bold text-gray-700'>
@@ -297,14 +294,16 @@ const benefitIcons = [
             </div>
 
             <div className='w-full h-48 bg-gray-200 rounded-lg overflow-hidden'>
-              <iframe
-                src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3641.90717426823!2d77.36440917549741!3d28.539918975715455!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce7b0bd62a163%3A0x7820cfa6b803e44d!2sComedy%20County%20by%20HITCHIN!5e1!3m2!1sen!2sin!4v1753120750365!5m2!1sen!2sin'
-                height='100%'
-                style={{ border: 0 }}
-                allowFullScreen=''
-                loading='lazy'
-                referrerPolicy='no-referrer-when-downgrade'
-              ></iframe>
+             <iframe
+  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25122.3685409536!2d77.28206052816522!3d28.59680683470372!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce31e6f7d0c67%3A0x44b48b1c09793e76!2sBaansera%20Park!5e0!3m2!1sen!2sin!4v1765982288315!5m2!1sen!2sin"
+  width={600}
+  height={450}
+  style={{ border: 0 }}
+  allowFullScreen
+  loading="lazy"
+  referrerPolicy="no-referrer-when-downgrade"
+/>
+
             </div>
 
             <a
@@ -337,45 +336,57 @@ const benefitIcons = [
               }`}
             >
               <div className='p-4 pt-2'>
-                <ul className='list-disc pl-6 space-y-3 text-gray-700'>
-                  <li>A valid Entry Pass is required for entry.</li>
-                  <li>
-                    Tickets are non-refundable, even in case of rescheduling.
-                  </li>
-                  <li>
-                    Security checks, including frisking, are at the discretion
-                    of management.
-                  </li>
-                  <li>
-                    Prohibited items include weapons, fireworks, laser devices,
-                    bottles, and helmets. Such items may be confiscated or lead
-                    to ejection.
-                  </li>
-                  <li>
-                    Outside food, beverages, and alcohol are strictly
-                    prohibited.
-                  </li>
-                  <li>
-                    Smoking, vaping, and drug use inside the venue are not
-                    allowed.
-                  </li>
-                  <li>
-                    Management is not responsible for lost, stolen, or damaged
-                    belongings.
-                  </li>
-                  <li>
-                    Any form of misconduct, harassment, or disruptive behavior
-                    will result in immediate removal from the venue.
-                  </li>
-                  <li>
-                    By attending, you consent to being photographed or recorded
-                    for promotional purposes.
-                  </li>
-                  <li>
-                    Event timings are subject to change without prior notice.
-                  </li>
-                  <li>Re-entry may not be allowed once you exit the venue.</li>
-                </ul>
+               <ul className="list-disc pl-6 space-y-3 text-gray-700">
+  <li>
+    Entry is allowed only for registered participants. Please carry your
+    registration confirmation (digital or print).
+  </li>
+  <li>
+    This is a free community meetup. However, registration once done cannot be
+    transferred.
+  </li>
+  <li>
+    Entry to Bansera Park may require a separate park entry fee, which must be
+    paid directly by attendees at the park entrance, as per park guidelines.
+  </li>
+  <li>
+    The meetup will take place in a public park, so all participants are
+    expected to follow park rules and cooperate with on-ground coordinators.
+  </li>
+  <li>
+    Please avoid carrying sharp objects, alcohol, illegal substances, or any
+    item that may disturb the safety or comfort of others.
+  </li>
+  <li>
+    Light refreshments and water bottles are allowed, but please do not litter.
+    Help us keep the park clean.
+  </li>
+  <li>
+    Smoking, vaping, or substance use during the meetup is discouraged in
+    respect of the public space and fellow participants.
+  </li>
+  <li>
+    MicTale is not responsible for loss or damage of personal belongings.
+    Please take care of your valuables.
+  </li>
+  <li>
+    Any form of harassment, aggressive behavior, or disrespect towards
+    participants or park staff will lead to immediate removal.
+  </li>
+  <li>
+    By attending the meetup, you agree to the possibility of being photographed
+    or recorded for MicTale’s community and promotional content.
+  </li>
+  <li>
+    Event flow and timings may change slightly depending on weather, crowd, or
+    on-ground conditions.
+  </li>
+  <li>
+    Participants are free to leave at any time, but re-entry may be subject to
+    coordination availability.
+  </li>
+</ul>
+
               </div>
             </div>
           </div>
@@ -465,7 +476,7 @@ const benefitIcons = [
           </div>
         </div>
       </div>
-      <BookingPopup
+      <MeetupPopup
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
         showId={showid}

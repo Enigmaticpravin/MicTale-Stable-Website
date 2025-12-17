@@ -55,7 +55,7 @@ export async function generateMetadata({ params }) {
   console.log("data",showSnap.data())
 
   const show = { id: showSnap.id, slug, ...showSnap.data() }
-  const metaTitle = `${show.name} by MicTale`
+  const metaTitle = `${show.name}`
   const metaDescription = show.description || 'Join us for an unforgettable evening of poetry, music and stories.'
   const encodedSlug = encodeURIComponent(show.slug)
   const showUrl = `https://www.mictale.in/show/${encodedSlug}`

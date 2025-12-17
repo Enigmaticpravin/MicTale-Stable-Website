@@ -9,7 +9,8 @@ export default function ClientForm({ showDetails }) {
   const [isSubmitted, setSubmitted] = useState(null)
 
   return (
-    <div className='min-h-screen bg-gray-950 flex flex-col items-center justify-center'>
+    <>
+    <div className='bg-gray-950 flex flex-col items-center justify-center'>
       {isSubmitted ? (
         <SuccessMessage />
       ) : (
@@ -24,8 +25,8 @@ export default function ClientForm({ showDetails }) {
           <div className='mx-auto max-w-3xl h-[1px] bg-gradient-to-r from-gray-950 via-white to-gray-950'></div>
         </>
       )}
-
-      <Footer />
     </div>
+       <Footer />
+       </>
   )
 }
