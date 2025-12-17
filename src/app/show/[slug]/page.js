@@ -70,7 +70,7 @@ export async function generateMetadata({ params }) {
       type: 'website',
       images: [
         {
-          url: 'https://mictale.in/images/mobile.png',
+          url: 'https://mictale.in/images/mobile.webp',
           width: 1200,
           height: 630,
           alt: show.name
