@@ -11,7 +11,6 @@ export default function MetallicFeatureCard() {
   const [open, setOpen] = useState(false);
   const [authInstance, setAuthInstance] = useState(null);
 
-  // Load Firebase Auth dynamically only when component loads
   useEffect(() => {
     async function init() {
       const { auth } = await getFirebaseAuth();

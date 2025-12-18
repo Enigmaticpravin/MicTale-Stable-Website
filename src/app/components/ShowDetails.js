@@ -16,7 +16,7 @@ import { Gift, Star, Video, Megaphone } from 'lucide-react'
 import { getDoc, doc, db } from '@/app/lib/firebase-db'
 import poster from '@/../public/images/mobile.webp'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import MeetupPopup from './MeetupPopup'
 const ShowDetails = ({ showid }) => {
   const [showDetails, setShowDetails] = useState(null)
@@ -27,6 +27,7 @@ const ShowDetails = ({ showid }) => {
   const [expanded, setExpanded] = useState(false)
 
   const router = useRouter()
+  const pathname = usePathname()
 
   const maxLength = 150
   const toggleTerms = () => {
@@ -85,13 +86,18 @@ const ShowDetails = ({ showid }) => {
       if (currentUser) {
         setIsPopupOpen(true)
       } else {
-        localStorage.setItem('authRedirect', window.location.pathname)
-        router.push('/login')
+        const currentPath = window.location.pathname + window.location.search
+
+        if (!localStorage.getItem('authRedirect')) {
+          localStorage.setItem('authRedirect', currentPath)
+        }
+        router.push(`/login?redirect=${encodeURIComponent(pathname)}`)
       }
     } catch (error) {
       console.error('Authentication error:', error)
     }
   }
+
   const formattedDate = showDetails?.date
     ? new Date(showDetails.date).toLocaleDateString('en-GB', {
         day: 'numeric',
@@ -294,16 +300,15 @@ const ShowDetails = ({ showid }) => {
             </div>
 
             <div className='w-full h-48 bg-gray-200 rounded-lg overflow-hidden'>
-             <iframe
-  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25122.3685409536!2d77.28206052816522!3d28.59680683470372!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce31e6f7d0c67%3A0x44b48b1c09793e76!2sBaansera%20Park!5e0!3m2!1sen!2sin!4v1765982288315!5m2!1sen!2sin"
-  width={600}
-  height={450}
-  style={{ border: 0 }}
-  allowFullScreen
-  loading="lazy"
-  referrerPolicy="no-referrer-when-downgrade"
-/>
-
+              <iframe
+                src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25122.3685409536!2d77.28206052816522!3d28.59680683470372!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce31e6f7d0c67%3A0x44b48b1c09793e76!2sBaansera%20Park!5e0!3m2!1sen!2sin!4v1765982288315!5m2!1sen!2sin'
+                width={600}
+                height={450}
+                style={{ border: 0 }}
+                allowFullScreen
+                loading='lazy'
+                referrerPolicy='no-referrer-when-downgrade'
+              />
             </div>
 
             <a
@@ -336,57 +341,62 @@ const ShowDetails = ({ showid }) => {
               }`}
             >
               <div className='p-4 pt-2'>
-               <ul className="list-disc pl-6 space-y-3 text-gray-700">
-  <li>
-    Entry is allowed only for registered participants. Please carry your
-    registration confirmation (digital or print).
-  </li>
-  <li>
-    This is a free community meetup. However, registration once done cannot be
-    transferred.
-  </li>
-  <li>
-    Entry to Bansera Park may require a separate park entry fee, which must be
-    paid directly by attendees at the park entrance, as per park guidelines.
-  </li>
-  <li>
-    The meetup will take place in a public park, so all participants are
-    expected to follow park rules and cooperate with on-ground coordinators.
-  </li>
-  <li>
-    Please avoid carrying sharp objects, alcohol, illegal substances, or any
-    item that may disturb the safety or comfort of others.
-  </li>
-  <li>
-    Light refreshments and water bottles are allowed, but please do not litter.
-    Help us keep the park clean.
-  </li>
-  <li>
-    Smoking, vaping, or substance use during the meetup is discouraged in
-    respect of the public space and fellow participants.
-  </li>
-  <li>
-    MicTale is not responsible for loss or damage of personal belongings.
-    Please take care of your valuables.
-  </li>
-  <li>
-    Any form of harassment, aggressive behavior, or disrespect towards
-    participants or park staff will lead to immediate removal.
-  </li>
-  <li>
-    By attending the meetup, you agree to the possibility of being photographed
-    or recorded for MicTale’s community and promotional content.
-  </li>
-  <li>
-    Event flow and timings may change slightly depending on weather, crowd, or
-    on-ground conditions.
-  </li>
-  <li>
-    Participants are free to leave at any time, but re-entry may be subject to
-    coordination availability.
-  </li>
-</ul>
-
+                <ul className='list-disc pl-6 space-y-3 text-gray-700'>
+                  <li>
+                    Entry is allowed only for registered participants. Please
+                    carry your registration confirmation (digital or print).
+                  </li>
+                  <li>
+                    This is a free community meetup. However, registration once
+                    done cannot be transferred.
+                  </li>
+                  <li>
+                    Entry to Bansera Park may require a separate park entry fee,
+                    which must be paid directly by attendees at the park
+                    entrance, as per park guidelines.
+                  </li>
+                  <li>
+                    The meetup will take place in a public park, so all
+                    participants are expected to follow park rules and cooperate
+                    with on-ground coordinators.
+                  </li>
+                  <li>
+                    Please avoid carrying sharp objects, alcohol, illegal
+                    substances, or any item that may disturb the safety or
+                    comfort of others.
+                  </li>
+                  <li>
+                    Light refreshments and water bottles are allowed, but please
+                    do not litter. Help us keep the park clean.
+                  </li>
+                  <li>
+                    Smoking, vaping, or substance use during the meetup is
+                    discouraged in respect of the public space and fellow
+                    participants.
+                  </li>
+                  <li>
+                    MicTale is not responsible for loss or damage of personal
+                    belongings. Please take care of your valuables.
+                  </li>
+                  <li>
+                    Any form of harassment, aggressive behavior, or disrespect
+                    towards participants or park staff will lead to immediate
+                    removal.
+                  </li>
+                  <li>
+                    By attending the meetup, you agree to the possibility of
+                    being photographed or recorded for MicTale’s community and
+                    promotional content.
+                  </li>
+                  <li>
+                    Event flow and timings may change slightly depending on
+                    weather, crowd, or on-ground conditions.
+                  </li>
+                  <li>
+                    Participants are free to leave at any time, but re-entry may
+                    be subject to coordination availability.
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
