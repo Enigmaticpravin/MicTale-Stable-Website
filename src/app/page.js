@@ -1,19 +1,7 @@
 
 import Image from 'next/image'
-import originallogo from '@/../public/images/MicTale Originals.png'
-import BookPoster from '@/app/images/bookcover.webp'
-
-import SoloShow from './components/SoloShow'
-import StoryboardGallery from './components/StoryboardGallery'
-import TopPerformers from './components/TopPerformers'
-import LogoMarquee from './components/LogoMarquee'
-import YouTubeChannelComponent from './components/YouTubeChannelComponent'
-import ContactForm from './components/Contact'
-import Footer from './components/Footer'
-
-import BannerClient from './components/BannerClient'
-import { Youtube } from 'lucide-react'
-import ScrollReveal from './components/ScrollReveal'
+import phone from '@/../public/images/phone.png'
+import desktop from '@/../public/images/desktop.png'
 
 export const metadata = {
   title: "MicTale | India’s Best Creative Platform",
@@ -95,85 +83,8 @@ export default async function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(navigationSchema) }} />
 
       <main className="relative min-h-screen bg-slate-950 text-white overflow-hidden">
-
-       <ScrollReveal>
-        <BannerClient bookPoster={BookPoster} />
-       </ScrollReveal>
-       <ScrollReveal>
-        <div className="bg-gradient-to-b from-transparent to-slate-900 h-10" />
-        <section id="solo-show" className="md:pb-0 bg-slate-900">
-          <div className="flex flex-col mb-3 md:mb-10 items-center">
-            <p className="uppercase bg-clip-text text-transparent bg-gradient-to-t text-[12px] md:text-[18px] font-bold from-yellow-700 via-yellow-500 to-yellow-900">
-              we did our first
-            </p>
-            <p className="text-transparent bg-clip-text bg-gradient-to-t text-2xl md:text-4xl font-semibold text-center from-slate-200 via-gray-400 to-white elsie-regular">
-              Solo Poetry Show
-            </p>
-          </div>
-
-          <SoloShow />
-        </section>
-        </ScrollReveal>
-
-        <div className="bg-gradient-to-b from-slate-900 to-transparent h-10" />
-        <ScrollReveal>
-        <div className="flex flex-col mx-2 rounded-2xl md:flex-row bg-white items-center justify-between py-5 px-5 bg-cover bg-center bg-no-repeat gap-4">
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
-            <Image src={originallogo} alt="MicTale Logo" className="w-24 h-auto sm:w-28" />
-            <p className="text-black text-[10px] md:text-[16px]">is now running live on YouTube.</p>
-          </div>
-
-         <a 
-            href="https://www.youtube.com/@mictaleoriginals" 
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group"
-          >
-            <button className="relative cursor-pointer px-4 py-1 md:px-8 md:py-4 text-xs md:text-base font-semibold rounded-full bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden">
-              <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-              
-              <span className="relative flex items-center gap-2">
-                <Youtube className="w-4 h-4 md:w-5 md:h-5" />
-                Subscribe Now
-              </span>
-            </button>
-          </a>
-        </div>
-        </ScrollReveal>
-        <ScrollReveal>
-        <TopPerformers />
-        </ScrollReveal>
-
-        <div className="bg-gradient-to-b to-slate-900 from-transparent h-10" />
-<ScrollReveal>
-        <StoryboardGallery />
-</ScrollReveal>
-<ScrollReveal>
-
-        <div className="bg-gradient-to-b from-slate-900 to-transparent h-10" />
-
-        <div className="flex flex-col items-center mb-2 mt-5">
-          <p className="uppercase bg-clip-text text-transparent bg-gradient-to-t text-[12px] md:text-[18px] font-semibold from-yellow-700 via-yellow-500 to-yellow-900">
-            our upcoming
-          </p>
-          <p className="text-transparent bg-clip-text bg-gradient-to-t text-2xl md:text-4xl font-semibold from-slate-200 via-gray-400 to-white elsie-regular">
-            Ventures
-          </p>
-        </div>
-
-        <LogoMarquee />
-
-        <div className="bg-gradient-to-b to-slate-900 from-transparent h-10" />
-</ScrollReveal>
-
-        <YouTubeChannelComponent />
-
-        <div className="bg-gradient-to-b from-slate-900 to-transparent h-10" />
-
-<ScrollReveal>
-        <ContactForm />
-</ScrollReveal>
-        <Footer />
+ <Image src={desktop} alt="..." className="hidden md:block w-full h-auto" />
+<Image src={phone} alt="..." className="block md:hidden w-full h-auto" />
 
       </main>
     </>

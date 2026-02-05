@@ -7,8 +7,11 @@ import {
   Book,
   ShieldCheck,
   ShoppingBag,
+  ChevronRight,
   InfoIcon,
   LockIcon,
+  Info,
+  Lock,
   User,
   Star,
   MapPin,
@@ -176,6 +179,19 @@ export default function BookClient ({ book, error, url }) {
   const discountPercentage = Math.round(
     ((book.originalPrice - book.price) / book.originalPrice) * 100
   )
+
+  const FloatingInput = ({ label, ...props }) => (
+  <div className="relative group">
+    <input
+      {...props}
+      placeholder=" "
+      className="peer w-full bg-transparent border-b border-gray-200 py-3 outline-none focus:border-black transition-all duration-500 text-gray-900 font-light"
+    />
+    <label className="absolute left-0 top-3 text-gray-400 text-[11px] uppercase tracking-[0.2em] font-bold transition-all duration-300 pointer-events-none peer-focus:-top-6 peer-focus:text-black peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-black">
+      {label}
+    </label>
+  </div>
+);
 
 
   return (
@@ -529,178 +545,135 @@ export default function BookClient ({ book, error, url }) {
             </div>
           )}
 
-          <div
-            id='delivery-form-container'
-            className={`md:mt-8 transition-all md:max-w-6xl mx-auto duration-500 ease-in-out overflow-hidden ${
-              showDeliveryForm ? 'max-h-fit opacity-100' : 'max-h-0 opacity-0'
-            }`}
-          >
-            <div className='bg-white  md:rounded-xl md:shadow-lg p-4 md:p-8 border border-gray-100'>
-              <h2 className='text-2xl font-bold text-gray-800 mb-2 text-center'>
-                Delivery Information
-              </h2>
-              <p className='text-gray-500 text-center mb-6'>
-                Please provide your details for delivery
-              </p>
-
-              <form onSubmit={handleSubmit} className='space-y-6'>
-                <div className='mb-6'>
-                  <h3 className='text-md font-semibold text-gray-700 mb-3 flex items-center'>
-                    <User className='h-4 w-4 mr-2 text-orange-500' />
-                    Contact Information
-                  </h3>
-                  <div className='grid md:grid-cols-2 gap-4'>
-                    <div className='relative group'>
-                      <label
-                        htmlFor='name'
-                        className='text-sm text-gray-600 mb-1 block'
-                      >
-                        Full Name
-                      </label>
-                      <input
-                        type='text'
-                        id='name'
-                        name='name'
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                        placeholder='Type your full name here...'
-                        className='w-full px-4 py-3 border text-black placeholder-gray-500 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all'
-                      />
-                    </div>
-
-                    <div className='relative group'>
-                      <label
-                        htmlFor='email'
-                        className='text-sm text-gray-600 mb-1 block'
-                      >
-                        Email Address
-                      </label>
-                      <input
-                        type='email'
-                        id='email'
-                        name='email'
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        placeholder='your@email.com'
-                        className='w-full px-4 py-3 text-black placeholder-gray-500 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all'
-                      />
-                    </div>
-                  </div>
-
-                  <div className='mt-4'>
-                    <label
-                      htmlFor='phone'
-                      className='text-sm text-gray-600 mb-1 block'
-                    >
-                      Phone Number
-                    </label>
-                    <div className='relative'>
-                      <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                        <Phone className='h-5 w-5 text-gray-400' />
-                      </div>
-                      <input
-                        type='tel'
-                        id='phone'
-                        name='phone'
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        required
-                        placeholder='+91 98765 43210'
-                        className='w-full pl-10 text-black placeholder-gray-500 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent'
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className='mb-6'>
-                  <h3 className='text-md font-semibold text-gray-700 mb-3 flex items-center'>
-                    <MapPin className='h-4 w-4 mr-2 text-orange-500' />
-                    Shipping Address
-                  </h3>
-                  <div className='relative'>
-                    <textarea
-                      name='address'
-                      id='address'
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      required
-                      placeholder='House/Flat No., Building Name, Street, Area, City, State, PIN Code'
-                      className='w-full px-4 text-black placeholder-gray-500 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent'
-                      rows={3}
-                    />
-                  </div>
-                </div>
-
-                <div className='bg-gray-50 p-6 rounded-lg border border-gray-200'>
-                  <h3 className='text-md font-semibold text-gray-700 mb-4 flex items-center'>
-                    <ShoppingBag className='h-4 w-4 mr-2 text-orange-500' />
-                    Order Summary
-                  </h3>
-
-                  <div className='space-y-2 mb-4'>
-                    <div className='flex justify-between items-center'>
-                      <div className='flex items-center'>
-                        <div className='w-12 h-16 bg-gray-100 rounded flex items-center justify-center mr-3'>
-                          <Book className='h-6 w-6 text-gray-500' />
-                        </div>
-                        <div>
-                          <p className='font-medium text-gray-800'>
-                            {book.title}
-                          </p>
-                          <p className='text-sm text-gray-500'>
-                            Quantity: {quantity}
-                          </p>
-                        </div>
-                      </div>
-                      <p className='font-medium text-gray-800'>
-                        ₹{(book.price * quantity).toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className='border-t border-gray-200 pt-4 space-y-2'>
-                    <div className='flex justify-between text-sm'>
-                      <p className='text-gray-600'>
-                        MRP ({quantity} {quantity > 1 ? 'items' : 'item'})
-                      </p>
-                      <p className='text-gray-800'>
-                        ₹{(book.price * quantity).toFixed(2)}
-                      </p>
-                    </div>
-                    <div className='flex justify-between text-sm'>
-                      <p className='text-gray-600'>Shipping Fee</p>
-                      <p className='text-gray-800'>₹50.00</p>
-                    </div>
-                    <div className='flex justify-between font-bold text-base pt-2 border-t border-gray-200 mt-2'>
-                      <p className='text-black'>Total</p>
-                      <p className='text-orange-600'>
-                        ₹{(book.price * quantity + 50).toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='space-y-4'>
-                  <div className='bg-orange-50 p-4 rounded-lg border border-orange-100'>
-                    <p className='text-sm text-orange-800'>
-                      <InfoIcon className='h-4 w-4 inline mr-2' />
-                      Your order will be delivered within 3-5 business days
-                    </p>
-                  </div>
-
-                  <button
-                    type='submit'
-                    className='w-full cursor-pointer bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-lg hover:from-orange-600 hover:to-orange-700 transition duration-300 flex items-center justify-center gap-3 font-medium shadow-md'
-                  >
-                    <LockIcon className='h-5 w-5' />
-                    Place Order & Pay ₹{(book.price * quantity + 50).toFixed(2)}
-                  </button>
-                </div>
-              </form>
-            </div>
+<div
+  id='delivery-form-container'
+  className={`transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+    showDeliveryForm ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20 pointer-events-none'
+  } max-w-7xl mx-auto md:mt-12 mb-24 px-6`}
+>
+  <div className='bg-white rounded-[3rem] shadow-[0_80px_150px_-30px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden flex flex-col lg:flex-row'>
+    
+    {/* Sidebar: Navigation & Identity */}
+    <div className='lg:w-1/4 bg-[#0a0a0a] p-12 text-white flex flex-col justify-between'>
+      <div>
+        <div className="w-8 h-1 bg-[#bf953f] mb-12"></div>
+        <h2 className='text-[10px] font-bold text-[#bf953f] uppercase tracking-[0.5em] mb-4'>Checkout</h2>
+        <h3 className='text-4xl font-extralight leading-tight mb-8'>Shipping <br/> <span className="italic font-serif">Registry</span></h3>
+        
+        <div className="space-y-6 opacity-50">
+          <div className="flex items-center gap-4 text-[10px] uppercase tracking-widest">
+            <div className="w-2 h-2 rounded-full bg-[#bf953f]"></div> Information
           </div>
+          <div className="flex items-center gap-4 text-[10px] uppercase tracking-widest">
+            <div className="w-2 h-2 rounded-full border border-white/30"></div> Payment
+          </div>
+        </div>
+      </div>
+      
+      <p className="text-[10px] text-gray-500 leading-loose tracking-widest uppercase">
+        Secure Hand-Delivery <br/> Guaranteed 2026
+      </p>
+    </div>
+
+    {/* Main Form: Detailed Address Breakdown */}
+    <div className='flex-1 p-10 md:p-16 lg:p-20'>
+      <form onSubmit={handleSubmit} className='max-w-2xl mx-auto space-y-16'>
+        
+        {/* Section: Contact */}
+        <section>
+          <h4 className="text-[10px] font-black text-black uppercase tracking-[0.3em] mb-12 flex items-center gap-4">
+            01. Recipient <span className="h-[1px] flex-1 bg-gray-100"></span>
+          </h4>
+          <div className="grid md:grid-cols-2 gap-12">
+            <FloatingInput label="Full Name" name="name" value={formData.name} onChange={handleInputChange} />
+            <FloatingInput label="Email Address" type="email" name="email" value={formData.email} onChange={handleInputChange} />
+          </div>
+        </section>
+
+        {/* Section: Detailed Address */}
+        <section>
+          <h4 className="text-[10px] font-black text-black uppercase tracking-[0.3em] mb-12 flex items-center gap-4">
+            02. Destination <span className="h-[1px] flex-1 bg-gray-100"></span>
+          </h4>
+          <div className="grid md:grid-cols-2 gap-12">
+            <div className="md:col-span-2">
+              <FloatingInput label="Street Address" name="street" value={formData.street} onChange={handleInputChange} />
+            </div>
+            <FloatingInput label="City / Suburb" name="city" value={formData.city} onChange={handleInputChange} />
+            <FloatingInput label="State / Province" name="state" value={formData.state} onChange={handleInputChange} />
+            <FloatingInput label="ZIP / Postal Code" name="zip" value={formData.zip} onChange={handleInputChange} />
+            <FloatingInput label="Country" name="country" value={formData.country} onChange={handleInputChange} />
+          </div>
+        </section>
+      </form>
+    </div>
+
+    {/* Right: The Financial Ledger */}
+    <div className='lg:w-[400px] bg-[#fcfcfc] p-10 md:p-14 border-l border-gray-100 flex flex-col'>
+      <h4 className="text-[10px] font-black text-black uppercase tracking-[0.3em] mb-10">Order Summary</h4>
+      
+      <div className="flex-1 space-y-8">
+        {/* Product Item */}
+        <div className="flex gap-4">
+          <Image
+            src={isSpecialBook ? '/images/1.webp' : '/images/front.webp'}
+            alt={book.title}
+            width={80}
+            height={100}
+            className="w-20 h-30 object-cover rounded-md"
+          />  
+          <div>
+            <p className="text-sm font-bold text-gray-900 leading-tight">{book.title}</p>
+            <p className="text-[10px] text-gray-400 uppercase mt-1">Quantity: {quantity}</p>
+          </div>
+        </div>
+
+        {/* Price Breakdown */}
+        <div className="space-y-4 pt-8 border-t border-gray-200/60">
+          <div className="flex justify-between text-xs tracking-widest uppercase text-gray-500">
+            <span>Base Price</span>
+            <span className="text-gray-900">₹{(book.price * quantity).toLocaleString()}</span>
+          </div>
+          
+          <div className="flex justify-between text-xs tracking-widest uppercase text-[#bf953f] font-bold">
+            <span>Exclusive Discount (20%)</span>
+            <span>- ₹{((book.price * quantity) * 0.2).toLocaleString()}</span>
+          </div>
+
+          <div className="flex justify-between text-xs tracking-widest uppercase text-gray-500">
+            <span>Express Shipping</span>
+            <span className="text-gray-900">₹500.00</span>
+          </div>
+
+          <div className="flex justify-between text-xs tracking-widest uppercase text-emerald-600 font-medium">
+            <span>Shipping Promotion</span>
+            <span>- ₹500.00</span>
+          </div>
+        </div>
+
+        {/* Total Price */}
+        <div className="pt-8 border-t border-black">
+          <div className="flex justify-between items-end">
+            <div>
+              <p className="text-[10px] font-black text-black uppercase tracking-widest">Total Payable</p>
+              <p className="text-[9px] text-gray-400 uppercase">Taxes included</p>
+            </div>
+            <span className="text-4xl font-extralight text-black tracking-tighter">
+              ₹{((book.price * quantity) * 0.8).toLocaleString()}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <button
+        onClick={handleSubmit}
+        className='mt-12 w-full bg-black text-white py-6 rounded-full text-[10px] font-black uppercase tracking-[0.4em] hover:bg-[#bf953f] transition-all duration-500 flex items-center justify-center gap-3 active:scale-95 shadow-xl hover:shadow-[#bf953f]/20'
+      >
+        Continue to Payment <ChevronRight className="h-3 w-3" />
+      </button>
+    </div>
+  </div>
+</div>
         </main>
       </div>
       <Footer />

@@ -45,7 +45,6 @@ export default function ClientRoot({ children }) {
     <UserProvider value={user}>
       <ShowsProvider>
         <Snowfall />
-        {showNavbar && <Navbar user={user} />}
         {children}
       </ShowsProvider>
     </UserProvider>
