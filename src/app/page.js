@@ -2,6 +2,7 @@
 import Image from 'next/image'
 import phone from '@/../public/images/phone.png'
 import desktop from '@/../public/images/desktop.png'
+import AnimatedRoyalBlue from './components/AnimatedRoyalBlue'
 
 export const metadata = {
   title: "MicTale | India’s Best Creative Platform",
@@ -82,10 +83,8 @@ export default async function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(navigationSchema) }} />
 
-      <main className="relative min-h-screen bg-slate-950 text-white overflow-hidden">
- <Image src={desktop} alt="..." className="hidden md:block w-full h-auto" />
-<Image src={phone} alt="..." className="block md:hidden w-full h-auto" />
-
+      <main className="relative min-h-screen  text-white overflow-hidden">
+        <AnimatedRoyalBlue />
       </main>
     </>
   )
