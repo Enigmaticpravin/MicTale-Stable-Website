@@ -198,7 +198,7 @@ const Navbar = () => {
   const closeMobileMenu = () => setMobileMenuOpen(false)
   const pushToProfile = () => router.push('/profile')
   const handleLogin = () => {
-    window.location.href = '/login'
+  router.push('/login')
   }
 
   return (
@@ -214,7 +214,7 @@ const Navbar = () => {
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 md:py-4 py-2 flex justify-between items-center'>
           <div
             className='relative cursor-pointer'
-            onClick={() => (window.location.href = '/')}
+            onClick={() => (router.push('/'))}
           >
             <Image
               src={logo}
@@ -679,166 +679,111 @@ const Navbar = () => {
         )}
       </nav>
 
-      <div
-        ref={mobileMenuRef}
-        className={`fixed inset-0 z-50 md:hidden transition-transform duration-300 ease-in-out ${
-          mobileMenuOpen
-            ? 'translate-y-0 opacity-100'
-            : '-translate-y-full opacity-0'
-        }`}
-      >
-        <div
-          className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
-            mobileMenuOpen ? 'opacity-100' : 'opacity-0'
-          }`}
+<div
+  ref={mobileMenuRef}
+  className={`fixed inset-0 z-[100] md:hidden transition-all duration-500 ease-in-out ${
+    mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+  }`}
+>
+  {/* DEEP SAPPHIRE OVERLAY */}
+  <div
+    className={`fixed inset-0 bg-[#02040a]/90 backdrop-blur-md transition-opacity duration-500 ${
+      mobileMenuOpen ? 'opacity-100' : 'opacity-0'
+    }`}
+    onClick={closeMobileMenu}
+  />
+
+  {/* COMPACT REALISTIC SILVER PANEL */}
+  <div
+    className={`fixed top-4 left-4 right-4 max-h-[85vh] overflow-hidden 
+    bg-[linear-gradient(145deg,#f8fafc_0%,#cbd5e1_30%,#e2e8f0_50%,#94a3b8_80%,#f1f5f9_100%)] 
+    border border-white/60 shadow-[0_30px_60px_rgba(0,0,0,0.4)] rounded-2xl
+    transition-all duration-500 ease-out ${
+      mobileMenuOpen ? 'translate-y-0 scale-100' : '-translate-y-4 scale-98'
+    }`}
+  >
+    {/* METALLIC BRUSHED OVERLAY */}
+    <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')]" />
+
+    {/* TOP SHINE FILAMENT */}
+    <div className="absolute top-0 left-0 w-full h-[1.5px] bg-white/40 overflow-hidden">
+       <motion.div 
+         animate={{ x: ['-100%', '100%'] }}
+         transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+         className="w-1/2 h-full bg-gradient-to-r from-transparent via-white to-transparent shadow-[0_0_10px_#fff]"
+       />
+    </div>
+
+    <div className='relative z-10 px-6'>
+      <div className='flex items-center justify-between py-5 border-b border-black/10'>
+        <Image src={logo} alt='Logo' className='h-5 w-auto grayscale brightness-10' priority />
+        <button
           onClick={closeMobileMenu}
-        />
+          className='w-8 h-8 flex items-center justify-center rounded-lg bg-[#1e293b]/10 border border-[#1e293b]/20 text-[#1e293b]'
+        >
+          <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+          </svg>
+        </button>
+      </div>
 
-        <div className='fixed top-0 left-0 right-0 m-2 max-h-screen overflow-y-auto bg-gray-950 border border-gray-800 shadow-xl rounded-lg'>
-          <div className='mx-auto max-w-md px-5'>
-            <div className='flex items-center justify-between py-4 border-b border-gray-800'>
-              <Image src={logo} alt='Logo' className='h-6 w-auto' priority />
-              <button
-                onClick={closeMobileMenu}
-                className='p-2 text-gray-400 hover:text-white transition-colors'
-              >
-                <svg
-                  className='w-6 h-6'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M6 18L18 6M6 6l12 12'
-                  />
-                </svg>
-              </button>
+      <nav className='flex flex-row w-full gap-2 py-4'>
+        {[
+          { name: 'Home', path: '/' },
+          { name: 'Treasury', path: '/treasury' },
+          { name: 'About', path: '/about' }
+        ].map((link) => (
+          <Link
+            key={link.path}
+            href={link.path}
+            onClick={closeMobileMenu}
+            className={`flex-1 text-center py-3 rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-500 ${
+              isActive(link.path)
+                ? 'text-white bg-[#0f172a] shadow-[0_10px_20px_rgba(15,23,42,0.3)]'
+                : 'text-[#334155] hover:text-[#0f172a] hover:bg-black/5'
+            }`}
+          >
+            {link.name}
+          </Link>
+        ))}
+      </nav>
+
+      <div className='py-4 border-t border-black/10'>
+        {user ? (
+          <div className='flex items-center justify-between bg-white/40 p-3 rounded-2xl border border-white/60 backdrop-blur-sm'>
+            <div className='flex items-center space-x-3'>
+              <div className="p-0.5 rounded-full bg-gradient-to-b from-white to-slate-400">
+                <Image src={user?.profilePicture || '/default-avatar.png'} alt='User' width={34} height={34} className='rounded-full' />
+              </div>
+              <div>
+                <p className='text-[#0f172a] text-[11px] font-black tracking-tight'>{user?.name || 'Creator'}</p>
+                <p className='text-[#475569] text-[9px] font-medium truncate max-w-[100px]'>{user?.email}</p>
+              </div>
             </div>
-
-            <nav className='flex flex-row w-full py-4'>
-              <Link
-                href='/'
-                onClick={closeMobileMenu}
-                className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${
-                  isActive('/')
-                    ? 'text-white bg-gray-800'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-900'
-                }`}
-              >
-                Home
-              </Link>
-              <Link
-                href='/treasury'
-                onClick={closeMobileMenu}
-                className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${
-                  isActive('/treasury')
-                    ? 'text-white bg-gray-800'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-900'
-                }`}
-              >
-                Treasury
-              </Link>
-              <Link
-                href='/about'
-                onClick={closeMobileMenu}
-                className={`flex-1 text-center rounded-md px-4 py-3 text-sm font-medium tracking-wide transition-colors ${
-                  isActive('/about')
-                    ? 'text-white bg-gray-800'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-900'
-                }`}
-              >
-                About Us
-              </Link>
-            </nav>
-
-            {user ? (
-              <div className='py-6 border-t border-gray-800'>
-                <div className='flex items-center space-x-3'>
-                  <Image
-                    src={user?.profilePicture || '/default-avatar.png'}
-                    alt='User Avatar'
-                    width={40}
-                    height={40}
-                    className='rounded-full'
-                  />
-                  <div>
-                    <p className='text-white text-sm font-medium'>
-                      {user?.name || user?.displayName || 'User'}
-                    </p>
-                    <p className='text-gray-400 text-xs'>{user?.email}</p>
-                  </div>
-                </div>
-
-                <div className='mt-4 flex flex-row space-x-2'>
-                  <button
-                    onClick={() => {
-                      pushToProfile()
-                      closeMobileMenu()
-                    }}
-                    className='flex-1 h-10 rounded-md bg-gray-800 px-4 text-sm font-medium text-white hover:bg-gray-700 transition'
-                  >
-                    Dashboard
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleLogout()
-                      closeMobileMenu()
-                    }}
-                    className='flex-1 h-10 rounded-md bg-red-600 px-4 text-sm font-medium text-white hover:bg-red-500 transition'
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className='py-6 border-t border-gray-800'>
-                <button
-                  onClick={() => {
-                    handleLogin()
-                    closeMobileMenu()
-                  }}
-                  className='w-full cursor-pointer rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-200 border border-gray-700 hover:bg-gray-800 hover:text-white transition-colors'
-                >
-                  Login
-                </button>
-              </div>
-            )}
-
-            <div className='flex flex-col py-6 border-t mx-auto justify-center items-center border-gray-800'>
-              <h4 className='text-xs uppercase tracking-wide text-gray-500 mb-3'>
-                Connect
-              </h4>
-              <div className='flex items-center space-x-4 mb-4'>
-                <a
-                  href='https://www.instagram.com/mictale.in'
-                  className='text-gray-400 hover:text-white transition'
-                >
-                  <Instagram size={18} />
-                </a>
-                <a
-                  href='mailto:contact@mictale.in'
-                  className='text-gray-400 hover:text-white transition'
-                >
-                  <Mail size={18} />
-                </a>
-                <a
-                  href='tel:+919667645676'
-                  className='text-gray-400 hover:text-white transition'
-                >
-                  <Phone size={18} />
-                </a>
-              </div>
-              <div className='flex items-center space-x-2 text-gray-400 text-xs'>
-                <MapPin size={14} />
-                <span>Delhi, India</span>
-              </div>
+            <div className="flex gap-2">
+               <button onClick={pushToProfile} className="px-4 py-2 rounded-xl bg-[#0f172a] text-white text-[9px] font-bold uppercase tracking-widest shadow-lg active:scale-95 transition-all">Profile</button>
+               <button onClick={handleLogout} className="px-3 py-2 rounded-xl border border-red-200 bg-red-50 text-red-600 text-[9px] font-bold uppercase hover:bg-red-100 transition-all">Logout</button>
             </div>
           </div>
+        ) : (
+          <button onClick={handleLogin} className="w-full py-4 rounded-2xl bg-[#0f172a] text-white text-[11px] font-black uppercase tracking-[0.4em] shadow-[0_15px_30px_rgba(15,23,42,0.4)] active:scale-95 transition-all">
+            Sign In
+          </button>
+        )}
+      </div>
+      <div className='flex items-center justify-between py-5 border-t border-black/10'>
+        <div className='flex items-center space-x-6'>
+           <a href="https://www.instagram.com/mictale.in" className="text-[#64748b] hover:text-[#0f172a] transition-colors"><Instagram size={16} /></a>
+           <a href="mailto:contact@mictale.in" className="text-[#64748b] hover:text-[#0f172a] transition-colors"><Mail size={16} /></a>
+        </div>
+        <div className='flex items-center space-x-2 text-black text-[9px] uppercase tracking-[0.3em] font-black'>
+          <MapPin size={12} className="text-black" />
+          <span>Sector 64, Noida</span>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
       <AnimatePresence>
         {showLogoutConfirmation && (

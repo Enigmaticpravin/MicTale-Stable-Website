@@ -33,10 +33,9 @@ const YouTubeChannelComponent = () => {
   const [selectedVideo, setSelectedVideo] = useState(null)
 
   return (
-    <div className="bg-[#000b1a] text-slate-300 font-sans selection:bg-[#bf953f]/30">
-      <div className={`h-1 w-full ${GoldGradient} rounded-4xl opacity-80`} />
+    <div className="bg-slate-950 text-slate-300 font-sans selection:bg-[#bf953f]/30">
 
-      <main className="max-w-6xl mx-auto px-6 py-16">
+      <main className="max-w-6xl mx-auto px-6 py-6">
         <header className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-16 gap-6">
           <div className='flex w-full flex-col justify-center items-center'>
             <div className="flex items-center justify-center gap-2">
