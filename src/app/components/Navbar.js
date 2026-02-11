@@ -685,7 +685,6 @@ const Navbar = () => {
     mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
   }`}
 >
-  {/* DEEP SAPPHIRE OVERLAY */}
   <div
     className={`fixed inset-0 bg-[#02040a]/90 backdrop-blur-md transition-opacity duration-500 ${
       mobileMenuOpen ? 'opacity-100' : 'opacity-0'
@@ -693,7 +692,6 @@ const Navbar = () => {
     onClick={closeMobileMenu}
   />
 
-  {/* COMPACT REALISTIC SILVER PANEL */}
   <div
     className={`fixed top-4 left-4 right-4 max-h-[85vh] overflow-hidden 
     bg-[linear-gradient(145deg,#f8fafc_0%,#cbd5e1_30%,#e2e8f0_50%,#94a3b8_80%,#f1f5f9_100%)] 
@@ -702,10 +700,8 @@ const Navbar = () => {
       mobileMenuOpen ? 'translate-y-0 scale-100' : '-translate-y-4 scale-98'
     }`}
   >
-    {/* METALLIC BRUSHED OVERLAY */}
     <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')]" />
 
-    {/* TOP SHINE FILAMENT */}
     <div className="absolute top-0 left-0 w-full h-[1.5px] bg-white/40 overflow-hidden">
        <motion.div 
          animate={{ x: ['-100%', '100%'] }}

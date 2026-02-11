@@ -17,7 +17,6 @@ const MicTaleLuxuryAnnouncement = () => {
 <div
   className="relative z-10 bg-[linear-gradient(135deg,#f8fafc_0%,#cbd5e1_25%,#f1f5f9_50%,#94a3b8_75%,#e2e8f0_100%)] rounded-b-3xl cursor-pointer shadow-[0_20px_50px_rgba(0,0,0,0.2)]"
   onClick={() => {
-    // Only toggle if screen width is greater than 768px
     if (window.innerWidth >= 768) {
       setIsExpanded(!isExpanded);
     }
@@ -56,7 +55,7 @@ const MicTaleLuxuryAnnouncement = () => {
 
           <div className='md:mt-0 flex flex-col items-center'>
             <p className='text-slate-500 text-[10px] md:text-sm'>
-              India's Most Creative Studio
+              India&apos;s Most Creative Studio
             </p>
             <div className='w-30 md:w-40 bg-slate-700 h-[0.7px]'></div>
             <div className='tracking-widest text-sm md:text-lg uppercase text-black'>
