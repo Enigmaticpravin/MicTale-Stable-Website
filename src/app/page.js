@@ -2,7 +2,6 @@
 import Image from 'next/image'
 import originallogo from '@/../public/images/MicTale Originals.png'
 import BookPoster from '@/app/images/bookcover.webp'
-
 import SoloShow from './components/SoloShow'
 import StoryboardGallery from './components/StoryboardGallery'
 import TopPerformers from './components/TopPerformers'
