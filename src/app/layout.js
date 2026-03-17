@@ -2,57 +2,6 @@ import "./globals.css"
 import ClientRoot from "./components/ClientRoot"
 import { ToastProvider } from "./components/ui/Toast"
 
-import {
-  Satisfy,
-  Dancing_Script,
-  Playfair_Display,
-  EB_Garamond,
-  Inter,
-  Libre_Baskerville,
-} from "next/font/google"
-
-const amsterdamFont = Satisfy({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-amsterdam",
-  display: "swap",
-})
-
-const veronicaFont = Dancing_Script({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-veronica",
-  display: "swap",
-})
-
-const rozhaFont = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-rozha",
-  display: "swap",
-})
-
-const garamondFont = EB_Garamond({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-garamond",
-  display: "swap",
-})
-
-const helveticaFont = Inter({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-helvetica",
-  display: "swap",
-})
-
-const tiroFont = Libre_Baskerville({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-tiro",
-  display: "swap",
-})
-
 export const metadata = {
   metadataBase: new URL("https://mictale.in"),
 
@@ -131,14 +80,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`
-        ${amsterdamFont.variable}
-        ${veronicaFont.variable}
-        ${rozhaFont.variable}
-        ${garamondFont.variable}
-        ${helveticaFont.variable}
-        ${tiroFont.variable}
-      `}
+      data-scroll-behavior="smooth"
     >
       <body {...(ADD_GPTW ? { "data-gptw": "" } : {})}>
         <ClientRoot>

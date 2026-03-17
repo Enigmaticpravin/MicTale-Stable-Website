@@ -1,37 +1,60 @@
-import { adminDb } from "@/app/lib/firebaseAdmin";
-import { toPlain } from "@/app/lib/firestorePlain";
+import { createRouteSupabase } from '@/app/lib/supabase/server-route'
 
-const poemsCol = adminDb.collection("poems");
+function toPlain(row) {
+  return row ? JSON.parse(JSON.stringify(row)) : null
+}
 
 export async function getPoemBySlug(slug) {
-  const docRef = poemsCol.doc(slug);
-  const one = await docRef.get();
-  if (one.exists) return toPlain({ id: one.id, ...one.data() });
+  const supabase = await createRouteSupabase()
 
-  const snap = await poemsCol.where("slug", "==", slug).limit(1).get();
-  if (snap.empty) return null;
-
-  const d = snap.docs[0];
-  return toPlain({ id: d.id, ...d.data() });
+  let { data } = await supabase
+    .from('poems')
+    .select('*')
+    .eq('slug', slug)
+    .single()
+  return toPlain(data)
 }
 
 export async function listPoemSlugs(max = 5000) {
-  const snap = await poemsCol.orderBy("createdAt", "desc").limit(max).get();
+  const supabase = await createRouteSupabase()
 
-  return snap.docs.map((d) => {
-    const data = d.data();
-    return {
-      slug: String(data.slug || d.id),
-      updatedAt: toPlain(data.createdAt) || new Date().toISOString(),
-    };
-  });
+  const { data } = await supabase
+    .from('poems')
+    .select('slug, created_at')
+    .order('created_at', { ascending: false })
+    .limit(max)
+
+  if (!data) return []
+
+  return data.map(d => ({
+    slug: String(d.slug),
+    updatedAt: d.created_at || new Date().toISOString()
+  }))
 }
 
 export async function upsertPoem(poem) {
-  const ref = poemsCol.doc(poem.slug);
+  const supabase = await createRouteSupabase()
 
-  await ref.set({ ...poem }, { merge: true });
+  const { data, error } = await supabase
+    .from('poems')
+    .upsert({
+      slug: poem.slug,
+      title: poem.title,
+      author: poem.author,
+      category: poem.category,
+      language: poem.language,
+      lines: poem.lines,
+      excerpt: poem.excerpt,
+      created_at: poem.createdAt,
+      published_at: poem.publishedAt
+    })
+    .select()
+    .single()
 
-  const fresh = await ref.get();
-  return toPlain({ id: fresh.id, ...fresh.data() });
+  if (error) {
+    console.error("Supabase error:", error)
+    throw new Error(error.message)
+  }
+
+  return toPlain(data)
 }

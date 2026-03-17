@@ -1,35 +1,31 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { getFirebaseAuth } from '@/app/lib/firebase-auth';
+import { supabaseAuth } from '@/app/lib/supabase/auth';
 import PoemSubmissionModal from './PoemSubmissionModal';
 
 export default function MetallicFeatureCard() {
   const router = useRouter();
   const pathname = usePathname();
+  const [checking, setChecking] = useState(false);
   const [open, setOpen] = useState(false);
-  const [authInstance, setAuthInstance] = useState(null);
 
-  useEffect(() => {
-    async function init() {
-      const { auth } = await getFirebaseAuth();
-      setAuthInstance(auth);
-    }
-    init();
-  }, []);
+    const handleSubmit = async () => {
+    setChecking(true)
 
-  const handleSubmit = async () => {
-    if (!authInstance) return;
+    const {
+      data: { session }
+    } = await supabaseAuth.auth.getSession()
 
-    const user = authInstance.currentUser;
-
-    if (!user) {
-      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+    if (!session) {
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`)
     } else {
-      setOpen(true);
+      setOpen(true)
     }
-  };
+
+    setChecking(false)
+  }
 
   return (
     <>

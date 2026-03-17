@@ -1,218 +1,120 @@
-'use client';
+'use client'
 
-import Image from 'next/image';
-import mobilelogo from '@/../public/images/logo.png';
-import { useState } from 'react';
-import { getFirebaseAuth } from '@/app/lib/firebase-auth';   // <-- FIXED
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  updateProfile,
-  sendPasswordResetEmail
-} from 'firebase/auth';
-import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image'
+import mobilelogo from '@/../public/images/logo.png'
+import { useState } from 'react'
+import { supabaseAuth } from '@/app/lib/supabase/auth'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function LoginClient() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [resetEmail, setResetEmail] = useState('');
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [resetEmail, setResetEmail] = useState('')
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectPath = searchParams.get('redirect') || '/';
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectPath = searchParams.get('redirect') || '/'
 
-  const [isLogin, setIsLogin] = useState(true);
-  const [isFlipping, setIsFlipping] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [googleloading, setGoogleLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [success, setSuccess] = useState('');
-
-  const [authInstance, setAuthInstance] = useState(null);
-
-  // Load Firebase auth dynamically ONCE
-  async function loadAuth() {
-    if (!authInstance) {
-      const { auth } = await getFirebaseAuth();
-      setAuthInstance(auth);
-      return auth;
-    }
-    return authInstance;
-  }
+  const [isLogin, setIsLogin] = useState(true)
+  const [isFlipping, setIsFlipping] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [googleloading, setGoogleLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [success, setSuccess] = useState('')
 
   const switchCard = () => {
-    setIsFlipping(true);
+    setIsFlipping(true)
     setTimeout(() => {
-      setIsLogin(!isLogin);
-      setError('');
-      setTimeout(() => setIsFlipping(false), 300);
-    }, 300);
-  };
+      setIsLogin(!isLogin)
+      setError('')
+      setTimeout(() => setIsFlipping(false), 300)
+    }, 300)
+  }
 
-  const createSession = async (idToken, userData = {}) => {
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken, userData }),
-      });
+  const handleSignIn = async e => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
-      if (!response.ok) throw new Error('Failed to create session');
+    const { error } = await supabaseAuth.auth.signInWithPassword({
+      email,
+      password
+    })
 
-      return await response.json();
-    } catch (error) {
-      console.error('Session creation error:', error);
-      throw error;
-    }
-  };
+    if (error) setError(error.message)
+    else router.push(redirectPath)
 
-  const handleSignIn = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+    setLoading(false)
+  }
 
-    try {
-      const auth = await loadAuth();
+  const handleSignUp = async e => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const idToken = await userCredential.user.getIdToken();
-      
-      await createSession(idToken, {
-        name: userCredential.user.displayName || '',
-        email: userCredential.user.email,
-        profilePicture: userCredential.user.photoURL || '',
-        isNewUser: false,
-        authProvider: 'email'
-      });
+    const { error } = await  supabaseAuth.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: name }
+      }
+    })
 
-      router.push(redirectPath);
-    } catch (err) {
-      console.error('Error signing in', err);
-      setError(getAuthErrorMessage(err.code));
-    } finally {
-      setLoading(false);
-    }
-  };
+    if (error) setError(error.message)
+    else router.push(redirectPath)
 
-  const handleSignUp = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    if (!name.trim()) {
-      setError('Please enter your name');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const auth = await loadAuth();
-
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, { displayName: name });
-
-      const idToken = await userCredential.user.getIdToken(true);
-
-      await createSession(idToken, {
-        name,
-        email: userCredential.user.email,
-        profilePicture: userCredential.user.photoURL || '',
-        isNewUser: true,
-        authProvider: 'email',
-        preferences: { notifications: true, theme: 'dark' }
-      });
-
-      router.push(redirectPath);
-    } catch (err) {
-      console.error('Error signing up', err);
-      setError(getAuthErrorMessage(err.code));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const toggleForgotPassword = () => {
-    setShowForgotPassword(!showForgotPassword);
-    setError('');
-    setSuccess('');
-    setResetEmail(email);
-  };
-
-  const handlePasswordReset = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    setLoading(true);
-
-    try {
-      const auth = await loadAuth();
-
-      await sendPasswordResetEmail(auth, resetEmail);
-      setSuccess('Password reset email sent! Check your inbox.');
-      setTimeout(() => setShowForgotPassword(false), 5000);
-    } catch (err) {
-      console.error('Error sending reset email', err);
-      setError(getAuthErrorMessage(err.code));
-    } finally {
-      setLoading(false);
-    }
-  };
+    setLoading(false)
+  }
 
   const handleGoogleSignIn = async () => {
-    setError('');
-    setGoogleLoading(true);
+    setGoogleLoading(true)
+    setError('')
 
-    try {
-      const auth = await loadAuth();
-      const provider = new GoogleAuthProvider();
-
-      const userCredential = await signInWithPopup(auth, provider);
-      const isNewUser = userCredential._tokenResponse?.isNewUser || false;
-      const idToken = await userCredential.user.getIdToken();
-
-      await createSession(idToken, {
-        name: userCredential.user.displayName || '',
-        email: userCredential.user.email,
-        profilePicture: userCredential.user.photoURL || '',
-        isNewUser,
-        authProvider: 'google',
-        preferences: isNewUser ? { notifications: true, theme: 'dark' } : {},
-      });
-
-      router.push(redirectPath);
-    } catch (err) {
-      console.error('Error with Google sign in', err);
-      setError(getAuthErrorMessage(err.code));
-    } finally {
-      setGoogleLoading(false);
+    const { error } = await supabaseAuth.auth.signInWithOAuth({
+  provider: 'google',
+  options: {
+    redirectTo: `${window.location.origin}/auth/callback`,
+    queryParams: {
+      access_type: 'offline',
+      prompt: 'consent'
     }
-  };
+  }
+})
 
-  const getAuthErrorMessage = (code) => {
-    switch (code) {
-      case 'auth/user-not-found':
-        return 'No user found with this email';
-      case 'auth/wrong-password':
-        return 'Incorrect password';
-      case 'auth/email-already-in-use':
-        return 'This email is already registered';
-      case 'auth/weak-password':
-        return 'Password should be at least 6 characters';
-      default:
-        return 'Something went wrong';
-    }
-  };
 
-  const poppinsStyle = {
-    fontFamily: 'Poppins, sans-serif',
-  };
+
+    if (error) setError(error.message)
+
+    setGoogleLoading(false)
+  }
+
+  const toggleForgotPassword = () => {
+    setShowForgotPassword(!showForgotPassword)
+    setResetEmail(email)
+    setError('')
+    setSuccess('')
+  }
+
+  const handlePasswordReset = async e => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setSuccess('')
+
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: `${window.location.origin}/reset-password`
+    })
+
+    if (error) setError(error.message)
+    else setSuccess('Password reset email sent.')
+
+    setLoading(false)
+  }
+
+  const poppinsStyle = { fontFamily: 'Poppins, sans-serif' }
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-black relative overflow-hidden">

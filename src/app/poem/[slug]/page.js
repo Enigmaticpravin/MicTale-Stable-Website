@@ -82,7 +82,8 @@ function buildShersFromContent(content = "") {
 }
 
 export default async function PoemPage({ params }) {
-  const { slug } = params;
+  const { slug } = await params;
+
   const poem = await getPoemBySlug(slug);
   if (!poem) notFound();
 

@@ -1,233 +1,236 @@
-import { adminDb } from './firebaseAdmin'; 
-import { toPlain } from './firestorePlain';
+import { supabasePublic } from "@/app/lib/supabase/public"
+
+function toPlain(v) {
+  return v ? JSON.parse(JSON.stringify(v)) : null
+}
+
 
 function toMillis(v) {
-  if (!v) return 0;
-  if (typeof v?.toDate === 'function') {
-    return v.toDate().getTime();
-  }
-  const ms = Date.parse(v);
-  return Number.isFinite(ms) ? ms : 0;
+  if (!v) return 0
+  const ms = Date.parse(v)
+  return Number.isFinite(ms) ? ms : 0
 }
 
 function extractMatlaFromDoc(data) {
-  let lines = [];
-  if (Array.isArray(data.lines)) {
-    lines = data.lines;
-  } else if (typeof data.lines === 'string') {
-    lines = data.lines.split('\n');
-  } else if (typeof data.content === 'string') {
-    lines = data.content.split('। ');
-  }
-  const first = (lines[0] || '').trim();
-  const second = (lines[1] || '').trim();
-  if (!first || !second) return null;
-  return [first, second];
+  let lines = []
+
+  if (Array.isArray(data.lines)) lines = data.lines
+  else if (typeof data.lines === 'string') lines = data.lines.split('\n')
+  else if (typeof data.content === 'string') lines = data.content.split('। ')
+
+  const first = (lines[0] || '').trim()
+  const second = (lines[1] || '').trim()
+
+  if (!first || !second) return null
+
+  return [first, second]
 }
 
 export async function getLatestPoems(limit = 10) {
-  const poemsSnap = await adminDb.collection('poems').orderBy('createdAt', 'desc').limit(limit).get();
-  return poemsSnap.docs.map(d => toPlain({ id: d.id, ...d.data() }));
+  const supabase = supabasePublic
+
+  const { data } = await supabase
+    .from('poems')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+
+  return (data || []).map(toPlain)
 }
 
-
 export async function getLatestGhazals(limit = 4) {
-  const windowLimit = 20; 
-  const ghazalsSnap = await adminDb.collection('poems').orderBy('createdAt', 'desc').limit(windowLimit).get();
+  const supabase = supabasePublic
 
-  const ghazalCandidates = ghazalsSnap.docs.map(d => ({ id: d.id, data: d.data() }));
+  const { data } = await supabase
+    .from('poems')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(20)
 
-  const ghazalsProcessed = ghazalCandidates.reduce((acc, doc) => {
-    const data = doc.data || {};
-    if (String(data.category || '').toLowerCase() !== 'ghazal') return acc;
-    
-    const matla = extractMatlaFromDoc(data);
-    if (!matla) return acc;
+  const ghazals = (data || []).reduce((acc, d) => {
+    if (String(d.category || '').toLowerCase() !== 'ghazal') return acc
 
-    const createdAtMs = toMillis(data.createdAt) || toMillis(data.updatedAt);
+    const matla = extractMatlaFromDoc(d)
+    if (!matla) return acc
+
+    const createdAtMs = toMillis(d.created_at)
+
     acc.push({
-      id: doc.id,
-      slug: data.slug || doc.id,
-      poet: data.author || data.poet || 'Unknown',
-      createdAt: data.createdAt?.toDate?.().toISOString() || String(data.createdAt || ''),
+      id: d.id,
+      slug: d.slug,
+      poet: d.author || 'Unknown',
+      createdAt: d.created_at,
       createdAtMs,
       matla
-    });
-    return acc;
-  }, []);
+    })
 
-  return ghazalsProcessed
+    return acc
+  }, [])
+
+  return ghazals
     .sort((a, b) => b.createdAtMs - a.createdAtMs)
-    .slice(0, limit);
+    .slice(0, limit)
+}
+
+function safeDate(d) {
+  try {
+    return d ? new Date(d) : null
+  } catch {
+    return null
+  }
+}
+
+function extractText(node) {
+  if (!node) return ""
+
+  if (node.type === "text") return node.text || ""
+
+  if (Array.isArray(node.content)) {
+    return node.content.map(extractText).join(" ")
+  }
+
+  return ""
 }
 
 export async function getLatestBlogs(limit = 7) {
-  const windowLimit = 25;
-  const colRef = adminDb.collection('blogs');
-  const snap = await colRef.orderBy('createdAt', 'desc').limit(windowLimit).get();
+  const supabase = supabasePublic
 
-  const items = [];
-  snap.forEach(doc => {
-    const d = doc.data();
-    if (!d?.published) return;
+  const { data, error } = await supabase
+    .from("blogs")
+    .select("*")
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(limit)
 
-    items.push({
-      id: doc.id,
-      title: d?.title || 'Untitled',
-      content: d?.content || '',
-      excerpt: d?.excerpt || (d?.content ? d.content.substring(0, 180) + '...' : ''),
-      coverImage: d?.coverImage || null,
-      slug: d?.slug || doc.id,
-      author: d?.author || 'MicTale',
-      createdAt: d?.createdAt?.toDate?.().toISOString() || String(d.createdAt || new Date().toISOString()),
-      tags: d?.tags || []
-    });
-  });
+  if (error) throw error
 
-  return items.slice(0, limit);
-}
+  return (data || []).map(d => {
+    const plainText = extractText(d.content)
 
-function safeDate(dateField) {
-  return dateField?.toDate?.().toISOString?.() || new Date().toISOString();
+    return {
+      id: d.id,
+      title: d.title || "Untitled",
+      content: plainText,
+      excerpt: d.excerpt || plainText.substring(0, 180) + "...",
+      featured_image: d.featured_image || null,
+      slug: d.slug,
+      author: d.author || "MicTale",
+      created_at: safeDate(d.published_at || d.created_at),
+      tags: d.tags || []
+    }
+  })
 }
 
 export async function getBlogBySlug(slug) {
-  const docSnap = await adminDb.collection('blogs').doc(slug).get();
+  const supabase = supabasePublic
 
-  if (!docSnap.exists) {
-    return null;
-  }
+  const { data, error } = await supabase
+    .from("blogs")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .single()
 
-  const blogData = docSnap.data();
-
-  if (blogData.published === false) {
-    return null;
-  }
+  if (error || !data) return null
 
   return {
-    id: docSnap.id,
-    ...blogData,
-    createdAt: safeDate(blogData.createdAt),
-    updatedAt: safeDate(blogData.updatedAt || blogData.createdAt),
-  };
+    ...data,
+    createdAt: safeDate(data.published_at || data.created_at),
+    updatedAt: safeDate(data.updated_at || data.created_at)
+  }
 }
 
 export async function getSimilarBlogs(currentBlog, currentBlogId) {
-  if (!currentBlog) return [];
-  const similarBlogs = [];
+  if (!currentBlog) return []
 
-  try {
-    const blogsRef = adminDb.collection('blogs');
-    const existingIds = new Set([currentBlogId]);
+  const supabase = supabasePublic
+  const collected = new Map()
 
-    if (currentBlog.tags?.length > 0) {
-      const tagQuerySnap = await blogsRef
-        .where('tags', 'array-contains-any', currentBlog.tags.slice(0, 2))
-        .orderBy('createdAt', 'desc')
-        .limit(8)
-        .get();
+  if (currentBlog.tags?.length) {
+    const { data } = await supabase
+      .from("blogs")
+      .select("*")
+      .overlaps("tags", currentBlog.tags.slice(0, 2))
+      .eq("status", "published")
+      .limit(8)
 
-      tagQuerySnap.forEach(doc => {
-        if (!existingIds.has(doc.id) && doc.data().published !== false) {
-          const blogData = doc.data();
-          similarBlogs.push({
-            id: doc.id,
-            slug: doc.id,
-            ...blogData,
-            createdAt: safeDate(blogData.createdAt),
-          });
-          existingIds.add(doc.id);
-        }
-      });
-    }
-    if (similarBlogs.length < 4) {
-      const recentSnap = await blogsRef.orderBy('createdAt', 'desc').limit(12).get();
-      recentSnap.forEach(doc => {
-        if (similarBlogs.length < 4 && !existingIds.has(doc.id) && doc.data().published !== false) {
-          const blogData = doc.data();
-          similarBlogs.push({
-            id: doc.id,
-            slug: doc.id,
-            ...blogData,
-            createdAt: safeDate(blogData.createdAt),
-          });
-          existingIds.add(doc.id);
-        }
-      });
-    }
-
-    return similarBlogs.slice(0, 4);
-  } catch (err) {
-    console.error('Error fetching similar blogs:', err);
-    return [];
+    data?.forEach(d => {
+      if (!collected.has(d.id) && d.id !== currentBlogId)
+        collected.set(d.id, d)
+    })
   }
+
+  if (collected.size < 4) {
+    const { data } = await supabase
+      .from("blogs")
+      .select("*")
+      .eq("status", "published")
+      .order("published_at", { ascending: false })
+      .limit(12)
+
+    data?.forEach(d => {
+      if (collected.size < 4 && !collected.has(d.id) && d.id !== currentBlogId)
+        collected.set(d.id, d)
+    })
+  }
+
+  return Array.from(collected.values()).slice(0, 4)
 }
+
 export async function getAllPublishedBlogSlugs() {
-    try {
-        const snapshot = await adminDb.collection('blogs').where('published', '!=', false).get();
-        return snapshot.docs.map(doc => ({ slug: doc.id }));
-    } catch {
-        return [];
-    }
+  const supabase = supabasePublic
+
+  const { data } = await supabase
+    .from("blogs")
+    .select("slug")
+    .eq("status", "published")
+
+  return (data || []).map(d => ({ slug: d.slug }))
 }
 
 export async function fetchSimilarPoems({ author, category, excludeSlug, limit = 4 }) {
-  const poemsRef = adminDb.collection("poems");
-  const collected = new Map();
+  const supabase = supabasePublic
+  const collected = new Map()
 
-  async function runAndCollect(q) {
-    try {
-      const snap = await q.get();
-      for (const doc of snap.docs) {
-        const data = doc.data();
-        const slug = data.slug || doc.id;
-        if (!slug || slug === excludeSlug) continue;
-        if (collected.has(slug)) continue;
-
-        const plain = toPlain({
-          id: doc.id,
-          slug,
-          title: data.title,
-          author: data.author || data.poet,
-          excerpt: data.excerpt,
-          createdAt: data.createdAt ?? null,
-        });
-        collected.set(slug, plain);
-        if (collected.size >= limit) break;
-      }
-    } catch (e) {
-      console.error("Error running Firestore query", e);
-    }
+  async function run(query) {
+    const { data } = await query
+    data?.forEach(d => {
+      if (d.slug === excludeSlug) return
+      if (!collected.has(d.slug)) collected.set(d.slug, d)
+    })
   }
 
   if (author) {
-    const qAuthor = poemsRef
-      .where("author", "==", author)
-      .orderBy("createdAt", "desc")
-      .limit(limit);
-    await runAndCollect(qAuthor);
+    await run(
+      supabase.from('poems')
+        .select('*')
+        .eq('author', author)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+    )
   }
 
   if (collected.size < limit && category) {
-    const qCat = poemsRef
-      .where("category", "==", category)
-      .orderBy("createdAt", "desc")
-      .limit(limit);
-    await runAndCollect(qCat);
+    await run(
+      supabase.from('poems')
+        .select('*')
+        .eq('category', category)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+    )
   }
 
   if (collected.size < limit) {
-    const qRecent = poemsRef.orderBy("createdAt", "desc").limit(limit * 2);
-    await runAndCollect(qRecent);
+    await run(
+      supabase.from('poems')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(limit * 2)
+    )
   }
 
-  const arr = Array.from(collected.values())
-    .sort((a, b) => {
-      const aTs = a.createdAt ? Date.parse(a.createdAt) : 0;
-      const bTs = b.createdAt ? Date.parse(b.createdAt) : 0;
-      return bTs - aTs;
-    })
-    .slice(0, limit);
-
-  return arr;
+  return Array.from(collected.values())
+    .sort((a, b) => toMillis(b.created_at) - toMillis(a.created_at))
+    .slice(0, limit)
 }

@@ -31,9 +31,9 @@ const TopPerformers = () => {
     <section className="py-12 px-4 flex items-center justify-center">
       <div className="max-w-6xl w-full">
         <div className="text-center mb-10">
-          <p className="uppercase text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-yellow-400 tracking-wide font-poppins">
-            Meet our
-          </p>
+         <p className="uppercase bg-clip-text text-transparent bg-gradient-to-t text-[12px] md:text-[18px] font-bold from-yellow-700 via-yellow-500 to-yellow-900">
+              meet our
+            </p>
           <h2 className="text-2xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-slate-200 to-white elsie-regular">
             Top Performers
           </h2>

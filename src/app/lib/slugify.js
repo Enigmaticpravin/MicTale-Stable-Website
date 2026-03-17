@@ -1,14 +1,15 @@
-// lib/slugify.js
-export function toSlug(str) {
-  return String(str)
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
+export function slugify(text) {
+  return text
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
 }
 
 export function poemSlug({ title, author, category }) {
-  // e.g. main-tera-hoon-tahzeeb-hafi-ghazal
-  return [title, author, category].map(toSlug).join('-')
+  return [title, author, category].map(slugify).join("-")
 }

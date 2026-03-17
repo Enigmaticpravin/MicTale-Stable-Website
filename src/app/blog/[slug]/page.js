@@ -2,6 +2,17 @@ import { notFound } from 'next/navigation'
 import BlogDisplayPage from '@/app/components/BlogDisplayPage'
 import { getBlogBySlug, getSimilarBlogs, getAllPublishedBlogSlugs } from '@/app/lib/database';
 
+function extractText(node) {
+  if (!node) return ""
+
+  if (node.type === "text") return node.text || ""
+
+  if (Array.isArray(node.content)) {
+    return node.content.map(extractText).join(" ")
+  }
+
+  return ""
+}
 
 function makeAbsoluteUrl(path) {
   if (!path) return null
@@ -22,9 +33,12 @@ export async function generateMetadata({ params }) {
   const blog = await getBlogBySlug(params.slug);
     const siteUrl = (process.env.SITE_URL || 'https://mictale.in').replace(/\/$/, '')
     const pageUrl = `${siteUrl}/blog/${slug}`
-    const publishedTime = safeDate(blog.createdAt)
-    const modifiedTime = safeDate(blog.updatedAt || blog.createdAt)
-    const description = blog.content ? blog.content.substring(0, 160).trim() + '...' : ''
+    const publishedTime = safeDate(blog.created_at)
+    const modifiedTime = safeDate(blog.updated_at || blog.created_at)
+const plainText = extractText(blog.content)
+const description = plainText
+  ? plainText.substring(0, 160).trim() + "..."
+  : ""
     const cover = makeAbsoluteUrl(blog.coverImage)
 
     return {
@@ -81,6 +95,7 @@ export default async function BlogPage({ params }) {
 
   try {
     const blog = await getBlogBySlug(params.slug);
+    const plainText = extractText(blog.content)
 
   const similarBlogs = await getSimilarBlogs(blog, blog.id);
 
@@ -107,7 +122,7 @@ export default async function BlogPage({ params }) {
               mainEntityOfPage: { "@type": "WebPage", "@id": `https://mictale.in/blog/${slug}` },
               keywords: blog.tags ? blog.tags.join(', ') : '',
               articleSection: "Blog",
-              wordCount: blog.content ? blog.content.split(' ').length : 0,
+       wordCount: plainText ? plainText.split(/\s+/).length : 0,
               url: `https://mictale.in/blog/${slug}`
             })
           }}

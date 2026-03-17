@@ -4,49 +4,49 @@ const StoryboardGallery = () => {
   const images = [
     {
       id: 1,
-      src: '/images/poetry.webp',
+      src: '/images/5.jpg',
       title: 'Poetry',
       description: 'A tranquil moment of reflection'
     },
     {
       id: 2,
-      src: '/images/storytelling.webp',
+      src: '/images/4.jpg',
       title: 'Storytelling',
       description: 'Capturing the essence of movement'
     },
     {
       id: 3,
-      src: '/images/standup.webp',
-      title: 'Stand-up Comedy',
+      src: '/images/2.jpg',
+      title: 'Ghazal',
       description: 'The interplay of light and shadow'
     },
     {
       id: 4,
-      src: '/images/experience.webp',
-      title: 'Experience',
+      src: '/images/3.jpg',
+      title: 'Soul-stirring',
       description: 'The interplay of light and shadow'
     },
     {
       id: 5,
-      src: '/images/music.webp',
+      src: '/images/1.jpg',
       title: 'Music',
       description: 'The interplay of light and shadow'
     },
     {
       id: 6,
-      src: '/images/ventri.webp',
-      title: 'Ventriloquist',
+      src: '/images/8.jpg',
+      title: 'Experience',
       description: 'The interplay of light and shadow'
     },
     {
       id: 7,
-      src: '/images/video.webp',
+      src: '/images/7.jpg',
       title: 'Video Recording',
       description: 'Exploring subtle emotions'
     },
     {
       id: 8,
-      src: '/images/two.webp',
+      src: '/images/6.jpg',
       title: 'Family',
       description: 'The interplay of light and shadow'
     }
@@ -82,8 +82,8 @@ const StoryboardGallery = () => {
   <Image
     src={image.src}
     alt={image.title}
-    width={300}     // exact display size
-    height={200}    // same aspect ratio as original
+    width={300}   
+    height={200}  
     className="object-cover object-center rounded-b-2xl opacity-100 hover:opacity-80 transition-opacity"
     sizes="(max-width:768px) 50vw, (max-width:1200px) 25vw, 200px"
   />

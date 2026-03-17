@@ -59,7 +59,7 @@ const MicTaleLuxuryAnnouncement = () => {
             </p>
             <div className='w-30 md:w-40 bg-slate-700 h-[0.7px]'></div>
             <div className='tracking-widest text-sm md:text-lg uppercase text-black'>
-          Opening Soon
+          Now Hosting Shows
             </div>
             
           </div>

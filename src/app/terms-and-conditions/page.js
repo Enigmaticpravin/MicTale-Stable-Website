@@ -1,9 +1,9 @@
-
 import React from "react";
 import Footer from "../components/Footer";
+import { Scale, ShieldCheck, Clock, Ban, AlertCircle} from "lucide-react";
 
 export const metadata = {
-  title: "Terms & Conditions — MicTale",
+  title: "Terms & Conditions",
   description:
     "Read MicTale's Terms and Conditions including performance registration, cancellation policy, liability, and contact details. Last updated February 13, 2025.",
   keywords: [
@@ -18,7 +18,7 @@ export const metadata = {
     canonical: "https://www.mictale.in/terms-and-conditions",
   },
   openGraph: {
-    title: "Terms & Conditions — MicTale",
+    title: "Terms & Conditions",
     description:
       "Read MicTale's Terms and Conditions including performance registration, cancellation policy, liability, and contact details. Last updated February 13, 2025.",
     url: "https://www.mictale.in/terms-and-conditions",
@@ -35,7 +35,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Terms & Conditions — MicTale",
+    title: "Terms & Conditions",
     description:
       "Read MicTale's Terms and Conditions including performance registration, cancellation policy, liability, and contact details. Last updated February 13, 2025.",
     images: ["https://www.mictale.in/og/terms-og.png"],
@@ -59,159 +59,149 @@ export default function TermsPage() {
     dateModified: "2025-02-13",
   };
 
-  return (
-    <div className="min-h-screen bg-gray-950">
-      {/* Decorative blurred shapes */}
-      <div className="fixed inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-red-600 rounded-full filter blur-3xl opacity-20"></div>
-        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-blue-700 rounded-full filter blur-3xl opacity-20"></div>
-        <div className="absolute -bottom-40 right-1/3 w-96 h-96 bg-red-200 rounded-full filter blur-3xl opacity-20"></div>
+  const SectionHeader = ({ number, title, icon: Icon }) => (
+    <div className="flex items-center gap-4 mb-10 group">
+      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-50 border border-zinc-200 text-zinc-900 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
+        <Icon size={20} />
       </div>
-
-      {/* JSON-LD structured data for SEO */}
+      <div>
+        <span className="text-[10px] font-bold tracking-[0.2em] text-blue-500 uppercase">Section {number}</span>
+        <h2 className="text-2xl font-bold text-zinc-900 tracking-tight lowercase first-letter:uppercase">{title}</h2>
+      </div>
+    </div>
+  );
+  
+    return (
+     <div className="min-h-screen flex flex-col bg-white text-zinc-800 antialiased selection:bg-indigo-100 selection:text-indigo-900">
+      
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <div className="flex-grow max-w-6xl mx-auto px-6 py-20 lg:py-32 w-full">
+        
+        <header className="mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-zinc-100 pb-12">
+          <div className="max-w-2xl">
+       <h1 className="text-6xl md:text-7xl font-black text-zinc-900 elsie-regular tracking-tighter mb-4">
 
-      <div className="relative">
-        <header
-          className="backdrop-blur-lg bg-gray-900/50 border-b border-gray-700"
-          role="banner"
-        >
-          <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-            <h1 className="text-4xl font-bold text-white">Terms and Conditions</h1>
-            <p className="mt-2 text-gray-400">Last updated: {lastUpdated}</p>
+                Terms <span className="text-zinc-400">&</span> Conditions
+
+              </h1>
+            <p className="text-lg text-zinc-500 font-medium tracking-tight">
+              Please read these terms carefully before participating in the MicTale community.
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-widest mb-1">Last Revised</p>
+            <p className="text-sm font-bold text-zinc-900">{lastUpdated}</p>
           </div>
         </header>
 
-        <main
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10"
-          id="main"
-          role="main"
-        >
-          <div className="backdrop-blur-lg bg-gray-900/50 rounded-2xl border border-gray-700 shadow-2xl">
-            <section className="p-8 border-b border-gray-700">
-              <h2 className="text-2xl font-semibold text-white mb-4">Welcome to MicTale</h2>
-              <p className="text-gray-300 leading-relaxed">
-                By accessing or using MicTale&apos;s platform, you agree to be bound by these Terms and
-                Conditions. Please read these terms carefully before participating in any open mic
-                events or using our services.
-              </p>
-            </section>
-            <section className="p-8 border-b border-gray-700">
-              <h2 className="text-2xl font-semibold text-white mb-6">Performance Registration</h2>
-              <div className="backdrop-blur-md bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-                <ul className="space-y-4 text-gray-300">
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-2"></div>
-                    <p>Performers must be at least 18 years old or accompanied by a legal guardian.</p>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-2"></div>
-                    <p>Registration is only confirmed upon successful payment of the performance fee.</p>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-2"></div>
-                    <p>Performance slots are allocated on a first-come, first-served basis.</p>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-2"></div>
-                    <p>Performers must arrive 30 minutes before their scheduled time slot.</p>
-                  </li>
-                </ul>
+        <main className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+          <aside className="lg:col-span-4">
+            <div className="sticky top-12 p-8 bg-zinc-50 border border-zinc-100 rounded-2xl">
+              <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-6">Quick Navigation</h3>
+              <nav className="space-y-4">
+                {["Introduction", "Performance Registration", "Refund Policy", "Code of Conduct", "Liability"].map((item, i) => (
+                  <a key={i} href={`#section-${i+1}`} className="flex items-center gap-3 text-sm font-bold text-zinc-600 hover:text-indigo-600 transition-colors group">
+                    <span className="text-zinc-300 group-hover:text-indigo-400">0{i+1}</span>
+                    {item}
+                  </a>
+                ))}
+              </nav>
+          
+            </div>
+          </aside>
+
+          <div className="lg:col-span-8 space-y-24">
+            <section id="section-1">
+              <SectionHeader number="01" title="Agreement to Terms" icon={Scale} />
+              <div className="space-y-6 text-zinc-600 leading-relaxed text-lg">
+                <p>
+                  By accessing the MicTale platform, you agree to be bound by these Terms of Service. This is a 
+                  <span className="text-zinc-900 font-bold"> legally binding contract</span> between you and MicTale.
+                </p>
               </div>
             </section>
-            <section className="p-8 border-b border-gray-700">
-              <h2 className="text-2xl font-semibold text-white mb-6">Cancellation Policy</h2>
-              <div className="backdrop-blur-md bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-                <ul className="space-y-4 text-gray-300">
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-3 mt-2"></div>
-                    <p>Cancellations made 48 hours before the event are eligible for a full refund.</p>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-3 mt-2"></div>
-                    <p>Cancellations within 24-48 hours receive a 50% refund.</p>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-3 mt-2"></div>
-                    <p>No refunds for cancellations less than 24 hours before the event.</p>
-                  </li>
-                </ul>
+
+            <section id="section-2">
+              <SectionHeader number="02" title="Performance Registration" icon={ShieldCheck} />
+             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {[
+                  { t: "Verification", d: "Performers must be 18+. Minors must be accompanied by a guardian." },
+                  { t: "Finality", d: "Registration is only valid after the confirmation email is issued." },
+                  { t: "Punctuality", d: "Arrival 30 minutes before the slot is mandatory for technical checks." },
+                  { t: "Ownership", d: "Performance slots are unique to the registrant and non-transferable." }
+                ].map((item, idx) => (
+                  <div key={idx} className="p-6 border border-zinc-100 rounded-xl hover:border-indigo-200 transition-colors">
+                    <h4 className="text-zinc-900 font-bold mb-2">{item.t}</h4>
+                    <p className="text-sm text-zinc-500 leading-relaxed">{item.d}</p>
+                  </div>
+                ))}
               </div>
             </section>
-            <section className="p-8 border-b border-gray-700">
-              <h2 className="text-2xl font-semibold text-white mb-6">Performance Guidelines</h2>
-              <div className="backdrop-blur-md bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-                <ul className="space-y-4 text-gray-300">
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-indigo-500 rounded-full mr-3 mt-2"></div>
-                    <p>Performance duration must not exceed the allocated time slot.</p>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-indigo-500 rounded-full mr-3 mt-2"></div>
-                    <p>Content must be appropriate for a general audience.</p>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-indigo-500 rounded-full mr-3 mt-2"></div>
-                    <p>Technical requirements must be communicated during registration.</p>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-indigo-500 rounded-full mr-3 mt-2"></div>
-                    <p>MicTale reserves the right to stop any performance that violates these guidelines.</p>
-                  </li>
-                </ul>
+
+            <section id="section-3">
+              <SectionHeader number="03" title="Refund Policy" icon={Clock} />
+              <div className="overflow-hidden border border-zinc-200 rounded-xl shadow-sm">
+                <table className="w-full text-left">
+                  <thead className="bg-zinc-50 border-b border-zinc-200">
+                    <tr>
+                      <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">Notice Period</th>
+                      <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">Refund Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-100 text-sm">
+                    <tr>
+                      <td className="px-6 py-5 font-medium text-zinc-900">&gt; 48 Hours</td>
+                      <td className="px-6 py-5 text-blue-500 font-bold italic">Full Refund Approved</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-5 font-medium text-zinc-900">24 – 48 Hours</td>
+                      <td className="px-6 py-5 text-zinc-600 font-bold">50% Partial Refund</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-5 font-medium text-zinc-900">&lt; 24 Hours</td>
+                      <td className="px-6 py-5 text-red-500 font-bold">No Refund Applicable</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </section>
-            <section className="p-8 border-b border-gray-700">
-              <h2 className="text-2xl font-semibold text-white mb-6">Liability</h2>
-              <div className="backdrop-blur-md bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-                <p className="text-gray-300 mb-4">MicTale is not responsible for:</p>
-                <ul className="space-y-4 text-gray-300">
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-2"></div>
-                    <p>Personal belongings or equipment brought to the venue</p>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-2"></div>
-                    <p>Technical issues not related to venue equipment</p>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full mr-3 mt-2"></div>
-                    <p>Any injuries or accidents during the performance</p>
-                  </li>
-                </ul>
+
+            <section id="section-4">
+              <SectionHeader number="04" title="Code of Conduct" icon={Ban} />
+              <div className="bg-red-50 border-l-4 border-red-600 p-8 rounded-r-xl">
+                <p className="text-red-700 font-medium leading-relaxed italic">
+                  "MicTale maintains a zero-tolerance policy for hate speech, harassment, or any form of 
+                  discrimination. We reserve the right to immediately terminate any performance or 
+                  membership that violates our community standards."
+                </p>
               </div>
             </section>
-            <section className="p-8">
-              <div className="backdrop-blur-xl bg-gray-800/30 rounded-xl p-6 border border-gray-700">
-                <h2 className="text-2xl font-semibold text-white mb-4">Questions or Concerns?</h2>
-                <div className="text-gray-300 space-y-2">
-                  <p>Contact MicTale Support:</p>
-                  <p>
-                    Email:{" "}
-                    <a
-                      href="mailto:contact@mictale.com"
-                      className="text-indigo-300 hover:underline"
-                    >
-                      contact@mictale.com
-                    </a>
-                  </p>
-                  <p>
-                    Phone:{" "}
-                    <a href="tel:+919667645676" className="text-indigo-300 hover:underline">
-                      +91 96676 45676
-                    </a>
-                  </p>
-                </div>
-              </div>
+
+            <section id="section-5" className="pb-20">
+              <SectionHeader number="05" title="Liability" icon={AlertCircle} />
+              <p className="text-zinc-500 leading-relaxed">
+               MicTale is not responsible for the loss or damage of personal equipment. Participants 
+                assume all risks associated with live performance and attendance.</p>
             </section>
           </div>
         </main>
 
-       <Footer />
+        <footer className="mt-20 pt-16 border-t border-zinc-100 flex flex-col md:flex-row justify-between items-start gap-8">
+          <div>
+            <h3 className="text-sm font-black uppercase tracking-[0.3em] text-zinc-300 mb-4">Legal Inquiries</h3>
+            <p className="text-3xl font-bold text-zinc-900">contact@mictale.com</p>
+          </div>
+          <div className="text-left md:text-right">
+             <p className="text-xs font-bold text-zinc-400 mb-2 uppercase">Official Support Line</p>
+             <p className="text-xl font-bold text-indigo-600">+91 96676 45676</p>
+          </div>
+        </footer>
       </div>
+
+      <Footer />
     </div>
   );
 }

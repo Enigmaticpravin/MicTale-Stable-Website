@@ -1,9 +1,9 @@
 import TreasuryClient from './TreasuryClient'
-import { getLatestGhazals, getLatestPoems } from '../lib/database'
-import LatestBlogsShowcase from '../components/LatestBlogsShowcase'
+import { getLatestGhazals, getLatestPoems } from '@/app/lib/database'
 import InstagramGrid from '../components/InstagramGrid'
 import MetallicFeatureCard from '../components/SubmitPoetry'
 import Footer from '../components/Footer'
+
 
 export const revalidate = 60
 
@@ -94,6 +94,7 @@ const breadcrumb = {
 
 
 export default async function TreasuryPage() {
+  
   const initialPoems = await getLatestPoems(10);
   const initialGhazals = await getLatestGhazals(4);
   return (
@@ -109,7 +110,6 @@ export default async function TreasuryPage() {
 
       <div className="bg-slate-950">
         <TreasuryClient initialPoems={initialPoems} initialGhazals={initialGhazals} />
-        <LatestBlogsShowcase limit={7} />
         <div className="bg-gradient-to-b from-transparent to-slate-900 h-20"></div>
         <InstagramGrid />
         <div className="bg-gradient-to-b from-slate-900 to-transparent h-10"></div>

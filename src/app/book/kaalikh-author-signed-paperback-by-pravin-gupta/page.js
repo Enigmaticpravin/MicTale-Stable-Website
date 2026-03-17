@@ -1,6 +1,6 @@
-// app/book/kaalikh-author-signed-paperback/page.jsx
 import Script from "next/script";
 import BookClient from "@/app/book/BookClient";
+import crypto from "crypto"
 
 export const dynamic = "force-static";
 
@@ -39,6 +39,7 @@ export const metadata = {
 };
 
 const book = {
+    id: crypto.randomUUID(),
   title: "Kaalikh (Author-signed, Revised Edition)",
   author: "Pravin Gupta",
   isbn: "978-9334145878",

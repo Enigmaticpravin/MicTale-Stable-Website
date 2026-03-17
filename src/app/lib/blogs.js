@@ -1,16 +1,16 @@
-// app/lib/blogs.js
-import { collection, getDocs } from "firebase/firestore"
-import { db } from "./firebase-db"
+import { createServerSupabase } from '@/app/lib/supabase/server-route'
 
 export async function listBlogSlugs() {
-  const blogsCol = collection(db, "blogs")
-  const snapshot = await getDocs(blogsCol)
+  const supabase = createServerSupabase()
 
-  return snapshot.docs.map(doc => {
-    const data = doc.data()
-    return {
-      slug: data.slug || doc.id,
-      updatedAt: data.updatedAt || null
-    }
-  })
+  const { data } = await supabase
+    .from('blogs')
+    .select('slug, updated_at')
+
+  if (!data) return []
+
+  return data.map(d => ({
+    slug: d.slug,
+    updatedAt: d.updated_at || null
+  }))
 }

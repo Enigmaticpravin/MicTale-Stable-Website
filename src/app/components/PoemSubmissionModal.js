@@ -1,61 +1,45 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { getFirebaseAuth } from '@/app/lib/firebase-auth';
-import { db } from '@/app/lib/firebase-db';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useState } from 'react'
 
 export default function PoemSubmissionModal({ isOpen, onClose }) {
-  const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('ghazal');
-  const [content, setContent] = useState('');
-  const [authInstance, setAuthInstance] = useState(null);
+  const [loading, setLoading] = useState(false)
+  const [title, setTitle] = useState('')
+  const [category, setCategory] = useState('ghazal')
+  const [content, setContent] = useState('')
 
-  // Load Firebase Auth dynamically
-  useEffect(() => {
-    async function init() {
-      const { auth } = await getFirebaseAuth();
-      setAuthInstance(auth);
-    }
-    init();
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!authInstance || !authInstance.currentUser) {
-      alert('You must be logged in to submit.');
-      return;
-    }
+  const handleSubmit = async e => {
+    e.preventDefault()
 
     try {
-      setLoading(true);
+      setLoading(true)
 
-      await addDoc(collection(db, 'submission'), {
-        title,
-        category,
-        content,
-        authorId: authInstance.currentUser.uid,
-        authorName: authInstance.currentUser.displayName || 'Anonymous',
-        createdAt: serverTimestamp(),
-        status: 'pending'
-      });
+      const res = await fetch('/api/submission', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, category, content })
+      })
 
-      alert('Your poem has been submitted!');
-      setTitle('');
-      setCategory('ghazal');
-      setContent('');
-      onClose();
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed')
+      }
+
+      alert('Your poem has been submitted!')
+
+      setTitle('')
+      setCategory('ghazal')
+      setContent('')
+      onClose()
     } catch (err) {
-      console.error('Error submitting poem:', err);
-      alert('Something went wrong, please try again.');
+      console.error('Submission error:', err)
+      alert(err.message || 'Something went wrong')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">

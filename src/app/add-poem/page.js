@@ -1,12 +1,11 @@
 "use client"
 
 import React, { useState, useRef, useEffect } from "react"
-import { PenTool, FileText, Upload, X, Check, AlertCircle, Eye, Edit3, Bold, Italic, List, Quote } from "lucide-react"
+import { PenTool, FileText, Upload, X, Check, AlertCircle, Eye, Edit3} from "lucide-react"
 
 export default function DualPublishingPage() {
-  const [activeMode, setActiveMode] = useState('poem') // 'poem' or 'blog'
+  const [activeMode, setActiveMode] = useState('poem')
   
-  // Poem state
   const [poemTitle, setPoemTitle] = useState("")
   const [poemAuthor, setPoemAuthor] = useState("")
   const [poemCategory, setPoemCategory] = useState("Poem")
@@ -16,7 +15,6 @@ export default function DualPublishingPage() {
   const [poemResult, setPoemResult] = useState(null)
   const [isPoemDropdownOpen, setIsPoemDropdownOpen] = useState(false)
 
-  // Blog state
   const [blogTitle, setBlogTitle] = useState("")
   const [blogAuthor, setBlogAuthor] = useState("")
   const [blogContent, setBlogContent] = useState("")
@@ -155,7 +153,7 @@ export default function DualPublishingPage() {
       const blogData = {
         title: blogTitle,
         author: blogAuthor,
-        content: blogContent, // Store raw markdown
+        content: blogContent,
         excerpt: blogExcerpt,
         tags: tagsArray,
         coverImage: coverImageUrl,

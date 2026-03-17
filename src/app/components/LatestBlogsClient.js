@@ -1,4 +1,3 @@
-// app/components/LatestBlogsClient.js
 'use client'
 
 import React, { useRef } from 'react'
@@ -18,7 +17,7 @@ function formatDate(iso) {
 }
 
 export default function LatestBlogsClient({ blogs = [] }) {
-    const stripRef = useRef(null) 
+    const stripRef = useRef(null)
   if (!Array.isArray(blogs) || blogs.length === 0) {
     return (
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -99,7 +98,7 @@ export default function LatestBlogsClient({ blogs = [] }) {
           <div className="relative z-10 grid lg:grid-cols-2 gap-0">
             <div className="relative aspect-[16/10] lg:aspect-square overflow-hidden">
               <Image
-                src={main.coverImage}
+                src={main.featured_image}
                 alt={main.title}
                 width={600}
                 height={400}
@@ -146,8 +145,8 @@ export default function LatestBlogsClient({ blogs = [] }) {
                 variants={item}
               >
                 <div className="flex items-center gap-3 text-xs md:text-sm text-gray-400">
-                  <time dateTime={main.createdAt}>
-                    {formatDate(main.createdAt)}
+                  <time dateTime={main.created_at}>
+                    {formatDate(main.created_at)}
                   </time>
                   <div className="w-1 h-1 bg-gray-600 rounded-full" />
                   <span className="md:flex hidden text-xs">5 min read</span>
@@ -221,9 +220,11 @@ export default function LatestBlogsClient({ blogs = [] }) {
                 >
                   <div className="relative rounded-2xl bg-gray-900/40 border border-gray-700/30 overflow-hidden backdrop-blur-sm shadow-xl transition-all duration-300 group-hover/card:shadow-2xl group-hover/card:border-gray-600/50">
                     <div className="relative aspect-[16/8] overflow-hidden">
-                      {blog.coverImage ? (
-                        <img 
-                          src={blog.coverImage} 
+                      {blog.featured_image ? (
+                        <Image
+                          width={400}
+                          height={200} 
+                          src={blog.featured_image} 
                           alt={blog.title}
                           loading="lazy"
                           className="h-full w-full object-cover transition-transform duration-500 group-hover/card:scale-110"
@@ -245,10 +246,10 @@ export default function LatestBlogsClient({ blogs = [] }) {
                       
                       <div className="flex items-center justify-between text-xs md:text-sm">
                         <time 
-                          dateTime={blog.createdAt}
+                          dateTime={blog.created_at}
                           className="text-gray-400 font-light"
                         >
-                          {formatDate(blog.createdAt)}
+                          {formatDate(blog.created_at)}
                         </time>
                         <div className="flex items-center gap-1 text-gray-500 group-hover/card:text-gray-400 transition-colors">
                           <span className="text-xs">Read more</span>

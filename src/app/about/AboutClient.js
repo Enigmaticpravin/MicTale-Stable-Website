@@ -1,54 +1,17 @@
-// app/about/AboutClient.jsx
 'use client'
 
-import poster from '@/app/images/About Us Cover.png'
-import Link from 'next/link'
+import poster from '@/../public/images/cover.png'
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Footer from '@/app/components/Footer'
-import {
-  collection,
-  getDocs,
-  db,
-  query,
-  where,
-  orderBy
-} from '@/app/lib/firebase-db'
 import ReactHead from 'next/head'
-import mobile from '../../../public/images/mobileabout.png'
+import mobile from '../../../public/images/mobilecover.png'
 
 export default function MicTalePremium () {
-  const [upcomingShows, setUpcomingShows] = useState([])
   const [scrollY, setScrollY] = useState(0)
   const [hasAnimated, setHasAnimated] = useState({})
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const sectionRefs = useRef({})
-
-  useEffect(() => {
-    const fetchUpcomingShows = async () => {
-      try {
-        const showsRef = collection(db, 'shows')
-        const today = new Date().toISOString()
-        // console.log('Today:', today)
-        const showsQuery = query(
-          showsRef,
-          where('date', '>', today),
-          orderBy('date', 'asc')
-        )
-        const querySnapshot = await getDocs(showsQuery)
-
-        const shows = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-
-        setUpcomingShows(shows)
-      } catch (error) {
-        console.error('Error fetching upcoming shows:', error)
-      }
-    }
-    fetchUpcomingShows()
-  }, [])
 
   useEffect(() => {
     const handleMouseMove = e => {
@@ -226,19 +189,19 @@ export default function MicTalePremium () {
           </div>
 
           <h3
-            className='md:px-24 mt-5 md:text-2xl px-4 text-justify raleway-regular hover:text-gray-100 transition-colors duration-500'
+            className='md:px-24 mt-5 md:text-2xl px-4 text-justify montserrat-regular hover:text-gray-100 transition-colors duration-500'
             style={{
               ...getAnimationStyle('hero', -10, '0.4s')
             }}
           >
             <b>
               <i>
-                <span className='text-yellow-400 hover:text-yellow-300 transition-colors duration-300'>
+                <span>
                   MicTale
                 </span>
               </i>
             </b>{' '}
-            is a modern Open Mic platform that goes beyond just providing a
+            is a modern creative platform that goes beyond just providing a
             stage for artists. It offers opportunities for growth, learning, and
             refinement, helping performers enhance their craft and establish
             themselves in the real marketplace. With dedicated support and
@@ -251,7 +214,7 @@ export default function MicTalePremium () {
        <section
           ref={setRef('features')}
           id='features'
-          className='px-2 py-4 md:py-24 grid grid-cols-3 md:grid-cols-3 gap-1 md:gap-8 max-w-6xl mx-auto'
+          className='px-2 py-4 md:mt-10 grid grid-cols-3 md:grid-cols-3 gap-1 md:gap-8 max-w-6xl mx-auto'
           style={{
             ...getAnimationStyle('features'),
             perspective: '1000px'
@@ -260,26 +223,26 @@ export default function MicTalePremium () {
           {[
             {
               img: 'https://i.imgur.com/fKqcMyW.jpeg',
-              title: 'STAGE PRESENCE',
+              title: 'Stage Presence',
               desc: 'Build confidence through regular performances',
               delay: '0s'
             },
             {
               img: 'https://i.imgur.com/OFfDOku.png',
-              title: 'ARTISTIC GROWTH',
+              title: 'Artistic Growth',
               desc: 'Expert-led workshops and mentorship',
               delay: '0.2s'
             },
             {
               img: 'https://i.imgur.com/g3aPyeT.jpeg',
-              title: 'PROFESSIONAL PATH',
+              title: 'Professional Path',
               desc: 'From open mic to solo shows',
               delay: '0.4s'
             }
           ].map((item, index) => (
             <div
               key={index}
-              className='text-center group'
+              className='text-center group border border-gray-700 rounded-xl cursor-pointer bg-slate-900 hover:bg-slate-800 transition-colors duration-300'
               style={{
                 ...getAnimationStyle('features', index * -5, item.delay),
                 transform: index === 0 ? 'rotateY(15deg) scale(0.85) md:rotateY(0deg) md:scale(1)' : 
@@ -289,7 +252,7 @@ export default function MicTalePremium () {
                 transition: 'transform 0.5s ease'
               }}
             >
-              <div className='h-24 md:h-64 bg-gray-900 rounded-sm overflow-hidden relative'>
+              <div className='h-24 md:h-64 bg-gray-900 rounded-xl overflow-hidden relative'>
                 <img
                   src={item.img}
                   alt={item.title}
@@ -297,10 +260,10 @@ export default function MicTalePremium () {
                 />
                 <div className='absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500'></div>
               </div>
-              <h3 className='text-sm md:text-lg font-light mt-2 '>
+              <h3 className='text-sm md:mt-4 md:text-lg libre-baskerville-regular-italic font-light mt-2 '>
                 {item.title}
               </h3>
-              <p className='text-xs md:text-sm text-gray-500 group-hover:text-gray-300 transition-colors duration-300'>
+              <p className='text-[10px] mb-2 md:mb-4 md:text-sm text-gray-500 group-hover:text-gray-300 transition-colors duration-300'>
                 {item.desc}
               </p>
             </div>
@@ -324,78 +287,79 @@ export default function MicTalePremium () {
           </p>
         </div>
 
-        <section className='md:py-10 px-6 py-0'>
-          <div className='max-w-7xl mx-auto'>
-            <div className='grid lg:grid-cols-2 gap-5 md:gap-16'>
-              <div
-                ref={setRef('founder-image')}
-                id='founder-image'
-                className='relative group'
-                style={{
-                  ...getAnimationStyle('founder-image', 20),
-                  transform: `${
-                    getAnimationStyle('founder-image', 20).transform
-                  } rotateY(${
-                    hasAnimated['founder-image'] ? '0deg' : '-15deg'
-                  })`
-                }}
-              >
-                <div className='relative bg-gray-800 rounded-2xl p-1 overflow-hidden'>
-                  <Image
-                    src='https://res.cloudinary.com/drwvlsjzn/image/upload/v1765480864/Pravin_Portrait_xxzysm.jpg'
-                    alt='Pravin Gupta, Founder of MicTale and author of Kaalikh, public speaker and creative entrepreneur'
-                    width={800}
-                    height={800}
-                    priority
-                    className='w-full h-auto rounded-xl'
-                  />
-                </div>
-              </div>
+   <section className='pb-10 px-4 md:px-80'>
+  <div className='max-w-7xl mx-auto'>
+    <div 
+      ref={setRef('founder-story')}
+      id='founder-story'
+      className='montserrat-regular md:text-lg text-white leading-relaxed text-justify'
+      style={{
+        ...getAnimationStyle('founder-story', -0),
+        transform: `${
+          getAnimationStyle('founder-story', -10).transform
+        } rotateY(${hasAnimated['founder-story'] ? '0deg' : '15deg'})`
+      }}
+    >
+      <div
+        ref={setRef('founder-image')}
+        id='founder-image'
+        className='relative group float-left mr-2 md:mr-8 mb-4 w-fit'
+        style={{
+          ...getAnimationStyle('founder-image', 20),
+          transform: `${
+            getAnimationStyle('founder-image', 20).transform
+          } rotateY(${
+            hasAnimated['founder-image'] ? '0deg' : '-15deg'
+          })`
+        }}
+      >
+        <div className='relative'>
+          <Image
+            src='https://res.cloudinary.com/drwvlsjzn/image/upload/v1765480864/Pravin_Portrait_xxzysm.jpg'
+            alt='Pravin Gupta'
+            width={800}
+            height={800}
+            priority={true}
+            className='w-40 md:w-80 h-auto rounded-xl object-cover'
+          />
+        </div>
+      </div>
 
-              <div
-                ref={setRef('founder-story')}
-                id='founder-story'
-                className='mb-10'
-                style={{
-                  ...getAnimationStyle('founder-story', -0),
-                  transform: `${
-                    getAnimationStyle('founder-story', -10).transform
-                  } rotateY(${hasAnimated['founder-story'] ? '0deg' : '15deg'})`
-                }}
-              >
-                <div className='space-y-6 md:text-lg text-white leading-relaxed text-justify'>
-                  {[
-                    'Pravin Gupta is an Indian author, Founder and CTO at MicTale. He has written bestselling titles like Kaalikh and Her Love Drowned The Poet, and newspapers like Hindustan Times and Dainik Jagran have also praised his work. He is a self-taught artist who believes in the power of creativity to change lives.',
+         {[
 
-                    'Professionally, he works a graphic design job. Personally, he juggles writing, wildlife photography, music, and mild overthinking. He is also half-coder, half-therapist-for-his-own-ideas.',
+        'Pravin Gupta is an Indian author, Founder and CTO at MicTale. He has written bestselling titles like Kaalikh and Her Love Drowned The Poet, and newspapers like Hindustan Times and Dainik Jagran have also praised his work. He is a self-taught artist who believes in the power of creativity to change lives.',
 
-                    'MicTale was not a startup idea. It was a reaction. Tired of overpriced, underwhelming open mics and gatekept creative spaces, Pravin started an Instagram page in late 2024 with zero budget and one goal; to create a platform where talent did not need permission.',
+        'Professionally, he works a graphic design job. Personally, he juggles writing, wildlife photography, music, and mild overthinking. He is also half-coder, half-therapist-for-his-own-ideas.',
 
-                    'He began by posting one sher a day. That page slowly became a vibe. And in January 2025, MicTale hosted its first open mic with no sponsor, but with just a mic, a rented hall, and people who actually gave a damn.',
+        'MicTale was not a startup idea. It was a reaction. Tired of overpriced, underwhelming open mics and gatekept creative spaces, Pravin started an Instagram page in late 2024 with zero budget and one goal; to create a platform where talent did not need permission.',
 
-                    'That day flipped the switch.',
+        'He began by posting one sher a day. That page slowly became a vibe. And in January 2025, MicTale hosted its first open mic with no sponsor, but with just a mic, a rented hall, and people who actually gave a damn.',
 
-                    'Since then, Pravin has been building MicTale like Dashrath Manjhi breaking the mountain, funding it from his salary, designing every visual, scripting every post, and creating something most people only talk about in "let\'s do something bro" conversations.',
+        'That day flipped the switch.',
 
-                    'He is not doing this for fame or followers. He is doing it because no one else would. And if you have ever felt like your voice did not fit the mold, welcome home!'
-                  ].map((paragraph, index) => (
-                    <p
-                      key={index}
-                      className=''
-                      style={getAnimationStyle(
-                        'founder-story',
-                        -5 * index,
-                        `${index * 0.1}s`
-                      )}
-                    >
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        'Since then, Pravin has been building MicTale like Dashrath Manjhi breaking the mountain, funding it from his salary, designing every visual, scripting every post, and creating something most people only talk about in "let\'s do something bro" conversations.',
+
+        'He is not doing this for fame or followers. He is doing it because no one else would. And if you have ever felt like your voice did not fit the mold, welcome home!'
+
+      ].map((paragraph, index) => (
+
+        <p
+          key={index}
+          className='mb-3 text-sm md:text-lg'
+          style={getAnimationStyle(
+            'founder-story',
+            -5 * index,
+            `${index * 0.1}s`
+          )}
+        >
+          {paragraph}
+        </p>
+      ))}
+      
+      <div className="clear-both"></div>
+    </div>
+  </div>
+</section>
 
         <Footer />
       </div>

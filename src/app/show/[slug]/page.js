@@ -1,155 +1,108 @@
-
-import { getDocs, collection, doc, getDoc } from '@/app/lib/firebase-db'
-import { notFound } from 'next/navigation'
-import ClientForm from '@/app/show/[slug]/ClientForm'
+import { notFound } from "next/navigation"
+import ClientForm from "@/app/show/[slug]/ClientForm"
+import { supabasePublic } from "@/app/lib/supabase/public"
 
 export const revalidate = 3600
 
 export async function generateStaticParams() {
-  try {
-  } catch (e) {
-  }
+  const { data } = await supabasePublic
+    .from("shows")
+    .select("slug")
+    .eq("status", "published")
 
-  try {
-    const { db } = await import('@/app/lib/firebase-db')
-    const snaps = await getDocs(collection(db, 'shows'))
-    const params = []
-
-    snaps.forEach(snap => {
-      const data = snap.data()
-      if (data && data.slug) {
-        params.push({ slug: data.slug })
-      }
-    })
-
-    return params
-  } catch (err) {
-    return []
-  }
+  return (data || []).map(d => ({
+    slug: d.slug
+  }))
 }
 
 export async function generateMetadata({ params }) {
-  const slug = params.slug
+  const { slug } = await params 
 
-  const { db } = await import('@/app/lib/firebase-db')
-  const snaps = await getDocs(collection(db, 'shows'))
-  const matched = snaps.docs.find(d => d.data().slug === slug)
+  const { data: show } = await supabasePublic
+    .from("shows")
+    .select("*")
+    .eq("slug", slug)
+    .single()
 
-  if (!matched) {
+  if (!show) {
     return {
-      title: 'Show not found — MicTale',
-      description: 'Show not found'
+      title: "Show not found — MicTale",
+      description: "Show not found"
     }
   }
 
-  const showRef = doc(db, 'shows', matched.id)
-  const showSnap = await getDoc(showRef)
-
-  if (!showSnap.exists()) {
-    return {
-      title: 'Show not found — MicTale',
-      description: 'Show not found'
-    }
-  }
-
-  console.log("data",showSnap.data())
-
-  const show = { id: showSnap.id, slug, ...showSnap.data() }
-  const metaTitle = `${show.name}`
-  const metaDescription = show.description || 'Join us for an unforgettable evening of poetry, music and stories.'
-  const encodedSlug = encodeURIComponent(show.slug)
-  const showUrl = `https://www.mictale.in/show/${encodedSlug}`
+  const showUrl = `https://mictale.in/show/${encodeURIComponent(show.slug)}`
 
   return {
-    title: metaTitle,
-    description: metaDescription,
+    title: show.name,
+    description:
+      show.description ||
+      "Join us for an unforgettable evening of poetry, music and stories.",
+
     openGraph: {
-      title: metaTitle,
-      description: metaDescription,
+      title: show.name,
+      description: show.description,
       url: showUrl,
-      type: 'website',
       images: [
         {
-          url: 'https://mictale.in/images/mobile.webp',
+          url: show.image || "https://mictale.in/images/mobile.webp",
           width: 1200,
-          height: 630,
-          alt: show.name
+          height: 630
         }
       ]
     },
+
     alternates: { canonical: showUrl },
+
     twitter: {
-      card: 'summary_large_image',
-      title: metaTitle,
-      description: metaDescription,
-      images: [show.image || 'https://mictale.in/images/mobile.png']
+      card: "summary_large_image",
+      title: show.name,
+      description: show.description,
+      images: [show.image || "https://mictale.in/images/mobile.webp"]
     }
   }
 }
 
 export default async function ShowPage({ params }) {
-  const slug = params.slug
+  const { slug } = await params 
 
-  const { db } = await import('@/app/lib/firebase-db')
-  const snaps = await getDocs(collection(db, 'shows'))
-  const matched = snaps.docs.find(d => d.data().slug === slug)
+  const { data: showDetails } = await supabasePublic
+    .from("shows")
+    .select("*")
+    .eq("slug", slug)
+    .single()
 
-  if (!matched) {
-    notFound()
-  }
+  if (!showDetails) notFound()
 
-  const showRef = doc(db, 'shows', matched.id)
-  const showSnap = await getDoc(showRef)
+  const showUrl = `https://mictale.in/show/${encodeURIComponent(showDetails.slug)}`
 
-  if (!showSnap.exists()) {
-    notFound()
-  }
-
-  const showDetails = {
-    id: showSnap.id,
-    slug,
-    ...showSnap.data()
-  }
-
-
-  const encodedSlug = encodeURIComponent(showDetails.slug)
-  const showUrl = `https://www.mictale.in/show/${encodedSlug}`
   const eventSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Event',
+    "@context": "https://schema.org",
+    "@type": "Event",
     name: `${showDetails.name} by MicTale`,
-    startDate: '2025-03-09T01:00:00+05:30',
-    endDate: '2025-03-09T06:00:00+05:30',
-    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    eventStatus: 'https://schema.org/EventScheduled',
-    location: showDetails.location || {
-      '@type': 'Place',
-      name: 'Nojoto Creator Hub',
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: 'Saket, Delhi',
-        addressLocality: 'Delhi',
-        addressCountry: 'IN'
-      }
+    startDate: showDetails.start_time,
+    endDate: showDetails.end_time,
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    eventStatus: "https://schema.org/EventScheduled",
+    location: {
+      "@type": "Place",
+      name: showDetails.venue_name,
+      address: showDetails.location
     },
-    image: 'https://i.imgur.com/YFpScQU.png',
-    description: showDetails.description || '',
+    image: showDetails.image,
+    description: showDetails.description,
     organizer: {
-      '@type': 'Organization',
-      name: 'MicTale',
-      url: 'https://www.mictale.in'
-    },
-    performer: {
-      '@type': 'PerformingGroup',
-      name: 'Local Poets & Artists'
+      "@type": "Organization",
+      name: "MicTale",
+      url: "https://mictale.in"
     },
     offers: {
-      '@type': 'Offer',
+      "@type": "Offer",
       url: showUrl,
-      price: String((showDetails.price ?? 200)),
-      priceCurrency: 'INR',
-      availability: 'https://schema.org/InStock'
-    },
+      price: String(showDetails.price || 0),
+      priceCurrency: "INR",
+      availability: "https://schema.org/InStock"
+    }
   }
 
   return (
@@ -158,7 +111,8 @@ export default async function ShowPage({ params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }}
       />
-        <ClientForm showDetails={showDetails} />
+
+      <ClientForm showDetails={showDetails} />
     </>
   )
 }

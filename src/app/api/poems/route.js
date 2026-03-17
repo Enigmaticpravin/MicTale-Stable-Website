@@ -6,15 +6,28 @@ import { poemSlug } from '@/app/lib/slugify'
 export async function GET(req) {
   const { searchParams } = new URL(req.url)
   const slug = searchParams.get('slug')
+
   const poem = await getPoemBySlug(slug)
+
   return NextResponse.json(poem || null)
 }
 
 export async function POST(req) {
+  try {
   const body = await req.json()
-  const { title, author, category = 'poem', lines, language = 'hi', excerpt, publishedAt } = body
+
+  const {
+    title,
+    author,
+    category = 'poem',
+    lines,
+    language = 'hi',
+    excerpt,
+    publishedAt
+  } = body
 
   const slug = poemSlug({ title, author, category })
+
   const poem = {
     slug,
     title,
@@ -35,4 +48,14 @@ export async function POST(req) {
   revalidatePath('/sitemap.xml')
 
   return NextResponse.json({ ok: true, slug })
+  } catch (error) {
+
+    console.error(error)
+
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 }
+    )
+
+  }
 }

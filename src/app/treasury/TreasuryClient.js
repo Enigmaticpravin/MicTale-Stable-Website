@@ -3,7 +3,6 @@
 import React, { useState} from 'react'
 import Link from 'next/link'
 import MatlaDisplay from '../components/MatlaDisplay'
-const PAGE_SIZE = 10
 
 export default function TreasuryClient ({ initialPoems, initialGhazals }) {
   const [poems, setPoems] = useState(initialPoems)
@@ -31,47 +30,64 @@ export default function TreasuryClient ({ initialPoems, initialGhazals }) {
                 Poems{' '}
               </p>
             </div>
+<ul className="flex flex-col gap-6">
+  {poems.map((p) => (
+    <li key={p.id ?? p.slug} className="group transition-all duration-150">
+      <Link
+        href={`/poem/${p.slug}`}
+        prefetch
+        className="flex flex-col md:flex-row md:items-center gap-6 px-6 md:py-4 md:px-12"
+      >
+        <div className="hidden md:block w-12 shrink-0">
+          <span className="text-xs font-mono font-bold group-hover:flex hidden  group-hover:text-slate-300 transition-colors">
+            {String(poems.indexOf(p) + 1).padStart(2, '0')}
+          </span>
+        </div>
+        <div className="flex-1">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg md:text-3xl tracking-tight text-slate-200 rozha-one-regular">
+                {p.title}
+              </h2>
+              <span className="rounded bg-slate-100 px-1 py-[1px] text-[8px] md:px-2 md:py-0.5 md:text-[10px] uppercase tracking-widest text-slate-500">
+                {p.category}
+              </span>
+            </div>
+            <p className="text-xs md:text-sm md:font-medium text-blue-300 italic">
+              by {p.author}
+            </p>
+          </div>
 
-            <ul className='grid gap-3 sm:gap-4'>
-              {poems.map(p => (
-                <li key={p.id ?? p.slug}>
-                  <Link
-                    href={`/poem/${p.slug}`}
-                    prefetch
-                    className='group block rounded-2xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur transition
-                     hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.04] focus:outline-none
-                     focus:ring-2 focus:ring-white/20'
-                  >
-                    <div className='flex items-start justify-between gap-3'>
-                      <h2 className='text-sm md:text-lg font-medium leading-snug text-white group-hover:text-white'>
-                        {p.title}
-                      </h2>
-                      <span className='shrink-0 rounded-full border border-white/10 px-2.5 py-1 text-[7px] md:text-[10px] uppercase tracking-wide text-white/50'>
-                        {p.category}
-                      </span>
-                    </div>
+          {Array.isArray(p.lines) && p.lines.length > 0 && (
+            <div className="mt-3 md:mt-6 max-w-3xl">
+             <p className="whitespace-pre-line text-sm md:text-lg leading-relaxed text-slate-200 line-clamp-2 font-medium tiro-class">
+                {p.lines.slice(0, 2).join('\n')}
+              </p>
+            </div>
+          )}
+        </div>
 
-                    <div className='mt-1 text-xs md:text-sm text-white/60'>{p.author}</div>
-
-                    {Array.isArray(p.lines) && p.lines.length > 0 ? (
-                      <p className='mt-3  md:flex hidden line-clamp-3 whitespace-pre-wrap text-sm leading-relaxed text-white/70'>
-                        {p.lines.slice(0, 3).join('\n')}
-                      </p>
-                    ) : null}
-
-                    <div className='mt-4 hidden md:flex items-center gap-2 text-xs text-white/40'>
-                      <span className='inline-flex items-center gap-1 rounded-full bg-white/[0.04] px-2 py-1'>
-                        <span className='h-1.5 w-1.5 rounded-full bg-white/50' />
-                        preview
-                      </span>
-                      <span className='opacity-0 transition group-hover:opacity-100'>
-                        read the full piece
-                      </span>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+<div className="group hidden items-center justify-end md:flex">
+  <div className="flex h-12 w-12 items-center justify-center rounded-full opacity-0 transition-all duration-300 group-hover:scale-110 group-hover:border-slate-900 group-hover:bg-slate-600 group-hover:text-white group-hover:opacity-100">
+    <svg 
+      width="20" 
+      height="20" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <line x1="7" y1="17" x2="17" y2="7"></line>
+      <polyline points="7 7 17 7 17 17"></polyline>
+    </svg>
+  </div>
+</div>
+      </Link>
+    </li>
+  ))}
+</ul>
           </div>
         </div>
         <div className='bg-gradient-to-b from-slate-900 to-transparent h-10'></div>

@@ -1,496 +1,301 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { db } from '@/app/lib/firebase-db'
-import { getFirebaseAuth } from '@/app/lib/firebase-auth'
-import { signOut } from 'firebase/auth'
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
-import { Edit2Icon, PhoneCall } from 'lucide-react'
-import imageCompression from 'browser-image-compression'
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { useState, useEffect } from 'react'
+import { supabase } from '@/app/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, CheckCircle } from 'lucide-react'
 import Footer from '@/app/components/Footer'
+import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
+import { 
+  Mail, 
+  Loader2,
+  Check,
+  User as UserIcon,
+  Globe,
+  Shield
+} from 'lucide-react'
 
 export default function Profile() {
-  const [auth, setAuth] = useState(null)  
-  const [userData, setUserData] = useState({
-    isLoading: true,
-    user: null,
-    formData: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      username: '',
-      phoneNumber: '',
-      profilePicture: ''
-    },
-    error: '',
-    success: '',
-    imageLoading: false
-  })
-
-  const fileInputRef = useRef(null)
   const router = useRouter()
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [particles, setParticles] = useState([])
-  const [cursorSpot, setCursorSpot] = useState([])
+  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [user, setUser] = useState(null)
+  const [formData, setFormData] = useState({
+    full_name: '',
+    email: '',
+    phone_number: '',
+    city: '',
+    avatar_url: ''
+  })
+  const [status, setStatus] = useState('')
 
   useEffect(() => {
-    const loadAuth = async () => {
-      const { auth } = await getFirebaseAuth()
-      setAuth(auth)
-    }
-    loadAuth()
-  }, [])
-
-  const handleMouseMove = useCallback(e => {
-    const { clientX, clientY } = e
-    setMousePosition({ x: clientX, y: clientY })
-
-    setCursorSpot(prev =>
-      [
-        ...prev,
-        {
-          x: clientX,
-          y: clientY,
-          timestamp: Date.now()
-        }
-      ].slice(-50)
-    )
-  }, [])
-
-  useEffect(() => {
-    window.addEventListener('mousemove', handleMouseMove)
-    setIsLoaded(true)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [handleMouseMove])
-
-  useEffect(() => {
-    if (!auth) return
-
-    const unsubscribe = auth.onAuthStateChanged(async currentUser => {
-      if (currentUser) {
-        try {
-          const userRef = doc(db, 'users', currentUser.uid)
-          const userSnap = await getDoc(userRef)
-
-          if (userSnap.exists()) {
-            const user = userSnap.data()
-            const nameParts = (user.name || '').split(' ')
-
-            setUserData({
-              isLoading: false,
-              user,
-              formData: {
-                firstName: nameParts[0] || '',
-                lastName: nameParts.slice(1).join(' ') || '',
-                email: user.email || '',
-                username: user.username || '',
-                phoneNumber: user.phoneNumber || '',
-                profilePicture: user.profilePicture || ''
-              },
-              error: '',
-              success: '',
-              imageLoading: false
-            })
-          } else {
-            throw new Error('User not found')
-          }
-        } catch (error) {
-          setUserData(prev => ({
-            ...prev,
-            isLoading: false,
-            error: 'Failed to load user data'
-          }))
-
-          setTimeout(() => {
-            setUserData(prev => ({ ...prev, error: '' }))
-          }, 3000)
-        }
-      } else {
+    const loadProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
         router.push('/login')
+        return
       }
-    })
+      setUser(user)
 
-    return () => unsubscribe()
-  }, [auth, router])
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single()
 
-  const handleInputChange = e => {
-    const { name, value } = e.target
-    setUserData(prev => ({
-      ...prev,
-      formData: {
-        ...prev.formData,
-        [name]: value
+      if (!error && data) {
+        setFormData({
+          full_name: data.full_name || '',
+          email: data.email || '',
+          phone_number: data.phone_number || '',
+          city: data.city || '',
+          avatar_url: data.avatar_url || ''
+        })
       }
-    }))
-  }
-
-  const handleUpdateProfile = async () => {
-    if (!auth?.currentUser) return
-
-    try {
-      setUserData(prev => ({ ...prev, isLoading: true }))
-
-      const { formData } = userData
-      const userRef = doc(db, 'users', auth.currentUser.uid)
-
-      const updatedUserData = {
-        name: `${formData.firstName} ${formData.lastName}`.trim(),
-        email: formData.email,
-        username: formData.username,
-        phoneNumber: formData.phoneNumber,
-        profilePicture: formData.profilePicture
-      }
-
-      await updateDoc(userRef, updatedUserData)
-
-      setUserData(prev => ({
-        ...prev,
-        isLoading: false,
-        user: {
-          ...prev.user,
-          ...updatedUserData
-        },
-        success: 'Profile updated successfully!'
-      }))
-
-      setTimeout(() => {
-        setUserData(prev => ({ ...prev, success: '' }))
-      }, 3000)
-    } catch (error) {
-      setUserData(prev => ({
-        ...prev,
-        isLoading: false,
-        error: 'Failed to update profile'
-      }))
-      setTimeout(() => {
-        setUserData(prev => ({ ...prev, error: '' }))
-      }, 3000)
+      setLoading(false)
     }
-  }
+    loadProfile()
+  }, [router])
 
-  const handleLogout = async () => {
-    try {
-      const { auth } = await getFirebaseAuth()
-      await signOut(auth)
+    const confirmLogout = () => {
+    supabase.auth.signOut().then(() => {
       router.push('/login')
-    } catch (error) {
-      setUserData(prev => ({
-        ...prev,
-        error: 'Failed to log out'
-      }))
-    }
+    })
   }
 
-  const handleChangeProfilePicture = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-  
-    setUserData(prev => ({
-      ...prev,
-      imageLoading: true,
-      success: 'Compressing image...'
-    }))
-  
-    try {
-      const compressedFile = await imageCompression(file, {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 1200,
-        useWebWorker: true,
-        initialQuality: 0.85 
+  const handleLogoutClick = () => {
+    setShowLogoutConfirmation(true)
+  }
+
+  const handleUpdate = async () => {
+    setSaving(true)
+    const { error } = await supabase
+      .from('users')
+      .update({
+        full_name: formData.full_name,
+        phone_number: formData.phone_number,
+        city: formData.city
       })
-      
-      setUserData(prev => ({
-        ...prev,
-        success: 'Uploading image...'
-      }))
-  
-      const storage = getStorage()
-      const storageRef = ref(storage, `profilePictures/${auth.currentUser.uid}`)
-      await uploadBytes(storageRef, compressedFile)
-      
-      const downloadURL = await getDownloadURL(storageRef)
-      
-      await updateDoc(doc(db, 'users', auth.currentUser.uid), {
-        profilePicture: downloadURL
-      })
-      
-      setUserData(prev => ({
-        ...prev,
-        imageLoading: false,
-        formData: {
-          ...prev.formData,
-          profilePicture: downloadURL
-        },
-        user: {
-          ...prev.user,
-          profilePicture: downloadURL
-        },
-        success: 'Profile picture updated!'
-      }))
-      
-      setTimeout(() => {
-        setUserData(prev => ({ ...prev, success: '', error: '' }))
-      }, 3000)
-    } catch (error) {
-      console.error('Image upload error:', error)
-      setUserData(prev => ({
-        ...prev,
-        imageLoading: false,
-        error: 'Failed to upload profile picture'
-      }))
-      
-      setTimeout(() => {
-        setUserData(prev => ({ ...prev, success: '', error: '' }))
-      }, 3000)
+      .eq('id', user.id)
+
+    if (error) {
+      setSaving(false)
+      return
     }
+
+    setStatus('Success')
+    setTimeout(() => setStatus(''), 3000)
+    setSaving(false)
   }
 
-  if (userData.isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
-        <div className="relative w-16 h-16 animate-spin">
-          <div className="absolute border-t-4 border-blue-500 border-solid rounded-full inset-0"></div>
-          <div className="absolute border-t-4 border-solid rounded-full inset-0 border-l-4 border-blue-500"></div>
-        </div>
-      </div>
-    )
-  }
-
-  const { formData, success, error } = userData
-  const fullName = `${formData.firstName} ${formData.lastName}`.trim()
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-[#020617]">
+      <div className="w-10 h-10 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
+    </div>
+  )
 
   return (
-    <>
-      <div className='min-h-screen flex items-center bg-gray-950 justify-center md:p-4'>
-        <div className='fixed inset-0 pointer-events-none'>
-          <div className='absolute top-0 left-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl moving-gradient-1' />
-          <div className='absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl moving-gradient-2' />
-        </div>
+    <div className="min-h-screen bg-[#020617] text-slate-200 font-sans relative overflow-hidden">
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[120px] rounded-full" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full" />
 
-        <div className='fixed inset-0 pointer-events-none'>
-          <div
-            className='absolute inset-0 opacity-30'
-            style={{
-              background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, 
-                rgba(56, 189, 248, 0.15),
-                transparent 40%
-              )`
-            }}
-          />
-        </div>
-        {particles.map(particle => (
-          <div
-            key={particle.id}
-            className='absolute w-1 h-1 bg-white rounded-full animate-float opacity-40'
-            style={{
-              left: particle.x,
-              top: particle.y,
-              width: particle.size,
-              height: particle.size
-            }}
-          />
-        ))}
-        <div className='w-full md:max-w-2xl bg-slate-900 rounded-3xl backdrop-blur-xl overflow-hidden border border-gray-700/30 text-white transition-all duration-300 hover:shadow-indigo-500/10 shadow-xl'>
-          {/* Header with clouds background */}
-          <div className='h-40 bg-gradient-to-r from-purple-300 to-yellow-200 relative'>
-            {/* Edit button */}
-            <button
-              className='absolute top-4 right-4 text-gray-700 hover:text-gray-900'
-              onClick={handleLogout}
-            >
-              <Edit2Icon size={24} />
-            </button>
+      <nav className="relative z-10 max-w-5xl mx-auto px-6 py-8 flex justify-between items-center">
+        <div className="flex items-center gap-2 group cursor-pointer">
+          <div className="w-9 h-9 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center group-hover:border-white/20 transition-all">
+            <UserIcon className="w-5 h-5 text-white" />
           </div>
+          <span className="font-medium tracking-tight text-slate-100">Profile</span>
+        </div>
+        <button 
+         onClick={handleLogoutClick}
+          className="text-xs font-semibold uppercase tracking-widest text-white hover:text-white hover:bg-red-700 bg-red-500 px-3 py-2 cursor-pointer rounded-4xl transition-colors"
+        >
+          Sign Out
+        </button>
+      </nav>
 
-          <div className='px-6 pb-6 -mt-12 relative'>
-            <div className='flex justify-between items-start mb-4'>
-              <div
-                className='relative w-20 h-20 rounded-full bg-gray-800 border-4 border-black overflow-hidden group cursor-pointer'
-                onClick={() => fileInputRef.current.click()}
-              >
-                {formData.profilePicture ? (
-                  <Image
-                    src={formData.profilePicture}
-                    alt='Profile'
-                    width={80}
-                    height={80}
-                    className='w-full h-full object-cover'
-                    priority
-                  />
-                ) : (
-                  <div className='w-full h-full flex items-center justify-center bg-blue-600 text-xl font-bold'>
-                    {formData.firstName?.[0]?.toUpperCase() || 'U'}
-                  </div>
-                )}
-
-                <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity'>
-                  <Edit2Icon size={24} className='text-white' />
+      <main className="relative z-10 max-w-4xl mx-auto px-6 pb-8 md:pb-24">
+        <div className="bg-slate-900 border border-white/[0.08] rounded-3xl p-4 md:p-12 shadow-2xl">
+          
+          <div className="flex flex-row md:flex-row gap-5 items-center md:items-start">
+            <div className="relative">
+              <div className="w-32 h-32 rounded-[32px] bg-slate-900 border border-white/10 p-1">
+                <div className="w-full h-full rounded-[28px] overflow-hidden relative bg-slate-800 flex items-center justify-center">
+                  {formData.avatar_url ? (
+                    <Image src={formData.avatar_url} alt="User" fill className="object-cover" />
+                  ) : (
+                    <UserIcon className="w-10 h-10 text-slate-600" />
+                  )}
                 </div>
-
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={handleChangeProfilePicture}
-                  className="hidden"
-                />
               </div>
               
-              {success && (
-                <p className="text-green-500 text-sm mb-2 absolute top-24 left-0">{success}</p>
-              )}
-              {error && (
-                <p className="text-red-500 text-sm mb-2 absolute top-24 left-0">{error}</p>
-              )}
             </div>
 
-            <div className='mb-2'>
-              <div className='flex items-center gap-2'>
-                <h1 className='text-xl font-bold'>{fullName}</h1>
+            <div className="flex-1 text-center md:text-left">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className='text-left'>
+                  <h1 className="text-lg md:text-3xl font-bold text-white tracking-tight">{formData.full_name || 'Your Name'}</h1>
+                  <p className="text-slate-400  mt-1 flex items-center md:text-sm text-xs justify-start md:justify-start gap-1">
+                    <Mail className="md:w-4 w-3 h-3 md:h-4" /> {formData.email}
+                  </p>
+                </div>
+                <button 
+                  onClick={handleUpdate}
+                  disabled={saving}
+                  className="md:px-8 px-5 py-2 md:py-3 cursor-pointer bg-white text-slate-950 rounded-2xl font-bold text-sm hover:bg-slate-200 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-xl shadow-white/5"
+                >
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : status === 'Success' ? <Check className="w-4 h-4" /> : null}
+                  {status === 'Success' ? 'Saved' : 'Update Profile'}
+                </button>
               </div>
-              <p className='text-sm text-gray-400'>{formData.email}</p>
+
+               <div className="bg-white/[0.02] hidden md:block mt-2 border border-white/[0.05] rounded-2xl p-4">
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter mb-1">Location</p>
+                  <p className="text-sm font-medium text-slate-200 truncate">{formData.city || 'Not set'}</p>
+                </div>
+            </div>
+          </div>
+
+          <div className="mt-4 md:mt-8 grid grid-cols-2 md:grid-cols-2 gap-x-2 md:gap-x-12 gap-y-4 md:gap-y-10">
+            <div className="md:space-y-2">
+              <label className="text-[10px] md:text-xs md:font-bold text-slate-500 uppercase tracking-[0.2em] ml-1">Full Name</label>
+              <input 
+                value={formData.full_name}
+                onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                className="w-full bg-transparent border-b border-white/10 py-3 text-sm md:text-lg focus:border-indigo-500 focus:outline-none transition-all placeholder:text-slate-800"
+                placeholder="John Doe"
+              />
             </div>
 
-            <div className='space-y-6 mt-10'>
-              <div className='text-sm'>
-                <label className='block text-gray-500 mb-1'>Name</label>
-                <div className='grid grid-cols-2 gap-4'>
-                  <input
-                    type='text'
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    name='firstName'
-                    className='w-full bg-gray-900 border border-gray-800 rounded p-3 text-white'
-                    placeholder='First name'
-                  />
-                  <input
-                    type='text'
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    name='lastName'
-                    className='w-full bg-gray-900 border border-gray-800 rounded p-3 text-white'
-                    placeholder='Last name'
-                  />
-                </div>
-              </div>
-              <div className='text-sm'>
-                <label className='block text-gray-500 mb-1'>Email address</label>
-                <div className='relative'>
-                  <div className='absolute inset-y-0 left-0 flex items-center pl-3'>
-                    <Mail size={16} className='text-gray-500' />
-                  </div>
-                  <input
-                    type='email'
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    name='email'
-                    className='w-full bg-gray-900 border border-gray-800 rounded p-3 pl-10 text-white cursor-not-allowed'
-                    placeholder='Email address'
-                    disabled
-                  />
-                </div>
-                <div className='flex items-center gap-2 mt-2 text-xs text-gray-400'>
-                  <CheckCircle size={14} className='text-blue-400' />
-                  <span>VERIFIED 2 JAN, 2025</span>
-                </div>
-              </div>
+            <div className="space-y-2">
+              <label className="text-[10px] md:text-xs md:font-bold text-slate-500 uppercase tracking-[0.2em] ml-1">Mobile</label>
+              <input 
+                  value={formData.phone_number}
+                  onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
+                className="w-full bg-transparent border-b border-white/10 py-3 text-sm md:text-lg focus:border-indigo-500 focus:outline-none transition-all placeholder:text-slate-800"
+                placeholder="+91 98765 43210"
+              />
+            </div>
 
-              <div className="md:flex md:items-start md:gap-4">
-                <div className="text-sm w-full md:w-1/2 mb-4 md:mb-0">
-                  <label className="block text-gray-500 mb-1">Phone Number</label>
-                  <div className="relative">
-                    <div className="flex items-center p-3 bg-gray-900 border border-gray-800 rounded text-white justify-between cursor-pointer">
-                      <div className="flex items-center gap-2 flex-1">
-                        <PhoneCall size={16} className="text-gray-500" />
-                        <input
-                          type="number"
-                          value={formData.phoneNumber}
-                          onChange={handleInputChange}
-                          name="phoneNumber"
-                          className="text-white bg-gray-900 placeholder-gray-500 focus:outline-none w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                          placeholder="Phone Number"
+            <div className="space-y-2">
+              <label className="text-[10px] md:text-xs md:font-bold text-slate-500 uppercase tracking-[0.2em] ml-1">City</label>
+              <div className="relative">
+                <input 
+                  value={formData.city}
+                  onChange={(e) => setFormData({...formData, city: e.target.value})}
+                  className="w-full bg-transparent border-b border-white/10 py-3 text-sm md:text-lg focus:border-indigo-500 focus:outline-none transition-all placeholder:text-slate-800"
+                  placeholder="New York, NY"
+                />
+                <Globe className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-700" />
+              </div>
+            </div>
+
+            <div className="space-y-2 opacity-50">
+              <label className="text-[10px] md:text-xs md:font-bold text-slate-500 uppercase tracking-[0.2em] ml-1">Email Address</label>
+              <div className="w-full py-3 text-sm md:text-lg text-slate-400 flex items-center justify-between cursor-not-allowed">
+              {formData.email
+    ? (() => {
+        const [name, domain] = formData.email.split('@')
+        return `${name.slice(0, 3)}...@${domain}`
+      })()
+    : ''}
+                <Shield className="w-4 h-4 text-slate-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-center mt-7 md:px-0 px-10 md:mt-12 text-xs md:text-sm text-slate-400">
+          Need to change your email or delete your account? <span className="text-blue-400 hover:underline cursor-pointer font-medium">Contact Support</span>
+        </p>
+      </main>
+       <AnimatePresence>
+        {showLogoutConfirmation && (
+          <>
+            <motion.button
+              type='button'
+              aria-label='Close dialog backdrop'
+              className='fixed inset-0 z-40 bg-black/40 backdrop-blur-md'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowLogoutConfirmation(false)}
+            />
+            <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
+              <motion.div
+                role='dialog'
+                aria-modal='true'
+                className='inline-block w-full max-w-lg overflow-hidden rounded-lg border border-gray-700 bg-gradient-to-b from-gray-800 to-gray-900 shadow-2xl'
+                initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  y: 0,
+                  transition: { type: 'spring', stiffness: 200, damping: 20 }
+                }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.98,
+                  y: 8,
+                  transition: { duration: 0.15 }
+                }}
+              >
+                <div className='px-4 pt-5 pb-4 sm:p-6 sm:pb-4'>
+                  <div className='sm:flex sm:items-start'>
+                    <div className='mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10'>
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        className='h-6 w-6 text-red-600'
+                        fill='none'
+                        viewBox='0 0 24 24'
+                        stroke='currentColor'
+                      >
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          strokeWidth={2}
+                          d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1'
                         />
+                      </svg>
+                    </div>
+                    <div className='mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left'>
+                      <h3 className='text-lg font-medium leading-6 text-white'>
+                        Sign out
+                      </h3>
+                      <div className='mt-2'>
+                        <p className='text-sm text-gray-300'>
+                          Are you sure you want to sign out? You will need to
+                          sign in again to access your account.
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="text-sm w-full md:w-1/2">
-                  <label className="block text-gray-500 mb-1">Username</label>
-                  <div className="flex">
-                    <div className="bg-gray-800 p-3 rounded-l border border-gray-700 text-gray-400">
-                      mictale.in/
-                    </div>
-                    <input
-                      type="text"
-                      value={formData.username}
-                      onChange={handleInputChange}
-                      name="username"
-                      className="flex-1 bg-gray-900 border border-gray-800 rounded-r p-3 text-white"
-                      placeholder="Username"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className='flex justify-end space-x-4 pt-4'>
-                <button
-                  className='px-4 py-2 text-white bg-gray-800 rounded-lg hover:bg-gray-700'
-                  onClick={() => router.push('/')}
-                >
-                  Cancel
-                </button>
-                <button
-                  className='px-4 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 flex items-center gap-2'
-                  onClick={handleUpdateProfile}
-                  disabled={userData.isLoading}
-                >
-                  {userData.isLoading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    'Save changes'
-                  )}
-                </button>
-              </div>
+<div className='bg-gray-900 px-4 py-3 flex flex-row-reverse gap-3 sm:px-6 items-center'>
+  <button
+    type='button'
+    className='flex-1 sm:flex-none inline-flex cursor-pointer justify-center items-center rounded-md border border-transparent bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-transform duration-200 hover:scale-105 hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:w-auto'
+    onClick={confirmLogout}
+  >
+    Sign out
+  </button>
+  <button
+    type='button'
+    className='flex-1 sm:flex-none inline-flex cursor-pointer justify-center items-center rounded-md border border-gray-600 bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 shadow-sm transition-transform duration-200 hover:scale-105 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 sm:w-auto'
+    onClick={() => setShowLogoutConfirmation(false)}
+  >
+    Cancel
+  </button>
+</div>
+              </motion.div>
             </div>
-          </div>
-        </div>
-
-        <AnimatePresence>
-          {success && (
-            <motion.div
-              initial={{ opacity: 0, y: -50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              className='fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg'
-            >
-              {success}
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <AnimatePresence>
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              className='fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg'
-            >
-              {error}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+          </>
+        )}
+      </AnimatePresence>
       <Footer />
-    </>
+    </div>
   )
 }

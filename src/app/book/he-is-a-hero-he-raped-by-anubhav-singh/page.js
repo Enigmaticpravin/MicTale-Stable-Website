@@ -1,4 +1,5 @@
 import BookClient from '@/app/book/BookClient'
+import crypto from 'crypto'
 
 export const metadata = {
   title: 'He is a Hero. He Raped! | Buy Online at MicTale',
@@ -20,6 +21,7 @@ export const metadata = {
 }
 
 const book = {
+    id: crypto.randomUUID(),
   title: 'He is a Hero. He Raped!',
   author: 'Anubhav Singh',
   isbn: '978-93-342-2993-6',

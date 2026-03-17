@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState, useRef } from 'react'
+import Image from 'next/image'
 
 export default function InstagramGrid({ limit = 50, max = 500 }) {
   const BATCH = 12
@@ -193,13 +194,16 @@ export default function InstagramGrid({ limit = 50, max = 500 }) {
                         paddingTop: '100%'
                       }}
                     >
-                      <img
-                        src={url}
-                        alt={alt}
-                        loading="lazy"
-                        className="absolute left-0 top-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        style={{ width: '100%', height: '100%' }}
-                      />
+                     <Image
+  src={url}
+  alt={alt}
+  fill
+  sizes="130px"
+  quality={50}
+  loading="lazy"
+  className="absolute left-0 top-0 object-cover transition-transform duration-300 group-hover:scale-105"
+/>
+
                     </div>
                   ) : (
                     <div className="flex h-48 items-center justify-center bg-white/4 text-xs text-white/40">

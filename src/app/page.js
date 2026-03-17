@@ -8,9 +8,10 @@ import TopPerformers from './components/TopPerformers'
 import YouTubeChannelComponent from './components/YouTubeChannelComponent'
 import ContactForm from './components/Contact'
 import Footer from './components/Footer'
-
 import BannerClient from './components/BannerClient'
+import HomeShowsClient from './components/ShowsClient'
 import { Youtube } from 'lucide-react'
+import { createRouteSupabase } from '@/app/lib/supabase/server-route'
 import ScrollReveal from './components/ScrollReveal'
 
 export const metadata = {
@@ -85,6 +86,11 @@ const navigationSchema = {
 
 
 export default async function HomePage() {
+  const supabase = await createRouteSupabase()
+
+  const { data: shows } = await supabase
+    .from("shows")
+    .select("*")
 
   return (
     <>
@@ -96,6 +102,9 @@ export default async function HomePage() {
 
        <ScrollReveal>
         <BannerClient bookPoster={BookPoster} />
+       </ScrollReveal>
+       <ScrollReveal>
+        <HomeShowsClient shows={shows || []} />
        </ScrollReveal>
        <ScrollReveal>
         <div className="bg-gradient-to-b from-transparent to-slate-900 h-10" />

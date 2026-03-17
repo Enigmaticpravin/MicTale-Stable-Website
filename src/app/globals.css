@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Elsie:wght@400;900&family=Libre+Baskerville:ital@1&family=Rozha+One&family=EB+Garamond&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet');
+@import url('https://fonts.googleapis.com/css2?family=Elsie:wght@400;900&family=Libre+Baskerville:ital@1&family=Rozha+One&family=Montserrat&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet');
 @import "tailwindcss";
 :root {
   --background: #171717;
@@ -19,11 +19,19 @@
   }
 }
 
+@keyframes spin-gradient {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-border-spin {
+  animation: spin-gradient 3s linear infinite;
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 }
-
 
 .star-field {
   background-image: 
@@ -156,20 +164,24 @@ body {
   font-style: normal;
 }
 
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #3f3f46;
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+}
+
+.tiptap p.is-editor-empty:first-child {
+  min-height: 1.5rem;
+}
+
 .libre-baskerville-regular-italic {
   font-family: "Libre Baskerville", serif;
   font-weight: 400;
   font-style: italic;
 }
-
-
-.eb-garamond-serial {
-  font-family: "EB Garamond", serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
-}
-
 
 .tiro-class {
   font-family: "Tiro Devanagari Hindi", serif;
@@ -185,6 +197,14 @@ body {
 
 .elsie-regular {
   font-family: "Elsie", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+.montserrat-regular {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
 }

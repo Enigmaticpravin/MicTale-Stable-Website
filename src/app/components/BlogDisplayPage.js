@@ -19,14 +19,28 @@ import Image from 'next/image'
 import logo from '@/app/images/mic transparent.png'
 
 export default function BlogDisplayPageDark ({ blog, similarBlogs = [] }) {
-  const [isBookmarked, setIsBookmarked] = useState(false)
   const [readingTime, setReadingTime] = useState(0)
 
-  useEffect(() => {
-    const wordCount = (blog?.content || '').split(/\s+/).filter(Boolean).length
-    const time = Math.max(1, Math.ceil(wordCount / 200))
-    setReadingTime(time)
-  }, [blog?.content])
+function extractText(node) {
+  if (!node) return ""
+
+  if (typeof node === "string") return node
+
+  if (node.type === "text") return node.text || ""
+
+  if (Array.isArray(node.content)) {
+    return node.content.map(extractText).join(" ")
+  }
+
+  return ""
+}
+
+useEffect(() => {
+  const plain = extractText(blog?.content)
+  const wordCount = plain.split(/\s+/).filter(Boolean).length
+  const time = Math.max(1, Math.ceil(wordCount / 200))
+  setReadingTime(time)
+}, [blog])
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -67,6 +81,7 @@ export default function BlogDisplayPageDark ({ blog, similarBlogs = [] }) {
   }
 
   if (!blog) return null
+  const articleText = extractText(blog?.content)
 
   const displaySimilarBlogs = similarBlogs?.slice(0, 4) || []
 
@@ -134,9 +149,9 @@ export default function BlogDisplayPageDark ({ blog, similarBlogs = [] }) {
              first-letter:float-left first-letter:mr-2 whitespace-pre-line first-letter:mt-1
              first-letter:text-6xl md:first-letter:text-7xl
              first-letter:leading-none first-letter:font-bold'
-              dangerouslySetInnerHTML={{
-                __html: blog.content || ''
-              }}
+            dangerouslySetInnerHTML={{
+  __html: articleText.replace(/\n/g, "<br />")
+}}
             />
           </motion.article>
 

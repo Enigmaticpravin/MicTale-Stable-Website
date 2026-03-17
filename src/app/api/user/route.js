@@ -1,47 +1,45 @@
-// app/api/user/route.js
-import { NextResponse } from "next/server";
-import { getUser } from "@/app/lib/getUser";
-import { adminDb } from "@/app/lib/firebaseAdmin";
+import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
 
 export async function GET() {
-  try {
-    const sessionUser = await getUser();
-    
-    if (!sessionUser) {
-      return NextResponse.json({ user: null });
+  const cookieStore = await cookies()
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options)
+          })
+        }
+      }
     }
+  )
 
-    const userRef = adminDb.collection('users').doc(sessionUser.uid);
-    const userDoc = await userRef.get();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser()
 
-    let userData;
-
-    if (userDoc.exists) {
-      const firestoreData = userDoc.data();
-      userData = {
-        uid: sessionUser.uid,
-        email: sessionUser.email,
-        name: firestoreData.name || sessionUser.name || '',
-        displayName: firestoreData.name || sessionUser.name || '',
-        profilePicture: firestoreData.profilePicture || sessionUser.picture || '/default-avatar.png',
-        createdAt: firestoreData.createdAt,
-        lastLogin: firestoreData.lastLogin,
-        preferences: firestoreData.preferences,
-        authProvider: firestoreData.authProvider,
-        ...firestoreData
-      };
-    } else {
-      userData = {
-        uid: sessionUser.uid,
-        email: sessionUser.email,
-        name: sessionUser.name || '',
-        displayName: sessionUser.name || '',
-        profilePicture: sessionUser.picture || '/default-avatar.png'
-      };
-    }
-
-    return NextResponse.json({ user: userData });
-  } catch (error) {
-    return NextResponse.json({ user: null }, { status: 401 });
+  if (!user) {
+    return NextResponse.json({ user: null })
   }
+
+  const { data: profile } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
+  return NextResponse.json({
+    user: {
+      ...user,
+      ...profile
+    }
+  })
 }

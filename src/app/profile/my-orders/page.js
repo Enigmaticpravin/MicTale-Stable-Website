@@ -2,13 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '@/app/lib/firebase-db';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { supabase } from '@/app/lib/supabase/client';
 import { 
   HelpCircle, 
-  Calendar, 
-  Clock, 
+  Calendar,
   MapPin, 
   User, 
   Mail, 
@@ -19,130 +16,158 @@ import {
   BookOpen, 
   Ticket,
   ChevronDown,
-  Filter
 } from 'lucide-react';
 import Footer from '@/app/components/Footer';
 
 export default function MyOrders() {
-  const [tickets, setTickets] = useState([]);
-  const [bookOrders, setBookOrders] = useState([]);
-  const [expandedId, setExpandedId] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [showDetails, setShowDetails] = useState({});
-  const [currentUser, setCurrentUser] = useState(null);
-  const [activeTab, setActiveTab] = useState('all'); // all, tickets, books
-  const [filterStatus, setFilterStatus] = useState('all');
-  const auth = getAuth();
+
+  const [tickets, setTickets] = useState([])
+  const [bookOrders, setBookOrders] = useState([])
+  const [expandedId, setExpandedId] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [showDetails, setShowDetails] = useState({})
+  const [currentUser, setCurrentUser] = useState(null)
+  const [activeTab, setActiveTab] = useState('all')
+  const [filterStatus, setFilterStatus] = useState('all')
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      setCurrentUser(user);
-    });
-    return () => unsubscribe();
-  }, [auth]);
+
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser()
+      setCurrentUser(data?.user || null)
+    }
+
+    getUser()
+
+  }, [])
 
   useEffect(() => {
+
     const fetchOrders = async () => {
-      if (!currentUser?.uid) return;
-      
+
+      if (!currentUser?.id) return
+
       try {
-        // Fetch tickets
-        const ticketsQuery = query(
-          collection(db, 'tickets'),
-          where('userId', '==', currentUser?.uid),
-        );
-        const ticketSnapshot = await getDocs(ticketsQuery);
-        const ticketList = ticketSnapshot.docs.map(doc => ({
-          id: doc.id,
+
+        const { data: ticketData } = await supabase
+          .from('tickets')
+          .select('*')
+          .eq('userId', currentUser.id)
+
+        const ticketList = (ticketData || []).map(ticket => ({
+          id: ticket.id,
           type: 'ticket',
-          ...doc.data()
-        }));
-        
-        // Fetch book orders
-        const ordersQuery = query(
-          collection(db, 'orders'),
-          where('email', '==', currentUser.email),
-        );
-        const orderSnapshot = await getDocs(ordersQuery);
-        const orderList = orderSnapshot.docs.map(doc => ({
-          id: doc.id,
+          ...ticket
+        }))
+
+
+        const { data: orderData } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('email', currentUser.email)
+
+        const orderList = (orderData || []).map(order => ({
+          id: order.id,
           type: 'book',
-          ...doc.data()
-        }));
-        
-        setTickets(ticketList);
-        setBookOrders(orderList);
-        
-        // Fetch show details for tickets
-        const showIds = [...new Set(ticketList.map(ticket => ticket.showId))];
-        await fetchShowDetails(showIds);
-        
-        setLoading(false);
+          ...order
+        }))
+
+
+        setTickets(ticketList)
+        setBookOrders(orderList)
+
+        const showIds = [...new Set(ticketList.map(ticket => ticket.showId))]
+        await fetchShowDetails(showIds)
+
+        setLoading(false)
+
       } catch (error) {
-        console.error('Error fetching orders:', error);
-        setLoading(false);
+
+        console.error('Error fetching orders:', error)
+        setLoading(false)
+
       }
-    };
-    
-    fetchOrders();
-  }, [currentUser?.uid, currentUser?.email]);
+
+    }
+
+    fetchOrders()
+
+  }, [currentUser?.id, currentUser?.email])
+
+
+  const fetchShowDetails = async (showIds) => {
+
+    try {
+
+      const showData = {}
+
+      for (const showId of showIds) {
+
+        const { data } = await supabase
+          .from('shows')
+          .select('*')
+          .eq('showid', showId)
+          .single()
+
+        if (data) {
+          showData[showId] = data
+        }
+      }
+      setShowDetails(showData)
+    } catch (error) {
+
+      console.error('Error fetching show details:', error)
+
+    }
+  }
 
   const sendToPaymentGateway = async (order) => {
-    const isTicket = order.type === 'ticket';
-    const orderId = isTicket ? order.bookingId : order.orderId;
-    const amount = isTicket ? 200 : (order.book.price * order.quantity + 50);
-    const productInfo = isTicket ? "Poetry Event Ticket" : `Book Order: ${order.book.title}`;
-    
+
+    const isTicket = order.type === 'ticket'
+    const orderId = isTicket ? order.bookingId : order.orderId
+    const amount = isTicket ? 200 : (order.book.price * order.quantity + 50)
+
+    const productInfo = isTicket
+      ? "Poetry Event Ticket"
+      : `Book Order: ${order.book.title}`
+
     const response = await fetch('/api/payments/payu', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        amount: amount,
-        productInfo: productInfo,
+        amount,
+        productInfo,
         firstname: isTicket ? order.fullName : order.name,
         email: order.email,
         phone: isTicket ? order.phoneNumber : order.phone,
-        [isTicket ? 'bookingId' : 'orderId']: orderId,
-      }),
-    });
-    
-    const data = await response.json();
+        [isTicket ? 'bookingId' : 'orderId']: orderId
+      })
+    })
+
+    const data = await response.json()
+
     if (data.action) {
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = data.action;
+
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action = data.action
 
       Object.keys(data).forEach((key) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = data[key];
-        form.appendChild(input);
-      });
 
-      document.body.appendChild(form);
-      form.submit();
+        const input = document.createElement('input')
+        input.type = 'hidden'
+        input.name = key
+        input.value = data[key]
+        form.appendChild(input)
+
+      })
+
+      document.body.appendChild(form)
+      form.submit()
+
     }
-  };
-  
-  const fetchShowDetails = async (showIds) => {
-    try {
-      const showData = {};
-      for (const showId of showIds) {
-        const showQuery = query(
-          collection(db, 'shows'),
-          where('showid', '==', showId)
-        );
-        const showSnapshot = await getDocs(showQuery);
-        if (!showSnapshot.empty) {
-          showData[showId] = showSnapshot.docs[0].data();
-        }
-      }
-      setShowDetails(showData);
-    } catch (error) {
-      console.error('Error fetching show details:', error);
-    }
-  };
+
+  }
 
   const toggleExpand = (id) => {
     setExpandedId(expandedId === id ? null : id);
@@ -246,7 +271,6 @@ export default function MyOrders() {
     </p>
         </div>
 
-        {/* Quick Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
           <div className="bg-gray-900 border border-gray-800 rounded-lg p-3 sm:p-4">
             <div className="flex items-center justify-between">

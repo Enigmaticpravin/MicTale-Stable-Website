@@ -1,24 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  Truck,
-  CreditCard,
-  Book,
-  ShieldCheck,
-  ShoppingBag,
-  ChevronRight,
-  InfoIcon,
-  LockIcon,
-  Info,
-  Lock,
-  User,
-  Star,
-  MapPin,
-  Phone
-} from 'lucide-react'
+import { ArrowRight, Lock, Star } from 'lucide-react'
 import Image from 'next/image'
-import { db, collection, addDoc } from '@/app/lib/firebase-db'
 import first from '@/app/images/1.jpg'
 import second from '@/app/images/2.jpg'
 import third from '@/app/images/3.jpg'
@@ -28,12 +12,17 @@ import LiteYouTube from '../components/LiteYouTube'
 
 export default function BookClient ({ book, error, url }) {
   const [quantity, setQuantity] = useState(1)
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: ''
-  })
+const [formData, setFormData] = useState({
+  name: '',
+  email: '',
+  phone: '',
+  street: '',
+  city: '',
+  zip: '',
+  state: '',
+  country: ''
+})
+
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [showDeliveryForm, setShowDeliveryForm] = useState(false)
@@ -51,6 +40,12 @@ export default function BookClient ({ book, error, url }) {
     book.title === 'Kaalikh (Author-signed, Revised Edition)' ||
     book.title === 'Kaalikh (Author-signed, Paperback)'
 
+      const generateBookingId = () => {
+    const timestamp = Date.now().toString(36)
+    const randomString = Math.random().toString(36).substring(2, 8)
+    return `MTL-${timestamp}-${randomString}`.toUpperCase()
+  }
+
   const handleInputChange = e => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -59,22 +54,16 @@ export default function BookClient ({ book, error, url }) {
     }))
   }
 
-  const generateBookingId = () => {
-    const timestamp = Date.now().toString(36)
-    const randomString = Math.random().toString(36).substring(2, 8)
-    return `MTL-${timestamp}-${randomString}`.toUpperCase()
+const handleSubmit = async e => {
+  e.preventDefault()
+
+  if (!formData.name || !formData.email || !formData.phone) {
+    setErrorMsg('Please fill all required fields')
+    return
   }
 
-  const handleSubmit = async e => {
-    e.preventDefault()
-
-    if (!book || !formData.name || !formData.email || !formData.phone) {
-      setErrorMsg('Please fill all the required fields.')
-      return
-    }
-
-    setLoading(true)
-    setErrorMsg('')
+  setLoading(true)
+  setErrorMsg('')
 
     const newOrder = {
       ...formData,
@@ -84,17 +73,13 @@ export default function BookClient ({ book, error, url }) {
       timestamp: new Date()
     }
 
-    try {
-      const orderRef = collection(db, 'orders')
-      await addDoc(orderRef, newOrder)
-
-      const bookPrice = book.price * quantity + 50
+  try {
+       const bookPrice = book.price * quantity + 50
       const totalAmount = bookPrice.toString()
-
-      const response = await fetch('/api/payments/payu', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    const res = await fetch('/api/payments/payu', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({
           amount: totalAmount,
           productInfo: `Book Order: ${book.title}`,
           firstname: formData.name,
@@ -102,34 +87,37 @@ export default function BookClient ({ book, error, url }) {
           phone: formData.phone,
           orderId: newOrder.orderId
         })
-      })
+    })
 
-      const data = await response.json()
-      setLoading(false)
+    const data = await res.json()
 
-      if (data.action) {
-        const form = document.createElement('form')
-        form.method = 'POST'
-        form.action = data.action
+    if (!res.ok) throw new Error(data.error || 'Order failed')
 
-        Object.keys(data).forEach(key => {
-          const input = document.createElement('input')
-          input.type = 'hidden'
-          input.name = key
-          input.value = data[key]
-          form.appendChild(input)
-        })
+    const form = document.createElement('form')
+    form.method = 'POST'
+form.action = data.action
 
-        document.body.appendChild(form)
-        form.submit()
-      } else {
-        setErrorMsg('Payment initiation failed. Please try again.')
-      }
-    } catch (error) {
-      setErrorMsg('Failed to place order. Please try again later.')
-      setLoading(false)
-    }
+Object.entries(data).forEach(([k, v]) => {
+  if (k === 'action') return
+
+  const input = document.createElement('input')
+  input.type = 'hidden'
+  input.name = k
+  input.value = v
+  form.appendChild(input)
+})
+
+
+    document.body.appendChild(form)
+    form.submit()
+  } catch (err) {
+    console.error(err)
+    setErrorMsg('Payment initiation failed')
+    setLoading(false)
   }
+}
+
+
 
   const toggleDeliveryForm = () => {
     setShowDeliveryForm(!showDeliveryForm)
@@ -147,52 +135,22 @@ export default function BookClient ({ book, error, url }) {
     }
   }
 
-  const sendConfirmationEmail = async (
-    buyerEmail,
-    buyerName,
-    orderId,
-    totalAmount
-  ) => {
-    try {
-      const response = await fetch('/api/sendEmail', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: buyerEmail,
-          name: buyerName,
-          orderId,
-          totalAmount
-        })
-      })
-
-      const data = await response.json()
-      if (response.ok) {
-        console.log('Email sent:', data)
-      } else {
-        console.error('Error sending email:', data.error)
-      }
-    } catch (error) {
-      console.error('Failed to send confirmation email:', error)
-    }
-  }
-
   const discountPercentage = Math.round(
     ((book.originalPrice - book.price) / book.originalPrice) * 100
   )
 
   const FloatingInput = ({ label, ...props }) => (
-  <div className="relative group">
-    <input
-      {...props}
-      placeholder=" "
-      className="peer w-full bg-transparent border-b border-gray-200 py-3 outline-none focus:border-black transition-all duration-500 text-gray-900 font-light"
-    />
-    <label className="absolute left-0 top-3 text-gray-400 text-[11px] uppercase tracking-[0.2em] font-bold transition-all duration-300 pointer-events-none peer-focus:-top-6 peer-focus:text-black peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-black">
-      {label}
-    </label>
-  </div>
-);
-
+    <div className='relative group'>
+      <input
+        {...props}
+        placeholder=' '
+        className='peer w-full bg-transparent border-b border-gray-200 py-3 outline-none focus:border-black transition-all duration-500 text-gray-900 font-light'
+      />
+      <label className='absolute left-0 top-3 text-gray-400 text-[11px] uppercase tracking-[0.2em] font-bold transition-all duration-300 pointer-events-none peer-focus:-top-6 peer-focus:text-black peer-[:not(:placeholder-shown)]:-top-6 peer-[:not(:placeholder-shown)]:text-black'>
+        {label}
+      </label>
+    </div>
+  )
 
   return (
     <>
@@ -233,15 +191,16 @@ export default function BookClient ({ book, error, url }) {
 
         <div className='absolute inset-0 bg-white opacity-80' />
         <main className='relative z-10  mx-auto md:px-6 py-5 md:py-12'>
-          <div className='relative p-5 mx-auto overflow-hidden justify-center items-center flex flex-col'>
-            <span
-              className="relative bg-yellow-400 text-black text-xs md:text-2xl font-bold px-5 py-1 rounded-full uppercase shadow-md 
+          {isSpecialBook && (
+            <div className='relative p-5 mx-auto overflow-hidden justify-center items-center flex flex-col'>
+              <span
+                className="relative bg-yellow-400 text-black text-xs md:text-2xl font-bold px-5 py-1 rounded-full uppercase shadow-md 
        animate-[wiggle_1s_ease-in-out_infinite] before:content-['🔥'] before:absolute before:-left-4 before:animate-[slideIn_1.5s_ease-in-out_infinite] after:content-['🔥'] after:absolute after:-right-4 after:animate-[slideIn_1.5s_ease-in-out_infinite]"
-            >
-              🎉 Bestseller
-            </span>
-            <style>
-              {`
+              >
+                🎉 Bestseller
+              </span>
+              <style>
+                {`
          @keyframes wiggle {
            0%, 100% { transform: rotate(-3deg); }
            50% { transform: rotate(3deg); }
@@ -252,250 +211,263 @@ export default function BookClient ({ book, error, url }) {
            100% { transform: translateX(10px); opacity: 0; }
          }
        `}
-            </style>
-          </div>
+              </style>
+            </div>
+          )}
 
-          <div className='flex flex-col lg:flex-row justify-between gap-6 w-full p-4'>
-            <div className='flex-1 flex justify-center lg:justify-start md:p-4'>
+          <div className='flex flex-col lg:flex-row justify-between gap-8 w-full p-4 lg:p-8 mx-auto'>
+            <div className='flex-1 flex justify-center lg:justify-start items-start'>
               {isSpecialBook ? (
                 <Book3D
                   frontCover='/images/1.webp'
                   backCover='/images/2.webp'
                   spineCover='/images/spine.webp'
-                  className='max-w-[150px] md:max-w-[300px] h-auto'
+                  className='max-w-[180px] md:max-w-[320px] shadow-2xl transition-transform duration-500 hover:scale-105'
                 />
               ) : (
                 <Book3D
                   backCover='/images/back.webp'
                   frontCover='/images/front.webp'
                   spineCover='/images/sspine.webp'
-                  className='max-w-[150px] md:max-w-[300px] h-auto'
+                  className='max-w-[180px] md:max-w-[320px] shadow-2xl transition-transform duration-500 hover:scale-105'
                 />
               )}
             </div>
 
-            <div className='flex-1 space-y-4 text-center lg:text-left'>
-              <h1 className='text-2xl md:text-3xl font-bold text-gray-800'>
-                {book.title}
-              </h1>
-              <p className='text-gray-500'>
-                By{' '}
-                <span className='font-semibold text-orange-600 italic'>
-                  {book.author}
-                </span>{' '}
-                | Paperback
-              </p>
-              <div className='flex justify-center lg:justify-start items-center gap-2'>
-                <div className='flex text-yellow-400'>
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className='w-5 h-5 fill-current' />
-                  ))}
+            <div className='flex-[1.5] space-y-6 text-center lg:text-left'>
+              <div className='space-y-2 flex flex-col items-center lg:items-start justify-center'>
+                <h1 className='text-2xl md:text-4xl montserrat-regular text-slate-900 tracking-tight'>
+                  {book.title}
+                </h1>
+                <div className='flex gap-4'>
+                  <p className='text-slate-600 text-sm md:text-lg'>
+                    By{' '}
+                    <span
+                      className='
+  font-semibold italic cursor-pointer text-blue-500'
+                    >
+                      {book.author}
+                    </span>
+                    <span className='mx-2 text-slate-600'>|</span>Paperback
+                  </p>
+
+                  {isSpecialBook && (
+                    <div className='hidden md:flex justify-center lg:justify-start items-center gap-3'>
+                      <div className='flex text-amber-400'>
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className='w-5 h-5 fill-current' />
+                        ))}
+                      </div>
+
+                      <span className='text-slate-500 font-medium'>
+                        (5 Customer Reviews)
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <span className='text-gray-600'>(5 Reviews)</span>
               </div>
 
-              <div className='block lg:hidden'>
-                <div className='flex items-center justify-center lg:justify-start gap-4'>
-                  <span className='text-2xl font-bold text-orange-600'>
+              <div className='block lg:hidden space-y-4'>
+                <div className='flex items-center justify-center gap-4'>
+                  <span className='text-3xl font-bold text-slate-900'>
                     ₹{book.price}
                   </span>
-                  <span className='line-through text-gray-400'>
+                  <span className='line-through text-slate-400 text-lg'>
                     ₹{book.originalPrice}
                   </span>
-                  <span className='bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs'>
-                    Save ₹{book.originalPrice - book.price} (
+                  <span className='bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-xs font-bold border border-orange-100'>
                     {Math.round(
                       ((book.originalPrice - book.price) / book.originalPrice) *
                         100
                     )}
-                    %)
+                    % OFF
                   </span>
                 </div>
 
-                <div className='text-black font-medium text-sm'>
-                  Available | Ships within 2-4 Business Days
+                <div className='text-emerald-600 font-semibold text-sm flex items-center justify-center gap-2'>
+                  <span className='relative flex h-2 w-2'>
+                    <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75'></span>
+                    <span className='relative inline-flex rounded-full h-2 w-2 bg-emerald-500'></span>
+                  </span>
+                  In Stock | Ships in 2-4 Business Days
                 </div>
 
                 <div className='flex flex-row gap-4 mt-4 items-center w-full'>
-                  <div className='flex text-black items-center border border-orange-600 rounded-lg'>
+                  <div className='flex items-center bg-white border border-slate-500 rounded-xl overflow-hidden shadow-sm'>
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className='px-3 py-2 hover:bg-gray-100'
+                      className='px-4 py-2 text-black hover:bg-slate-50 transition-colors'
                     >
-                      -
+                      {' '}
+                      -{' '}
                     </button>
-                    <span className='px-4'>{quantity}</span>
+                    <span className='px-2 font-bold text-slate-700'>
+                      {quantity}
+                    </span>
                     <button
                       onClick={() => setQuantity(quantity + 1)}
-                      className='px-3 py-2  hover:bg-gray-100'
+                      className='px-4 py-2 text-black hover:bg-slate-50 transition-colors'
                     >
-                      +
+                      {' '}
+                      +{' '}
                     </button>
                   </div>
 
                   <button
                     onClick={toggleDeliveryForm}
-                    className='
-    w-full relative overflow-hidden
-    bg-gradient-to-br from-orange-400 via-orange-500 to-pink-500
-    backdrop-blur-md backdrop-saturate-150
-    border border-white/30 cursor-pointer before:pointer-events-none
-    text-white font-medium py-3 px-6 rounded-2xl
-    shadow-[0_8px_32px_rgba(251,146,60,0.3),inset_0_1px_0_rgba(255,255,255,0.2)]
-    hover:shadow-[0_12px_40px_rgba(251,146,60,0.4),inset_0_1px_0_rgba(255,255,255,0.3)]
-    hover:bg-gradient-to-br hover:from-orange-400/80 hover:via-orange-500/90 hover:to-pink-500/70
-    transition-all duration-300 ease-out
-    before:absolute before:inset-0 before:rounded-2xl
-    before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent
-    before:translate-x-[-100%] before:transition-transform before:duration-1000
-    hover:before:translate-x-[100%]
-    group
-  '
+                    className='flex-1 items-center py-2 justify-center rounded-xl bg-gradient-to-br from-blue-400 via-blue-600 to-blue-900 shadow-[0_4px_20px_rgba(59,130,246,0.5),inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_30px_rgba(59,130,246,0.7),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-1px_0_rgba(0,0,0,0.3)] transition-all duration-300 transform hover:scale-105 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/20 before:via-transparent before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 text-white cursor-pointer'
                   >
-                    <span className='relative z-10 flex items-center justify-center gap-2'>
-                      Buy Now
-                      <div className='w-1 h-1 bg-white/60 rounded-full animate-pulse group-hover:animate-ping'></div>
-                    </span>
+                    Buy Now
                   </button>
                 </div>
               </div>
 
-              <p className='text-gray-600 leading-relaxed text-sm text-justify md:text-base px-2'>
-                {' '}
+              <p className='text-slate-600 leading-relaxed text-base text-justify lg:text-left'>
                 {book.description}
               </p>
 
-              <div className='pt-4 border-t'>
-                <div
-                  className='flex gap-4 overflow-x-auto px-2 sm:px-0'
-                  style={{
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none'
-                  }}
-                >
-                  <style jsx>{`
-                    div::-webkit-scrollbar {
-                      display: none;
-                    }
-                  `}</style>
+              <div className='pt-8 border-t border-slate-100'>
+                <div className='flex flex-col gap-4'>
+                  <div className='flex items-center gap-2 text-slate-500'>
+                    <Lock className='w-4 h-4 text-emerald-600' />
+                    <span className='text-xs font-bold uppercase tracking-wider'>
+                      Secure Checkout Guaranteed
+                    </span>
+                  </div>
 
-                  {[
-                    { icon: ShieldCheck, text: 'Premium Quality' },
-                    { icon: Book, text: 'Certified Product' },
-                    { icon: CreditCard, text: 'Secure Checkout' },
-                    { icon: Truck, text: 'On Time Delivery' }
-                  ].map(({ icon: Icon, text }, index) => (
-                    <div
-                      key={index}
-                      className='flex flex-col items-center text-center text-gray-600 min-w-[90px] sm:min-w-[120px]'
-                    >
-                      <Icon className='w-6 h-6 mb-2 text-orange-600' />
-                      <span className='text-xs sm:text-sm'>{text}</span>
+                  <div
+                    className='flex items-center gap-6 overflow-x-auto pb-2'
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                  >
+                    <style jsx>{`
+                      div::-webkit-scrollbar {
+                        display: none;
+                      }
+                    `}</style>
+
+                    <div className='flex items-center gap-4 border-r border-slate-200 pr-6'>
+                      <img
+                        src='https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg'
+                        alt='Visa'
+                        className='h-4'
+                      />
+                      <img
+                        src='https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg'
+                        alt='Mastercard'
+                        className='h-6  '
+                      />
+                      <img
+                        src='https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg'
+                        alt='PayPal'
+                        className='h-5 '
+                      />
+                      <img
+                        src='https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg'
+                        alt='UPI'
+                        className='h-5'
+                      />
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
-
-              <div className='bg-gray-50 text-black rounded-lg p-4 mt-4 block md:hidden'>
-                <div className='grid grid-cols-2 gap-4 text-xs md:text-sm'>
+              <div className='bg-slate-50 rounded-2xl p-5 mt-4 block md:hidden border border-slate-100'>
+                <div className='grid grid-cols-2 gap-y-4 gap-x-8 text-sm'>
                   <div>
-                    <p className='text-gray-500'>ISBN</p>
-                    <p className='font-medium'>{book.isbn}</p>
+                    <p className='text-slate-400 text-xs uppercase tracking-wider font-bold mb-1'>
+                      ISBN
+                    </p>
+                    <p className='font-semibold text-slate-700'>{book.isbn}</p>
                   </div>
                   <div>
-                    <p className='text-gray-500'>Page Count</p>
-                    <p className='font-medium'>{book.pageCount}</p>
+                    <p className='text-slate-400 text-xs uppercase tracking-wider font-bold mb-1'>
+                      Pages
+                    </p>
+                    <p className='font-semibold text-slate-700'>
+                      {book.pageCount}
+                    </p>
                   </div>
                   <div>
-                    <p className='text-gray-500'>Weight</p>
-                    <p className='font-medium'>231 gr</p>
+                    <p className='text-slate-400 text-xs uppercase tracking-wider font-bold mb-1'>
+                      Weight
+                    </p>
+                    <p className='font-semibold text-slate-700'>231 gr</p>
                   </div>
                   <div>
-                    <p className='text-gray-500'>Dimensions</p>
-                    <p className='font-medium'>198x21x131 mm</p>
+                    <p className='text-slate-400 text-xs uppercase tracking-wider font-bold mb-1'>
+                      Dimensions
+                    </p>
+                    <p className='font-semibold text-slate-700 uppercase text-[10px]'>
+                      198x21x131 mm
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
-
-            <div className='hidden lg:flex-1 lg:flex flex-col space-y-4'>
-              <div className='flex items-center space-x-4'>
-                <span className='text-3xl font-bold text-orange-600'>
-                  ₹{book.price}
-                </span>
-                <span className='line-through text-gray-400'>
-                  ₹{book.originalPrice}
-                </span>
-                <span className='bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm'>
+            <div className='hidden lg:flex flex-col flex-1 space-y-6 bg-white p-6 rounded-3xl border border-slate-100 shadow-xl self-start h-fit sticky top-8'>
+              <div className='space-y-1'>
+                <div className='flex items-baseline gap-2'>
+                  <span className='text-4xl libre-baskerville-regular-italic  text-slate-900'>
+                    ₹{book.price}
+                  </span>
+                  <span className='text-slate-400 line-through text-lg font-medium'>
+                    ₹{book.originalPrice}
+                  </span>
+                </div>
+                <div className='inline-block bg-green-100 text-green-700 px-3 py-1 rounded-lg text-sm font-bold'>
                   Save ₹{book.originalPrice - book.price} ({discountPercentage}
                   %)
-                </span>
+                </div>
               </div>
 
-              <div className='text-black font-medium'>
-                Available | Ships within 2-4 Business Days
+              <div className='text-emerald-600 font-bold text-sm flex items-center gap-2'>
+                <div className='h-2 w-2 rounded-full bg-emerald-500 animate-pulse' />
+                In Stock | Ships in 2-4 Business Days
               </div>
 
-              <div className='flex text-black flex-row gap-4 mt-4 items-center w-full'>
-                <div className='flex items-center border border-orange-600 rounded-lg'>
+              <div className='flex gap-4 w-full h-12 items-stretch'>
+                <div className='flex-1 flex items-center justify-between border border-slate-500 rounded-xl p-1 bg-slate-50'>
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className='px-3 py-2 hover:bg-gray-100 cursor-pointer'
+                    className='w-10 h-full flex items-center justify-center hover:bg-white rounded-lg transition-all font-bold text-slate-600 cursor-pointer'
                   >
-                    -
+                    {' '}
+                    -{' '}
                   </button>
-                  <span className='px-4'>{quantity}</span>
+                  <span className='font-bold text-slate-800'>{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className='px-3 py-2 hover:bg-gray-100 cursor-pointer'
+                    className='w-10 h-full flex items-center justify-center hover:bg-white rounded-lg transition-all font-bold text-slate-600 cursor-pointer'
                   >
-                    +
+                    {' '}
+                    +{' '}
                   </button>
                 </div>
 
                 <button
                   onClick={toggleDeliveryForm}
-                  className='
-    w-full relative overflow-hidden
-    bg-gradient-to-br from-orange-400 via-orange-500 to-pink-500
-    backdrop-blur-md
-    border border-white/30 cursor-pointer
-    text-white font-medium py-3 px-6 rounded-2xl
-    shadow-[0_8px_32px_rgba(251,146,60,0.3),inset_0_1px_0_rgba(255,255,255,0.2)]
-    hover:shadow-[0_12px_40px_rgba(251,146,60,0.4),inset_0_1px_0_rgba(255,255,255,0.3)]
-    hover:bg-gradient-to-br hover:from-orange-400/80 hover:via-orange-500/90 hover:to-pink-500/70
-    transition-all duration-300 ease-out
-    before:absolute before:inset-0 before:rounded-2xl
-    before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent
-    before:translate-x-[-100%] before:transition-transform before:duration-1000
-    hover:before:translate-x-[100%]
-    group
-  '
+                  className='flex-[2] flex items-center justify-center rounded-xl bg-gradient-to-br from-blue-400 via-blue-600 to-blue-900 shadow-[0_4px_20px_rgba(59,130,246,0.5),inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_30px_rgba(59,130,246,0.7),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-1px_0_rgba(0,0,0,0.3)] transition-all duration-300 transform hover:scale-105 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/20 before:via-transparent before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 text-white cursor-pointer'
                 >
-                  <span className='relative z-10 flex items-center justify-center gap-2'>
-                    Buy Now
-                    <div className='w-1 h-1 bg-white/60 rounded-full animate-pulse group-hover:animate-ping'></div>
-                  </span>
+                  Buy Now
                 </button>
               </div>
 
-              <div className='bg-gray-50 text-black rounded-lg p-4 mt-4 hidden md:block'>
-                <div className='grid grid-cols-2 gap-4 text-xs md:text-sm'>
+              <div className='bg-slate-50 rounded-xl p-5 border border-slate-100'>
+                <div className='grid grid-cols-2 gap-4 text-xs'>
                   <div>
-                    <p className='text-gray-500'>ISBN</p>
-                    <p className='font-medium'>{book.isbn}</p>
+                    <p className='text-slate-400 font-bold mb-1'>ISBN</p>
+                    <p className='font-semibold text-slate-800'>{book.isbn}</p>
                   </div>
                   <div>
-                    <p className='text-gray-500'>Page Count</p>
-                    <p className='font-medium'>{book.pageCount}</p>
+                    <p className='text-slate-400 font-bold mb-1'>PAGES</p>
+                    <p className='font-semibold text-slate-800'>
+                      {book.pageCount}
+                    </p>
                   </div>
-                  <div>
-                    <p className='text-gray-500'>Weight</p>
-                    <p className='font-medium'>231 gr</p>
-                  </div>
-                  <div>
-                    <p className='text-gray-500'>Dimensions</p>
-                    <p className='font-medium'>198x21x131 mm</p>
+                  <div className='col-span-2 pt-2 border-t border-slate-200 mt-2'>
+                    <p className='text-slate-400 font-bold'>DIMENSIONS</p>
+                    <p className='font-semibold text-slate-800'>
+                      198 x 21 x 131 mm (231g)
+                    </p>
                   </div>
                 </div>
               </div>
@@ -505,7 +477,7 @@ export default function BookClient ({ book, error, url }) {
           {isSpecialBook && (
             <div className='relative flex w-full max-w-6xl mx-auto gap-4 mt-8'>
               <div className='md:w-1/2 aspect-video w-full'>
-              <LiteYouTube videoId="PqkjSkL_EBQ" />
+                <LiteYouTube videoId='PqkjSkL_EBQ' />
               </div>
               <div className='md:w-1/2 md:flex items-center hidden'>
                 <Image
@@ -545,135 +517,245 @@ export default function BookClient ({ book, error, url }) {
             </div>
           )}
 
-<div
-  id='delivery-form-container'
-  className={`transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-    showDeliveryForm ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20 pointer-events-none'
-  } max-w-7xl mx-auto md:mt-12 mb-24 px-6`}
->
-  <div className='bg-white rounded-[3rem] shadow-[0_80px_150px_-30px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden flex flex-col lg:flex-row'>
-    
-    {/* Sidebar: Navigation & Identity */}
-    <div className='lg:w-1/4 bg-[#0a0a0a] p-12 text-white flex flex-col justify-between'>
-      <div>
-        <div className="w-8 h-1 bg-[#bf953f] mb-12"></div>
-        <h2 className='text-[10px] font-bold text-[#bf953f] uppercase tracking-[0.5em] mb-4'>Checkout</h2>
-        <h3 className='text-4xl font-extralight leading-tight mb-8'>Shipping <br/> <span className="italic font-serif">Registry</span></h3>
-        
-        <div className="space-y-6 opacity-50">
-          <div className="flex items-center gap-4 text-[10px] uppercase tracking-widest">
-            <div className="w-2 h-2 rounded-full bg-[#bf953f]"></div> Information
-          </div>
-          <div className="flex items-center gap-4 text-[10px] uppercase tracking-widest">
-            <div className="w-2 h-2 rounded-full border border-white/30"></div> Payment
-          </div>
-        </div>
-      </div>
-      
-      <p className="text-[10px] text-gray-500 leading-loose tracking-widest uppercase">
-        Secure Hand-Delivery <br/> Guaranteed 2026
-      </p>
-    </div>
+          {showDeliveryForm && (
+            <div
+              id='delivery-form-container'
+              className='transition-all overflow-hidden mt-5 duration-700 ease-out opacity-100 translate-y-0 max-w-6xl mx-auto md:mt-12 mb-4 md:mb-24 px-4'
+            >
+              <div className='bg-white rounded-3xl border border-slate-100 overflow-hidden flex flex-col lg:flex-row'>
+                <div className='lg:w-1/4 bg-gradient-to-l from-slate-900 via-slate-950 to-slate-900 p-8 text-white hidden md:flex flex-col'>
+                  <div className='flex-1'>
+                    <div className='flex items-center gap-2 mb-12'>
+                      <div className='w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold'>
+                        1
+                      </div>
+                      <h2 className='text-xs font-bold uppercase tracking-widest text-blue-400'>
+                        Shipping
+                      </h2>
+                    </div>
 
-    {/* Main Form: Detailed Address Breakdown */}
-    <div className='flex-1 p-10 md:p-16 lg:p-20'>
-      <form onSubmit={handleSubmit} className='max-w-2xl mx-auto space-y-16'>
-        
-        {/* Section: Contact */}
-        <section>
-          <h4 className="text-[10px] font-black text-black uppercase tracking-[0.3em] mb-12 flex items-center gap-4">
-            01. Recipient <span className="h-[1px] flex-1 bg-gray-100"></span>
-          </h4>
-          <div className="grid md:grid-cols-2 gap-12">
-            <FloatingInput label="Full Name" name="name" value={formData.name} onChange={handleInputChange} />
-            <FloatingInput label="Email Address" type="email" name="email" value={formData.email} onChange={handleInputChange} />
-          </div>
-        </section>
+                    <nav className='space-y-8'>
+                      <div className='flex items-center gap-4 group'>
+                        <div className='w-2 h-2 rounded-full bg-blue-500 ring-4 ring-blue-500/20'></div>
+                        <span className='text-sm font-medium tracking-wide'>
+                          Information
+                        </span>
+                      </div>
+                      <div className='flex items-center gap-4 opacity-40'>
+                        <div className='w-2 h-2 rounded-full bg-slate-400'></div>
+                        <span className='text-sm font-medium tracking-wide'>
+                          Payment
+                        </span>
+                      </div>
+                      <div className='flex items-center gap-4 opacity-40'>
+                        <div className='w-2 h-2 rounded-full bg-slate-400'></div>
+                        <span className='text-sm font-medium tracking-wide'>
+                          Confirmation
+                        </span>
+                      </div>
+                    </nav>
+                  </div>
 
-        {/* Section: Detailed Address */}
-        <section>
-          <h4 className="text-[10px] font-black text-black uppercase tracking-[0.3em] mb-12 flex items-center gap-4">
-            02. Destination <span className="h-[1px] flex-1 bg-gray-100"></span>
-          </h4>
-          <div className="grid md:grid-cols-2 gap-12">
-            <div className="md:col-span-2">
-              <FloatingInput label="Street Address" name="street" value={formData.street} onChange={handleInputChange} />
+                  <div className='pt-8 border-t border-white/10'>
+                    <div className='flex items-center gap-3 text-slate-400'>
+                      <Lock className='w-4 h-4' />
+                      <span className='text-[10px] uppercase tracking-widest font-semibold'>
+                        256-bit Encryption
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className='flex-1 p-8 md:p-12 bg-white'>
+                  <form
+                    onSubmit={handleSubmit}
+                    className='max-w-xl mx-auto space-y-10'
+                  >
+                    <header>
+                      <h3 className='text-2xl font-bold text-slate-900'>
+                        Shipping Details
+                      </h3>
+                      <p className='text-slate-500 text-sm mt-1'>
+                        Please enter your precise delivery information.
+                      </p>
+                    </header>
+
+                    <section className='space-y-6'>
+                      <div className='flex items-center gap-3'>
+                        <span className='text-xs font-black text-blue-600 bg-blue-50 px-2 py-1 rounded'>
+                          01
+                        </span>
+                        <span className='text-sm font-bold uppercase tracking-wider text-slate-800'>
+                          Contact Person
+                        </span>
+                      </div>
+                      <div className='grid md:grid-cols-2 gap-6'>
+                        <FloatingInput
+                          label='Full Name'
+                          name='name'
+                          value={formData.name}
+                          onChange={handleInputChange}
+                        />
+                        <FloatingInput
+                          label='Email Address'
+                          type='email'
+                          name='email'
+                          value={formData.email}
+                          onChange={handleInputChange}
+                        />
+                        <FloatingInput
+                          label='Phone Number'
+                          type='tel'
+                          name='phone'
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </section>
+
+                    <section className='space-y-6'>
+                      <div className='flex items-center gap-3'>
+                        <span className='text-xs font-black text-blue-600 bg-blue-50 px-2 py-1 rounded'>
+                          02
+                        </span>
+                        <span className='text-sm font-bold uppercase tracking-wider text-slate-800'>
+                          Destination
+                        </span>
+                      </div>
+                      <div className='grid md:grid-cols-2 gap-6'>
+                        <div className='md:col-span-2'>
+                          <FloatingInput
+                            label='Street Address'
+                            name='street'
+                            value={formData.street}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                        <FloatingInput
+                          label='City'
+                          name='city'
+                          value={formData.city}
+                          onChange={handleInputChange}
+                        />
+                        <FloatingInput
+                          label='Postal Code'
+                          name='zip'
+                          value={formData.zip}
+                          onChange={handleInputChange}
+                        />
+                        <FloatingInput
+                          label='State'
+                          name='state'
+                          value={formData.state}
+                          onChange={handleInputChange}
+                        />
+                        <FloatingInput
+                          label='Country'
+                          name='country'
+                          value={formData.country}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </section>
+                  </form>
+                </div>
+                <div className='lg:w-[380px] bg-slate-50 p-8 border-l border-slate-100 flex flex-col'>
+                  <h4 className='text-sm font-bold text-slate-900 uppercase tracking-widest mb-8'>
+                    Order Summary
+                  </h4>
+
+                  <div className='flex-1 space-y-6'>
+                    <div className='flex gap-4 bg-white p-3 rounded-2xl border border-slate-200/60'>
+                      <div className='relative'>
+                        <Image
+                          src={
+                            isSpecialBook
+                              ? '/images/1.webp'
+                              : '/images/front.webp'
+                          }
+                          alt={book.title}
+                          width={64}
+                          height={80}
+                          className='w-16 h-20 object-cover rounded-lg shadow-sm'
+                        />
+                        <span className='absolute -top-2 -right-2 bg-slate-900 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full'>
+                          {quantity}
+                        </span>
+                      </div>
+                      <div className='flex flex-col justify-center'>
+                        <p className='text-sm font-bold text-slate-900 line-clamp-1'>
+                          {book.title}
+                        </p>
+                        <p className='text-xs text-slate-500 italic'>
+                          {book.author}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className='space-y-3 pt-4'>
+                      <div className='flex justify-between text-sm text-slate-600'>
+                        <span>Subtotal</span>
+                        <span className='font-medium text-slate-900'>
+                          ₹{(book.originalPrice * quantity).toLocaleString()}
+                        </span>
+                      </div>
+
+                      <div className='flex justify-between text-sm text-slate-600'>
+                        <span>Shipping</span>
+                        <span className='text-slate-600 font-bold uppercase text-sm'>
+                          ₹50
+                        </span>
+                      </div>
+                      <div className='flex justify-between text-sm text-green-600 font-medium'>
+                        <span>Discount</span>
+                        <span>
+                          - ₹
+                          {(
+                            book.originalPrice *
+                            quantity *
+                            0.25
+                          ).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className='pt-6 border-t border-slate-200'>
+                      <div className='flex justify-between items-center'>
+                        <span className='text-sm font-bold text-slate-900'>
+                          Total
+                        </span>
+                        <div className='text-right'>
+                          <p className='text-3xl font-black text-slate-900 tracking-tighter'>
+                            ₹
+                            {(
+                              book.originalPrice *
+                              quantity *
+                              1
+                            ).toLocaleString()}
+                          </p>
+                          <p className='text-[10px] text-slate-400 font-medium'>
+                            VAT & Taxes included
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleSubmit}
+                    className='mt-8 w-full py-4 rounded-xl text-sm font-bold flex justify-center items-center tracking-wide bg-gradient-to-br from-blue-400 via-blue-600 to-blue-900 shadow-[0_4px_20px_rgba(59,130,246,0.5),inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_30px_rgba(59,130,246,0.7),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-1px_0_rgba(0,0,0,0.3)] transition-all duration-300 transform hover:scale-105 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/20 before:via-transparent before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 text-white cursor-pointer'
+                  >
+                    Continue to Payment
+                    <ArrowRight className='h-4 w-4' />
+                  </button>
+
+                  <p className='text-center text-[10px] text-slate-400 mt-4'>
+                    By continuing, you agree to our Terms of Service.
+                  </p>
+                </div>
+              </div>
             </div>
-            <FloatingInput label="City / Suburb" name="city" value={formData.city} onChange={handleInputChange} />
-            <FloatingInput label="State / Province" name="state" value={formData.state} onChange={handleInputChange} />
-            <FloatingInput label="ZIP / Postal Code" name="zip" value={formData.zip} onChange={handleInputChange} />
-            <FloatingInput label="Country" name="country" value={formData.country} onChange={handleInputChange} />
-          </div>
-        </section>
-      </form>
-    </div>
-
-    {/* Right: The Financial Ledger */}
-    <div className='lg:w-[400px] bg-[#fcfcfc] p-10 md:p-14 border-l border-gray-100 flex flex-col'>
-      <h4 className="text-[10px] font-black text-black uppercase tracking-[0.3em] mb-10">Order Summary</h4>
-      
-      <div className="flex-1 space-y-8">
-        {/* Product Item */}
-        <div className="flex gap-4">
-          <Image
-            src={isSpecialBook ? '/images/1.webp' : '/images/front.webp'}
-            alt={book.title}
-            width={80}
-            height={100}
-            className="w-20 h-30 object-cover rounded-md"
-          />  
-          <div>
-            <p className="text-sm font-bold text-gray-900 leading-tight">{book.title}</p>
-            <p className="text-[10px] text-gray-400 uppercase mt-1">Quantity: {quantity}</p>
-          </div>
-        </div>
-
-        {/* Price Breakdown */}
-        <div className="space-y-4 pt-8 border-t border-gray-200/60">
-          <div className="flex justify-between text-xs tracking-widest uppercase text-gray-500">
-            <span>Base Price</span>
-            <span className="text-gray-900">₹{(book.price * quantity).toLocaleString()}</span>
-          </div>
-          
-          <div className="flex justify-between text-xs tracking-widest uppercase text-[#bf953f] font-bold">
-            <span>Exclusive Discount (20%)</span>
-            <span>- ₹{((book.price * quantity) * 0.2).toLocaleString()}</span>
-          </div>
-
-          <div className="flex justify-between text-xs tracking-widest uppercase text-gray-500">
-            <span>Express Shipping</span>
-            <span className="text-gray-900">₹500.00</span>
-          </div>
-
-          <div className="flex justify-between text-xs tracking-widest uppercase text-emerald-600 font-medium">
-            <span>Shipping Promotion</span>
-            <span>- ₹500.00</span>
-          </div>
-        </div>
-
-        {/* Total Price */}
-        <div className="pt-8 border-t border-black">
-          <div className="flex justify-between items-end">
-            <div>
-              <p className="text-[10px] font-black text-black uppercase tracking-widest">Total Payable</p>
-              <p className="text-[9px] text-gray-400 uppercase">Taxes included</p>
-            </div>
-            <span className="text-4xl font-extralight text-black tracking-tighter">
-              ₹{((book.price * quantity) * 0.8).toLocaleString()}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <button
-        onClick={handleSubmit}
-        className='mt-12 w-full bg-black text-white py-6 rounded-full text-[10px] font-black uppercase tracking-[0.4em] hover:bg-[#bf953f] transition-all duration-500 flex items-center justify-center gap-3 active:scale-95 shadow-xl hover:shadow-[#bf953f]/20'
-      >
-        Continue to Payment <ChevronRight className="h-3 w-3" />
-      </button>
-    </div>
-  </div>
-</div>
+          )}
         </main>
       </div>
       <Footer />

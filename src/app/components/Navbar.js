@@ -1,8 +1,6 @@
 'use client'
 
 import React, {
-  createContext,
-  useContext,
   useEffect,
   useRef,
   useState
@@ -10,7 +8,6 @@ import React, {
 import Image from 'next/image'
 import {
   HelpCircle,
-  Phone,
   Instagram,
   Menu,
   Mail,
@@ -23,102 +20,7 @@ import Link from 'next/link'
 import WhatsNew from '@/app/components/WhatsNew'
 import { AnimatePresence, motion } from 'framer-motion'
 import { usePathname, useRouter } from 'next/navigation'
-
-export const UserContext = createContext(null)
-export const ShowsContext = createContext([])
-
-export function UserProvider ({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [authChecked, setAuthChecked] = useState(false)
-  const pathname = usePathname()
-  useEffect(() => {
-    let mounted = true
-
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch('/api/user', {
-          method: 'GET',
-          credentials: 'include'
-        })
-
-        if (!mounted) return
-
-        if (response.ok) {
-          const userData = await response.json()
-
-          if (userData.user) {
-            setUser(userData.user)
-          } else {
-            setUser(null)
-          }
-        } else {
-          setUser(null)
-        }
-      } catch (error) {
-        if (mounted) {
-          setUser(null)
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false)
-          setAuthChecked(true)
-        }
-      }
-    }
-
-    fetchUserData()
-
-    return () => {
-      mounted = false
-    }
-  }, [pathname])
-
-  return (
-    <UserContext.Provider value={{ user, setUser, loading, authChecked }}>
-      {children}
-    </UserContext.Provider>
-  )
-}
-
-export function ShowsProvider ({ children }) {
-  const [upcomingShows, setUpcomingShows] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    let mounted = true
-    const fetchUpcomingShows = async () => {
-      try {
-        const response = await fetch('/api/shows/upcoming')
-        if (!mounted) return
-
-        if (response.ok) {
-          const data = await response.json()
-          setUpcomingShows(data.shows || [])
-        }
-      } catch (err) {
-        console.error('ShowsProvider fetch error', err)
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    }
-
-    fetchUpcomingShows()
-
-    return () => {
-      mounted = false
-    }
-  }, [])
-
-  return (
-    <ShowsContext.Provider value={{ upcomingShows, loading }}>
-      {children}
-    </ShowsContext.Provider>
-  )
-}
-
-export const useUser = () => useContext(UserContext)
-export const useShows = () => useContext(ShowsContext)
+import { supabaseAuth } from '@/app/lib/supabase/auth'
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -127,10 +29,9 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const menuRef = useRef(null)
   const mobileMenuRef = useRef(null)
+  const [user, setUser] = useState(undefined)
 
   const router = useRouter()
-  const { user, setUser } = useUser() || { user: null, setUser: () => {} }
-  const { upcomingShows } = useShows() || { upcomingShows: [] }
   const pathname = usePathname()
   const isActive = path => pathname === path
 
@@ -142,6 +43,26 @@ const Navbar = () => {
     handleScroll()
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  useEffect(() => {
+  const getUser = async () => {
+    const { data: { user } } = await supabaseAuth.auth.getUser()
+    setUser(user)
+    console.log('Current user:', user)
+  }
+
+  getUser()
+
+  const { data: listener } = supabaseAuth.auth.onAuthStateChange(
+    (_event, session) => {
+      setUser(session?.user ?? null)
+    }
+  )
+
+  return () => {
+    listener.subscription.unsubscribe()
+  }
+}, [])
 
   useEffect(() => {
     const handleClickOutside = event => {
@@ -176,7 +97,7 @@ const Navbar = () => {
 
   const confirmLogout = async () => {
     try {
-      const response = await fetch('/api/auth/logout', {
+      const response = await fetch('/auth/logout', {
         method: 'POST',
         credentials: 'include'
       })
@@ -476,7 +397,7 @@ const Navbar = () => {
                     className='h-10 w-10 rounded-full overflow-hidden border-2 border-gray-600 hover:border-white transition-colors duration-200 cursor-pointer'
                   >
                     <Image
-                      src={user.profilePicture || '/default-avatar.png'}
+                      src={user?.avatar_url}
                       alt='Profile'
                       width={40}
                       height={40}
@@ -524,7 +445,7 @@ const Navbar = () => {
                       <div className='flex items-center space-x-3'>
                         <div className='flex-shrink-0 h-12 w-12 rounded-full overflow-hidden border-2 border-gray-600'>
                           <Image
-                            src={user.profilePicture || '/default-avatar.png'}
+                            src={user.avatar_url || '/default-avatar.png'}
                             alt='Profile'
                             width={48}
                             height={48}
@@ -533,7 +454,7 @@ const Navbar = () => {
                         </div>
                         <div className='min-w-0'>
                           <p className='text-white font-medium'>
-                            {user.name || user.displayName || 'User'}
+                            {user.full_name || user.displayName || 'User'}
                           </p>
                           <p className='text-gray-400 text-sm truncate'>
                             {user.email}
@@ -587,7 +508,7 @@ const Navbar = () => {
                           external: false
                         },
                         {
-                          href: 'https://www.instagram.com/mictale.in',
+                          href: 'https://www.instagram.com/direct/t/17842070994390974',
                           label: 'Need Help?',
                           icon: <HelpCircle className='h-5 w-5 mr-3' />,
                           external: true
@@ -749,10 +670,10 @@ const Navbar = () => {
           <div className='flex items-center justify-between bg-white/40 p-3 rounded-2xl border border-white/60 backdrop-blur-sm'>
             <div className='flex items-center space-x-3'>
               <div className="p-0.5 rounded-full bg-gradient-to-b from-white to-slate-400">
-                <Image src={user?.profilePicture || '/default-avatar.png'} alt='User' width={34} height={34} className='rounded-full' />
+                <Image src={user?.avatar_url || '/default-avatar.png'} alt='User' width={34} height={34} className='rounded-full' />
               </div>
               <div>
-                <p className='text-[#0f172a] text-[11px] font-black tracking-tight'>{user?.name || 'Creator'}</p>
+                <p className='text-[#0f172a] text-[11px] font-black tracking-tight'>{user?.full_name || 'Creator'}</p>
                 <p className='text-[#475569] text-[9px] font-medium truncate max-w-[100px]'>{user?.email}</p>
               </div>
             </div>

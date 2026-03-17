@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { doc, updateDoc, arrayUnion, db } from '@/app/lib/firebase-db'
+import { supabase } from '@/app/lib/supabase/client'
 
-const BookingPopup = ({ isOpen, onClose, showId }) => {
+const BookingPopup = ({ isOpen, onClose, showId, user }) => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -19,7 +19,6 @@ const BookingPopup = ({ isOpen, onClose, showId }) => {
 
   const PERFORMANCE_TYPES = [
     'Poetry',
-    'Comedy',
     'Music',
     'Storytelling',
     'Others'
@@ -40,71 +39,86 @@ const BookingPopup = ({ isOpen, onClose, showId }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+    e.preventDefault()
+
     if (!showId) {
-        setError('Show ID is not available. Please try again later.')
-        return
-      }
-  
-      setLoading(true)
-      setError('')
-  
-      const newParticipant = {
-        ...formData,
-        bookingId: generateBookingId()
-      }
-  
-      try {
-        const showDocRef = doc(db, 'shows', showId)
-        await updateDoc(showDocRef, {
-          participants: arrayUnion(newParticipant)
+      setError('Invalid show.')
+      return
+    }
+
+    setLoading(true)
+    setError('')
+
+    const bookingId = generateBookingId()
+    const baseAmount = 299
+    const videoCost = formData.videoEditingService ? 200 : 0
+    const totalAmount = baseAmount + videoCost
+
+    try {
+      const { error: insertError } = await supabase
+        .from('bookings')
+        .insert({
+          show_id: showId,
+          user_id: user?.id || null,
+          full_name: formData.fullName,
+          email: formData.email,
+          phone_number: formData.phoneNumber,
+          instagram_handle: formData.instagramHandle,
+          performance_type: formData.performanceType,
+          first_time: formData.firstTime,
+          special_requirements: formData.specialRequirements,
+          video_editing_service: formData.videoEditingService,
+          payment_status: 'pending',
+          confirmation_status: 'pending',
+          booking_id: bookingId
         })
-  
-        const baseAmount = 350;
-        const videoEditingCost = formData.videoEditingService ? 200 : 0;
-        const totalAmount = (baseAmount + videoEditingCost).toString();
-  
-        const response = await fetch('/api/payments/payu', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: totalAmount,
-            productInfo: formData.videoEditingService ? 'Performance Booking with Video Editing' : 'Performance Booking',
-            firstname: formData.fullName,
-            email: formData.email,
-            phone: formData.phoneNumber
-          })
+
+        console.log('Booking insert result:', { insertError })
+
+      if (insertError) throw insertError
+      const response = await fetch('/api/payments/payu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: totalAmount.toString(),
+          productInfo: formData.videoEditingService
+            ? 'Performance Booking with Video Editing'
+            : 'Performance Booking',
+          firstname: formData.fullName,
+          email: formData.email,
+          phone: formData.phoneNumber,
+          bookingId
         })
-  
-        const data = await response.json()
-        console.log(data)
-        setLoading(false)
-  
-        if (data.action) {
-          const form = document.createElement('form')
-          form.method = 'POST'
-          form.action = data.action
-  
-          Object.keys(data).forEach(key => {
-            const input = document.createElement('input')
-            input.type = 'hidden'
-            input.name = key
-            input.value = data[key]
-            form.appendChild(input)
-          })
-  
-          document.body.appendChild(form)
-          form.submit()
-        } else {
-          setError('Payment initiation failed. Please try again.')
-        }
-      } catch (error) {
-        console.error('Error processing booking:', error)
-        setError('Failed to process booking. Please try again later.')
-        setLoading(false)
+      })
+
+      const data = await response.json()
+
+      if (data.action) {
+        const form = document.createElement('form')
+        form.method = 'POST'
+        form.action = data.action
+
+        Object.keys(data).forEach(key => {
+          const input = document.createElement('input')
+          input.type = 'hidden'
+          input.name = key
+          input.value = data[key]
+          form.appendChild(input)
+        })
+
+        document.body.appendChild(form)
+        form.submit()
+      } else {
+        throw new Error('Payment initiation failed.')
       }
-  };
+
+    } catch (err) {
+      console.error(err)
+      setError('Booking failed. Please try again.')
+      setLoading(false)
+    }
+  }
 
   const openSampleVideo = (e) => {
     e.preventDefault();
@@ -128,7 +142,6 @@ const BookingPopup = ({ isOpen, onClose, showId }) => {
       </button>
       
       <div className="w-full h-full md:h-auto md:max-w-3xl bg-gray-900 rounded-none md:rounded-lg shadow-xl p-6 md:mb-5 md:p-8 overflow-y-auto max-h-screen md:max-h-[90vh]">
-        {/* Close button - for desktop */}
         <button 
           onClick={onClose} 
           className="absolute cursor-pointer hidden md:block top-4 right-4 text-white hover:text-gray-300"
@@ -389,7 +402,7 @@ const BookingPopup = ({ isOpen, onClose, showId }) => {
           <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
             <div className="flex justify-between items-center mb-2">
               <span className="text-gray-300">Base price:</span>
-              <span className="text-gray-300">₹350</span>
+              <span className="text-gray-300">₹299</span>
             </div>
             {formData.videoEditingService && (
               <div className="flex justify-between items-center mb-2">
@@ -400,7 +413,7 @@ const BookingPopup = ({ isOpen, onClose, showId }) => {
             <div className="flex justify-between items-center pt-2 border-t border-gray-700 mt-2">
               <span className="text-gray-200 font-medium">Total:</span>
               <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-t from-yellow-500 via-yellow-400 to-yellow-300">
-                ₹{formData.videoEditingService ? '550' : '350'}
+                ₹{formData.videoEditingService ? '499' : '299'}
               </span>
             </div>
           </div>
