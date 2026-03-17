@@ -1,28 +1,33 @@
-import { adminDb } from '@/app/lib/firebaseAdmin'
+import { createRouteSupabase } from '@/app/lib/supabase/server-route'
 
 const PAGE_SIZE = 10
 
 export async function GET(req) {
+
+  const supabase = createRouteSupabase()
+
   const { searchParams } = new URL(req.url)
-  const cursor = searchParams.get('cursor')
 
-  let q = adminDb.collection('poems').orderBy('createdAt', 'desc').limit(PAGE_SIZE)
+  const cursor = parseInt(searchParams.get('cursor') || '0', 10)
 
-  if (cursor) {
-    const snapshot = await adminDb.collection('poems').doc(cursor).get()
-    if (snapshot.exists) {
-      q = adminDb.collection('poems')
-        .orderBy('createdAt', 'desc')
-        .startAfter(snapshot)
-        .limit(PAGE_SIZE)
-    }
+  const from = cursor
+  const to = cursor + PAGE_SIZE - 1
+
+  const { data, error } = await supabase
+    .from('poems')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .range(from, to)
+
+  if (error) {
+    console.error("Supabase error:", error)
+    return Response.json({ error: error.message }, { status: 500 })
   }
 
-  const snap = await q.get()
-  const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+  const nextCursor = data.length === PAGE_SIZE ? cursor + PAGE_SIZE : null
 
-  const lastDoc = snap.docs[snap.docs.length - 1]
-  const nextCursor = lastDoc ? lastDoc.id : null
-
-  return Response.json({ docs, nextCursor })
+  return Response.json({
+    docs: data,
+    nextCursor
+  })
 }

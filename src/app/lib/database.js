@@ -11,6 +11,44 @@ function toMillis(v) {
   return Number.isFinite(ms) ? ms : 0
 }
 
+export async function getPoetBySlug(slug) {
+  const supabase = supabasePublic
+
+  const { data, error } = await supabase
+    .from('poets')
+    .select('*')
+    .eq('slug', slug)
+    .single()
+
+  if (error) {
+    if (error.code === 'PGRST116') return null
+    console.error('Supabase error:', error)
+    throw new Error(error.message)
+  }
+
+  return data
+}
+
+export async function getPoemsByAuthor(authorName) {
+  const supabase = supabasePublic
+
+  const { data, error } = await supabase
+    .from('poems')
+    .select('*')
+    .eq('author', authorName)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Supabase error:', error)
+    throw new Error(error.message)
+  }
+
+  return (data || []).map(p => ({
+    ...p,
+    createdAt: p.created_at
+  }))
+}
+
 function extractMatlaFromDoc(data) {
   let lines = []
 

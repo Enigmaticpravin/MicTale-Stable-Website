@@ -1,13 +1,12 @@
-import { db, getDocs } from './firebase-db'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { createRouteSupabase } from '@/app/lib/supabase/server-route'
 
 function slugify(str) {
   return str
     .toLowerCase()
     .trim()
     .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')     
-    .replace(/--+/g, '-') 
+    .replace(/\s+/g, '-')
+    .replace(/--+/g, '-')
 }
 
 export async function addPoet({ name, bio, image }) {
@@ -15,32 +14,47 @@ export async function addPoet({ name, bio, image }) {
     throw new Error('Missing fields')
   }
 
+  const supabase = createRouteSupabase()
+
   const slug = slugify(name)
 
-  const poetsRef = collection(db, 'poets')
-  const docRef = await addDoc(poetsRef, {
-    name,
-    slug,
-    bio,
-    image,
-    createdAt: serverTimestamp(),
-  })
+  const { data, error } = await supabase
+    .from('poets')
+    .insert({
+      name,
+      slug,
+      bio,
+      image,
+      created_at: new Date().toISOString()
+    })
+    .select()
+    .single()
 
-  return { id: docRef.id, slug }
+  if (error) {
+    console.error("Supabase error:", error)
+    throw new Error(error.message)
+  }
+
+  return { id: data.id, slug }
 }
 
 export async function listPoetSlugs() {
-  const poetsCol = collection(db, "poets")
-  const snapshot = await getDocs(poetsCol)
+  const supabase = createRouteSupabase()
 
-  return snapshot.docs.map(doc => {
-    const data = doc.data()
-    const createdAt = data.createdAt?.toDate?.() || null
-    const updatedAt = data.createdAt?.toDate?.() || null
-    return {
-      slug: data.slug || doc.id,
-      createdAt: createdAt || new Date(),
-      updatedAt: updatedAt || new Date()
-    }
-  })
+  const { data, error } = await supabase
+    .from('poets')
+    .select('slug, created_at')
+
+  if (error) {
+    console.error("Supabase error:", error)
+    throw new Error(error.message)
+  }
+
+  if (!data) return []
+
+  return data.map(row => ({
+    slug: row.slug,
+    createdAt: row.created_at || new Date().toISOString(),
+    updatedAt: row.created_at || new Date().toISOString()
+  }))
 }

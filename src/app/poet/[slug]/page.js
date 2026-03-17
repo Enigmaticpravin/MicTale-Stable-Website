@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getPoetBySlug, getPoemsByAuthor } from '@/app/lib/firebaseAdmin'
+import { getPoetBySlug, getPoemsByAuthor } from '@/app/lib/database'
 import PoemListClient from './PoemListClient'
 import Footer from '@/app/components/Footer'
 

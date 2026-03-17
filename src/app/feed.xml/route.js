@@ -1,24 +1,28 @@
 import { NextResponse } from 'next/server'
-import { db, collection, addDoc, doc, setDoc, getDocs, query, orderBy, where, limit } from '@/app/lib/firebase-db'
-
+import { createRouteSupabase } from '@/app/lib/supabase/server-route'
 
 export async function GET() {
   const baseUrl = 'https://mictale.in'
-  
+
   try {
-    const blogsQuery = query(
-      collection(db, 'blogs'),
-      where('published', '==', true),
-      orderBy('createdAt', 'desc'),
-      limit(50)
-    )
-    
-    const snapshot = await getDocs(blogsQuery)
-    const blogs = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate?.()?.toISOString(),
-      updatedAt: doc.data().updatedAt?.toDate?.()?.toISOString()
+    const supabase = await createRouteSupabase()
+
+    const { data, error } = await supabase
+      .from('blogs')
+      .select('*')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(50)
+
+    if (error) {
+      console.error("Supabase error:", error)
+      throw new Error(error.message)
+    }
+
+    const blogs = (data || []).map(blog => ({
+      ...blog,
+      createdAt: blog.created_at,
+      updatedAt: blog.updated_at
     }))
 
     const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -39,18 +43,23 @@ export async function GET() {
       <title>Mictale Blog</title>
       <link>${baseUrl}/blog</link>
     </image>
+
     ${blogs.map(blog => `
     <item>
       <title><![CDATA[${blog.title}]]></title>
-      <description><![CDATA[${blog.excerpt || blog.content.substring(0, 200) + '...'}]]></description>
-      <content:encoded><![CDATA[${blog.content.replace(/\n\n/g, '</p><p>').replace(/^/, '<p>').replace(/$/, '</p>')}]]></content:encoded>
-      <link>${baseUrl}/blog/${blog.id}</link>
-      <guid isPermaLink="true">${baseUrl}/blog/${blog.id}</guid>
+      <description><![CDATA[${blog.excerpt || blog.content?.substring(0, 200) + '...'}]]></description>
+      <content:encoded><![CDATA[${blog.content
+        ?.replace(/\n\n/g, '</p><p>')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>')}]]></content:encoded>
+      <link>${baseUrl}/blog/${blog.slug}</link>
+      <guid isPermaLink="true">${baseUrl}/blog/${blog.slug}</guid>
       <author>contact@mictale.in (${blog.author})</author>
       <category><![CDATA[${blog.tags ? blog.tags.join(', ') : 'Blog'}]]></category>
       <pubDate>${new Date(blog.createdAt).toUTCString()}</pubDate>
       ${blog.coverImage ? `<enclosure url="${blog.coverImage}" type="image/jpeg"/>` : ''}
     </item>`).join('')}
+
   </channel>
 </rss>`
 
@@ -60,6 +69,7 @@ export async function GET() {
         'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400'
       }
     })
+
   } catch (error) {
     console.error('Error generating RSS feed:', error)
     return new Response('Error generating RSS feed', { status: 500 })
