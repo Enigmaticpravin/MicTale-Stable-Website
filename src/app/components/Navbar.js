@@ -397,7 +397,7 @@ const Navbar = () => {
                     className='h-10 w-10 rounded-full overflow-hidden border-2 border-gray-600 hover:border-white transition-colors duration-200 cursor-pointer'
                   >
                     <Image
-                      src={user?.avatar_url}
+                      src={user?.user_metadata?.avatar_url}
                       alt='Profile'
                       width={40}
                       height={40}
@@ -445,7 +445,7 @@ const Navbar = () => {
                       <div className='flex items-center space-x-3'>
                         <div className='flex-shrink-0 h-12 w-12 rounded-full overflow-hidden border-2 border-gray-600'>
                           <Image
-                            src={user.avatar_url || '/default-avatar.png'}
+                            src={user?.user_metadata?.avatar_url}
                             alt='Profile'
                             width={48}
                             height={48}
@@ -454,7 +454,7 @@ const Navbar = () => {
                         </div>
                         <div className='min-w-0'>
                           <p className='text-white font-medium'>
-                            {user.full_name || user.displayName || 'User'}
+                            {user?.user_metadata?.full_name || user?.user_metadata?.displayName || 'User'}
                           </p>
                           <p className='text-gray-400 text-sm truncate'>
                             {user.email}
@@ -670,11 +670,11 @@ const Navbar = () => {
           <div className='flex items-center justify-between bg-white/40 p-3 rounded-2xl border border-white/60 backdrop-blur-sm'>
             <div className='flex items-center space-x-3'>
               <div className="p-0.5 rounded-full bg-gradient-to-b from-white to-slate-400">
-                <Image src={user?.avatar_url || '/default-avatar.png'} alt='User' width={34} height={34} className='rounded-full' />
+                <Image src={user?.user_metadata?.avatar_url} alt='User' width={34} height={34} className='rounded-full' />
               </div>
               <div>
-                <p className='text-[#0f172a] text-[11px] font-black tracking-tight'>{user?.full_name || 'Creator'}</p>
-                <p className='text-[#475569] text-[9px] font-medium truncate max-w-[100px]'>{user?.email}</p>
+                <p className='text-[#0f172a] text-[11px] font-black tracking-tight'>{user?.user_metadata?.full_name || 'Creator'}</p>
+                <p className='text-[#475569] text-[9px] font-medium truncate max-w-[100px]'>{user?.user_metadata?.email}</p>
               </div>
             </div>
             <div className="flex gap-2">

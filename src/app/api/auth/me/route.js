@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createRouteSupabase } from '@/app/lib/supabase/server-route'
 
 export async function GET() {
-  const supabase = await createRouteSupabase()
+  const supabase = createRouteSupabase()
 
   const {
     data: { user }
