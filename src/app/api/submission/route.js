@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabase } from '@/app/lib/supabase/server-route'
+import { createRouteSupabase } from '@/app/lib/supabase/server-route'
 
 export async function POST(req) {
-  const supabase = createServerSupabase()
+  const supabase = createRouteSupabase()
   const body = await req.json()
 
   const {
