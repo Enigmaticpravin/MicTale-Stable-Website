@@ -164,9 +164,9 @@ export default function PrivacyPolicy() {
               <SectionHeader number="04" title="Data Security" icon={Lock} />
               <div className="bg-blue-50 border-l-4 border-blue-600 p-8 rounded-r-2xl">
                 <p className="text-blue-900 font-medium leading-relaxed italic">
-                  "At MicTale, we implement industry-standard AES-256 encryption for data at rest and TLS for 
+                  &quot;At MicTale, we implement industry-standard AES-256 encryption for data at rest and TLS for 
                   data in transit. Your personal data is only accessible to authorized personnel 
-                  required to manage event logistics."
+                  required to manage event logistics.&quot;
                 </p>
               </div>
             </section>

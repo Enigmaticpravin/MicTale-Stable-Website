@@ -173,9 +173,9 @@ export default function TermsPage() {
               <SectionHeader number="04" title="Code of Conduct" icon={Ban} />
               <div className="bg-red-50 border-l-4 border-red-600 p-8 rounded-r-xl">
                 <p className="text-red-700 font-medium leading-relaxed italic">
-                  "MicTale maintains a zero-tolerance policy for hate speech, harassment, or any form of 
+                  &quot;MicTale maintains a zero-tolerance policy for hate speech, harassment, or any form of 
                   discrimination. We reserve the right to immediately terminate any performance or 
-                  membership that violates our community standards."
+                  membership that violates our community standards.&quot;
                 </p>
               </div>
             </section>
