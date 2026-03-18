@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/app/lib/supabase/client'
 
-const BookingPopup = ({ isOpen, onClose, showId, user }) => {
+const BookingPopup = ({ isOpen, onClose, showId, user, selectedDate }) => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -17,15 +19,8 @@ const BookingPopup = ({ isOpen, onClose, showId, user }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const PERFORMANCE_TYPES = [
-    'Poetry',
-    'Music',
-    'Storytelling',
-    'Others'
-  ]
-
+  const PERFORMANCE_TYPES = ['Poetry', 'Music', 'Storytelling', 'Others'];
   const FIRSTTIME = ['Yes', 'No'];
-
 
   const generateBookingId = () => {
     return 'MTL-' + Math.random().toString(36).substr(2, 9).toUpperCase()
@@ -39,9 +34,8 @@ const BookingPopup = ({ isOpen, onClose, showId, user }) => {
     }));
   };
 
-    const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-
     if (!showId) {
       setError('Invalid show.')
       return
@@ -51,9 +45,7 @@ const BookingPopup = ({ isOpen, onClose, showId, user }) => {
     setError('')
 
     const bookingId = generateBookingId()
-    const baseAmount = 299
-    const videoCost = formData.videoEditingService ? 200 : 0
-    const totalAmount = baseAmount + videoCost
+    const totalAmount = 299 + (formData.videoEditingService ? 200 : 0)
 
     try {
       const { error: insertError } = await supabase
@@ -71,20 +63,18 @@ const BookingPopup = ({ isOpen, onClose, showId, user }) => {
           video_editing_service: formData.videoEditingService,
           payment_status: 'pending',
           confirmation_status: 'pending',
-          booking_id: bookingId
+          booking_id: bookingId,
+          selected_date: selectedDate 
         })
 
-        console.log('Booking insert result:', { insertError })
-
       if (insertError) throw insertError
+
       const response = await fetch('/api/payments/payu', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: totalAmount.toString(),
-          productInfo: formData.videoEditingService
-            ? 'Performance Booking with Video Editing'
-            : 'Performance Booking',
+          productInfo: formData.videoEditingService ? 'Performance + Video' : 'Performance Slot',
           firstname: formData.fullName,
           email: formData.email,
           phone: formData.phoneNumber,
@@ -93,12 +83,10 @@ const BookingPopup = ({ isOpen, onClose, showId, user }) => {
       })
 
       const data = await response.json()
-
       if (data.action) {
         const form = document.createElement('form')
         form.method = 'POST'
         form.action = data.action
-
         Object.keys(data).forEach(key => {
           const input = document.createElement('input')
           input.type = 'hidden'
@@ -106,15 +94,12 @@ const BookingPopup = ({ isOpen, onClose, showId, user }) => {
           input.value = data[key]
           form.appendChild(input)
         })
-
         document.body.appendChild(form)
         form.submit()
       } else {
-        throw new Error('Payment initiation failed.')
+        throw new Error('Payment gateway error.')
       }
-
     } catch (err) {
-      console.error(err)
       setError('Booking failed. Please try again.')
       setLoading(false)
     }
@@ -125,306 +110,119 @@ const BookingPopup = ({ isOpen, onClose, showId, user }) => {
     window.open('https://youtu.be/PVOqvM7EEuE?si=2c1KyMKNVvj0sBJE', '_blank');
   };
 
-  const poppinsStyle = { fontFamily: 'Poppins, sans-serif' };
-
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-75 transition-opacity backdrop-blur-2xl">
+  const formattedDate = selectedDate 
+    ? `${new Date(selectedDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long' })}, ${new Date(selectedDate).toLocaleDateString('en-GB', { weekday: 'long' })}`
+    : 'Select Date';
 
-      <button 
-        onClick={onClose} 
-        className="absolute top-4 right-4 cursor-pointer text-white hover:text-gray-300 z-10 md:hidden"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+  const poppinsStyle = { fontFamily: 'Poppins, sans-serif' };
+
+  return (
+    <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/70 backdrop-blur-xl p-0 md:p-4">
       
-      <div className="w-full h-full md:h-auto md:max-w-3xl bg-gray-900 rounded-none md:rounded-lg shadow-xl p-6 md:mb-5 md:p-8 overflow-y-auto max-h-screen md:max-h-[90vh]">
-        <button 
-          onClick={onClose} 
-          className="absolute cursor-pointer hidden md:block top-4 right-4 text-white hover:text-gray-300"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+      <div className="relative w-full h-full md:h-auto md:max-w-2xl bg-gray-900 md:rounded-3xl shadow-2xl flex flex-col overflow-hidden border-t md:border border-gray-800">
         
-        <div className="mb-8 text-center pt-5">
-          <div className="justify-center items-center flex flex-col mb-2">
-            <p
-              className="uppercase text-transparent bg-clip-text bg-gradient-to-t font-semibold text-[18px] from-yellow-700 via-yellow-500 to-yellow-900"
-              style={poppinsStyle}
-            >
-              ready to rock?
-            </p>
-            <p
-              className="text-transparent bg-clip-text bg-gradient-to-t font-semibold text-4xl text-center from-slate-200 via-gray-400 to-white"
-              style={poppinsStyle}
-            >
-              Book your performance slot!
-            </p>
+        {/* HEADER - Fixed */}
+        <div className="p-6 md:p-8 border-b border-gray-800 flex justify-between items-center bg-gray-900/50 backdrop-blur-md z-20">
+          <div>
+            <h2 className="text-white font-bold text-xl md:text-2xl" style={poppinsStyle}>Book Slot</h2>
+            <p className="text-blue-400 text-xs md:text-sm font-medium mt-1">{formattedDate}</p>
           </div>
+          <button onClick={onClose} className="p-2 bg-gray-800 hover:bg-gray-700 rounded-full text-gray-400 hover:text-white transition-all cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-200"
-            >
-              Name
-            </label>
-            <input
-              id="fullName"
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              placeholder="Enter your full name"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-200"
-            >
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              placeholder="your@email.com"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium text-gray-200"
-            >
-              Phone Number
-            </label>
-            <input
-              id="phoneNumber"
-              type="tel"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              placeholder="Your contact number"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor="instagram"
-              className="block text-sm font-medium text-gray-200"
-            >
-              Instagram Handle
-            </label>
-            <div className="flex">
-              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-600 bg-gray-700 text-gray-400 text-sm">
-                @
-              </span>
-              <input
-                id="instagramHandle"
-                type="text"
-                name="instagramHandle"
-                value={formData.instagramHandle}
-                onChange={handleChange}
-                className="w-full px-4 py-2 rounded-r-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="username"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor="performanceType"
-              className="block text-sm font-medium text-gray-200"
-            >
-              Performance Type
-            </label>
-            <select
-              id="performanceType"
-              name="performanceType"
-              value={formData.performanceType}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors appearance-none"
-            >
-              <option value="" disabled>
-                Select your performance type
-              </option>
-              {PERFORMANCE_TYPES.map(type => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor="firstTime"
-              className="block text-sm font-medium text-gray-200"
-            >
-              Is this your first time performing at an Open Mic?
-            </label>
-            <select
-              id="firstTime"
-              name="firstTime"
-              value={formData.firstTime}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors appearance-none"
-            >
-              <option value="" disabled>
-                Select your choice
-              </option>
-              {FIRSTTIME.map(type => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor="specialRequirements"
-              className="block text-sm font-medium text-gray-200"
-            >
-              Special Requirements
-            </label>
-            <textarea
-              id="specialRequirements"
-              name="specialRequirements"
-              value={formData.specialRequirements}
-              onChange={handleChange}
-              rows={4}
-              className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
-              placeholder="Any special requirements for your performance (e.g., microphone, instruments, etc.)"
-            />
-          </div>
-
-          <div className="mt-8 p-5 rounded-lg bg-gray-800 border border-gray-700">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h3 className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-t from-blue-300 via-blue-400 to-blue-500" style={poppinsStyle}>
-                  Professional Video Editing
-                </h3>
-                <p className="text-gray-300 text-sm mt-1">
-                  Get your performance professionally edited with YouTube thumbnail
-                </p>
+        {/* SCROLLABLE FORM CONTENT */}
+        <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 custom-scrollbar pb-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-gray-500 uppercase ml-1">Full Name</label>
+                <input name="fullName" value={formData.fullName} onChange={handleChange} required className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-white focus:ring-2 focus:ring-blue-600 outline-none transition-all" placeholder="Enter name" />
               </div>
-              <div className="flex items-center">
-                <span className="mr-2 text-sm text-gray-400">
-                  {formData.videoEditingService ? 'Enabled' : 'Disabled'}
-                </span>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-gray-500 uppercase ml-1">Email</label>
+                <input type="email" name="email" value={formData.email} onChange={handleChange} required className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-white focus:ring-2 focus:ring-blue-600 outline-none transition-all" placeholder="your@email.com" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-gray-500 uppercase ml-1">Phone</label>
+                <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-white focus:ring-2 focus:ring-blue-600 outline-none transition-all" placeholder="98765..." />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-gray-500 uppercase ml-1">Instagram</label>
+                <input name="instagramHandle" value={formData.instagramHandle} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-white focus:ring-2 focus:ring-blue-600 outline-none transition-all" placeholder="@username" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-gray-500 uppercase ml-1">Performance</label>
+                <select name="performanceType" value={formData.performanceType} onChange={handleChange} required className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-white focus:ring-2 focus:ring-blue-600 outline-none transition-all appearance-none">
+                  <option value="" disabled>Category</option>
+                  {PERFORMANCE_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-gray-500 uppercase ml-1">First Timer?</label>
+                <select name="firstTime" value={formData.firstTime} onChange={handleChange} required className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-white focus:ring-2 focus:ring-blue-600 outline-none transition-all appearance-none">
+                  <option value="" disabled>Select</option>
+                  {FIRSTTIME.map(type => <option key={type} value={type}>{type}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-gray-500 uppercase ml-1">Requirements</label>
+              <textarea name="specialRequirements" value={formData.specialRequirements} onChange={handleChange} rows={2} className="w-full px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-white focus:ring-2 focus:ring-blue-600 outline-none transition-all resize-none" placeholder="Any special requests..." />
+            </div>
+
+            <div className="p-4 rounded-2xl bg-blue-600/5 border border-blue-500/20 flex items-center justify-between">
+              <div className="flex gap-3 items-center">
+                <div className="p-2 bg-blue-600/20 rounded-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-white font-bold text-sm">Professional Editing</p>
+                  <button type="button" onClick={openSampleVideo} className="text-blue-400 text-[10px] uppercase font-bold tracking-wider hover:underline">View Sample</button>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-yellow-500 font-bold text-sm">+₹200</span>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input 
-                    type="checkbox"
-                    name="videoEditingService"
-                    checked={formData.videoEditingService}
-                    onChange={handleChange}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  <input type="checkbox" name="videoEditingService" checked={formData.videoEditingService} onChange={handleChange} className="sr-only peer" />
+                  <div className="w-10 h-5 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
               </div>
             </div>
 
-            <div className="space-y-3">
-              <div className="flex flex-col md:flex-row items-start md:items-center text-sm text-gray-300 space-y-2 md:space-y-0 md:space-x-2">
-                <span className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Professional editing
-                </span>
-                <span className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Custom YouTube thumbnail
-                </span>
-                <span className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Color correction
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center mt-3">
-                <button
-                  type="button"
-                  onClick={openSampleVideo}
-                  className="inline-flex items-center text-sm text-blue-400 hover:text-blue-300 transition-colors focus:outline-none"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                    <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                  </svg>
-                  See sample
-                </button>
-                <div className="text-right">
-                  <span className="block text-sm font-medium text-gray-300">Additional cost</span>
-                  <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-t from-yellow-500 via-yellow-400 to-yellow-300">₹200</span>
-                </div>
-              </div>
-              
-              <div className="bg-gray-900/50 p-3 rounded mt-2 text-xs text-gray-400">
-                Note: Our video editing service includes professional color grading, audio enhancement, intro/outro animations, and a custom YouTube thumbnail designed to boost your online presence.
-              </div>
-            </div>
+            {error && <p className="text-red-400 text-xs bg-red-400/10 p-3 rounded-lg border border-red-400/20">{error}</p>}
           </div>
 
-          {error && (
-            <div className="p-4 rounded-lg bg-red-900/50 border border-red-800 text-red-200 text-sm">
-              {error}
-            </div>
-          )}
-
-          {/* Price summary box */}
-          <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-gray-300">Base price:</span>
-              <span className="text-gray-300">₹299</span>
-            </div>
-            {formData.videoEditingService && (
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-300">Video editing service:</span>
-                <span className="text-gray-300">₹200</span>
+          {/* FOOTER - Fixed Bottom */}
+          <div className="p-6 md:p-8 bg-gray-900 border-t border-gray-800 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-20">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-col">
+                <span className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Grand Total</span>
+                <span className="text-2xl font-black text-white" style={poppinsStyle}>₹{formData.videoEditingService ? '499' : '299'}</span>
               </div>
-            )}
-            <div className="flex justify-between items-center pt-2 border-t border-gray-700 mt-2">
-              <span className="text-gray-200 font-medium">Total:</span>
-              <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-t from-yellow-500 via-yellow-400 to-yellow-300">
-                ₹{formData.videoEditingService ? '499' : '299'}
-              </span>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 md:flex-none md:min-w-[200px] bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer shadow-xl shadow-blue-600/20"
+              >
+                {loading ? "Please wait..." : "Confirm & Pay"}
+              </button>
             </div>
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 cursor-pointer hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors"
-          >
-            {loading ? "Booking..." : "Book Slot"}
-          </button>
         </form>
       </div>
     </div>
