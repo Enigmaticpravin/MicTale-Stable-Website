@@ -128,6 +128,13 @@ export default function CreateShow() {
           <header className="mb-10 text-center">
             <h1 className="text-3xl font-bold text-gray-900">Create New Show</h1>
             <p className="text-gray-500 mt-2">Fill in the details to host your next event</p>
+            <button
+              type="button"
+              onClick={() => router.push('/admin/performer-passes')}
+              className="mt-4 inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:border-black hover:text-black"
+            >
+              View Performer Passes
+            </button>
           </header>
 
           <div className="space-y-6">

@@ -80,7 +80,6 @@ const ShowDetails = ({ show }) => {
       >
         <div className="text-left">
           <p className="font-semibold text-white group-hover:text-blue-400 transition-colors">
-            {/* Formats to: 22 March, Sunday */}
             {`${d.toLocaleDateString('en-GB', { day: '2-digit', month: 'long' })}, ${d.toLocaleDateString('en-GB', { weekday: 'long' })}`}
           </p>
           <p className="text-sm text-gray-400">
@@ -239,7 +238,7 @@ const ShowDetails = ({ show }) => {
                 <div className='w-full h-52 bg-gray-200 rounded-xl overflow-hidden mb-4'>
                    <iframe src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.583943352849!2d77.37509327569087!3d28.61225588500079!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce53df7d6d171%3A0x2e1a09972f9ad2ec!2sMicTale%20Studio!5e0!3m2!1sen!2sus!4v1773813061769!5m2!1sen!2sus' width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading='lazy'></iframe>
                 </div>
-                <a href="#" className='w-full py-3 bg-white border border-gray-200 text-gray-800 font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors'>
+                <a href="https://share.google/eX6TAEdUKV7ojkbNe" className='w-full py-3 bg-white border border-gray-200 text-gray-800 font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors'>
                   <MapPin className='w-4 h-4 text-blue-500' /> Get Directions
                 </a>
               </div>
@@ -336,6 +335,7 @@ const ShowDetails = ({ show }) => {
         showId={show.id}
         user={currentUser}
         selectedDate={selectedDate}
+        category={show.category}
       />
     </div>
   )

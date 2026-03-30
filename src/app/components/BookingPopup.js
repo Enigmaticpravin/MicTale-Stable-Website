@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { supabase } from '@/app/lib/supabase/client';
 
-const BookingPopup = ({ isOpen, onClose, showId, user, selectedDate }) => {
+const BookingPopup = ({ isOpen, onClose, showId, user, selectedDate, category }) => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -108,13 +108,12 @@ const BookingPopup = ({ isOpen, onClose, showId, user, selectedDate }) => {
         </div>
 
         {!isSubmitted ? (
-          /* Form: flex-1 ensures it fills the height between header and footer */
           <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden z-10 justify-between">
             <div className="flex-1 overflow-y-auto px-8 pb-8 space-y-5 custom-scrollbar">
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">The Performer</label>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Full Name</label>
                   <input name="fullName" value={formData.fullName} onChange={handleChange} required className={`w-full px-5 py-3 rounded-xl text-white outline-none ${silverBorder}`} placeholder="Full Name" />
                 </div>
                 <div className="space-y-1">
@@ -134,7 +133,8 @@ const BookingPopup = ({ isOpen, onClose, showId, user, selectedDate }) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+{category == 'Open Mic Show' && (
+   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Art Form</label>
                   <select name="performanceType" value={formData.performanceType} onChange={handleChange} required className={`w-full px-5 py-3 rounded-xl text-white outline-none appearance-none cursor-pointer ${silverBorder}`}>
@@ -149,37 +149,45 @@ const BookingPopup = ({ isOpen, onClose, showId, user, selectedDate }) => {
                     {FIRSTTIME.map(type => <option key={type} value={type} className="bg-slate-900">{type}</option>)}
                   </select>
                 </div>
-              </div>
-
-              <div className={`p-5 rounded-2xl border border-yellow-500/20 bg-gradient-to-br from-yellow-500/5 to-transparent flex items-center justify-between`}>
+              </div>)}
+             
+             {category == 'Open Mic Show' && (
+               <div className={`p-5 rounded-2xl border border-white bg-gradient-to-br from-yellow-500/5 to-transparent flex items-center justify-between`}>
                 <div className="flex gap-4 items-center">
-                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8860B] shadow-lg shrink-0">
+                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-[#ffffff] to-[#fffdfa] shadow-lg shrink-0">
                     <svg className="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" /></svg>
                   </div>
                   <div>
-                    <p className="text-white font-semibold text-sm">Cinematic Video Package</p>
-                    <p className="text-yellow-500/70 text-[11px] font-medium tracking-wide">4K MULTI-CAM EDITING</p>
+                    <p className="text-white font-semibold text-sm">Add Video Recording</p>
+                    <p className="text-yellow-200 text-[11px] font-medium uppercase tracking-wide">perfect for sharing on Social Media</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className={`font-bold text-lg ${goldText}`}>+₹200</span>
+                  <span className={`font-bold text-lg ${goldText}`}>+₹100</span>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" name="videoEditingService" checked={formData.videoEditingService} onChange={handleChange} className="sr-only peer" />
                     <div className="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:bg-yellow-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
                   </label>
                 </div>
-              </div>
+              </div>)}
+             
 
               {error && <p className="text-red-400 text-xs bg-red-400/5 border border-red-400/20 p-3 rounded-xl text-center">{error}</p>}
             </div>
 
             <div className="p-5 md:p-8 bg-[linear-gradient(135deg,#f8fafc_0%,#cbd5e1_25%,#f1f5f9_50%,#94a3b8_75%,#e2e8f0_100%)] backdrop-blur-xl flex flex-row items-center justify-between gap-4 md:gap-6 border-t border-white/20 shrink-0">
               <div className="text-left">
-                <p className="text-[9px] md:text-[10px] text-gray-500 uppercase font-black tracking-[0.1em] md:tracking-[0.2em] leading-tight">
-                  Performance Fee
-                </p>
+                {category == 'An Intimate Nashist' ? (
+                  <p className="text-[9px] md:text-[10px] text-gray-500 uppercase font-black tracking-[0.1em] md:tracking-[0.2em] leading-tight">
+                    Audience Entry Fee
+                  </p>
+                ) : (
+                  <p className="text-[9px] md:text-[10px] text-gray-500 uppercase font-black tracking-[0.1em] md:tracking-[0.2em] leading-tight">
+                    Performance Fee
+                  </p>
+                )}
                 <p className="text-2xl md:text-4xl font-serif text-black font-bold">
-                  ₹{formData.videoEditingService ? '499' : '299'}
+                  ₹{formData.videoEditingService ? '399' : '299'}
                 </p>
               </div>
               

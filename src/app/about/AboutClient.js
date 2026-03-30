@@ -4,7 +4,6 @@ import poster from '@/../public/images/cover.png'
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Footer from '@/app/components/Footer'
-import ReactHead from 'next/head'
 import mobile from '../../../public/images/mobilecover.png'
 
 export default function MicTalePremium () {
@@ -83,64 +82,6 @@ export default function MicTalePremium () {
 
   return (
     <>
-      <ReactHead>
-        <meta charSet='UTF-8' />
-        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
-        <meta name='robots' content='index, follow' />
-
-        <title>About Us – MicTale</title>
-        <meta
-          name='description'
-          content='Learn about the vision, journey, and mission of MicTale – India’s leading open mic platform for poets, performers, and storytellers.'
-        />
-        <meta
-          name='keywords'
-          content='MicTale, Open Mic India, Poetry Platform, Spoken Word, Storytelling, Artist Growth, Mentorship, Creative Events, Performance Stage'
-        />
-        <meta name='author' content='MicTale' />
-
-        <meta
-          property='og:title'
-          content='About MicTale – Open Mic Platform for Performers & Creatives'
-        />
-        <meta
-          property='og:description'
-          content="Learn how MicTale is redefining India's open mic scene by providing artists with growth, exposure, and a powerful stage to perform."
-        />
-        <meta property='og:image' content='https://i.imgur.com/WcNbK7B.png' />
-        <meta property='og:image:alt' content='MicTale logo and stage' />
-        <meta property='og:url' content='https://mictale.in/about' />
-        <meta property='og:type' content='website' />
-
-        <meta name='twitter:card' content='summary_large_image' />
-        <meta
-          name='twitter:title'
-          content="About MicTale – India's Best Platform for Open Mic Artists"
-        />
-        <meta
-          name='twitter:description'
-          content='MicTale supports poets, storytellers, and performers with curated stages, mentorship, and a vibrant artist community.'
-        />
-        <meta name='twitter:image' content='https://i.imgur.com/WcNbK7B.png' />
-        <meta name='twitter:image:alt' content='MicTale stage and mic icon' />
-
-        <link rel='canonical' href='https://mictale.in/about' />
-
-        <link
-          rel='icon'
-          type='image/png'
-          sizes='32x32'
-          href='/favicon-32x32.png'
-        />
-        <link
-          rel='icon'
-          type='image/png'
-          sizes='16x16'
-          href='/favicon-16x16.png'
-        />
-        <link rel='apple-touch-icon' href='/apple-touch-icon.png' />
-        <link rel='manifest' href='/site.webmanifest' />
-      </ReactHead>
 
       <div className='relative min-h-screen bg-slate-950 text-gray-300 overflow-hidden'>
         <div
@@ -158,7 +99,7 @@ export default function MicTalePremium () {
           id='hero'
           style={getAnimationStyle('hero')}
         >
-          <a className='z-10 block md:px-6'>
+          <a className='z-10 block md:px-6' href='https://www.mictale.in/show/open-mic-show-mictale-noida' rel='noopener noreferrer'>
             <Image
               src={poster}
               alt='MicTale Official Banner'

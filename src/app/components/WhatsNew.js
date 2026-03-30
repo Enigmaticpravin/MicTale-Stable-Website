@@ -26,21 +26,26 @@ const MicTaleLuxuryAnnouncement = () => {
 
         <div className='relative z-20 md:py-8 py-8 md:px-10 flex flex-col md:flex-row items-center justify-center md:gap-18'>
           <div className='flex flex-col items-center'>
-            <div className='relative w-fit px-2 py-1 md:px-5 md:py-1.5 flex rounded-full border border-[#b45309]/30 bg-[linear-gradient(135deg,#bf953f,#fcf6ba,#b38728,#fbf5b7,#aa771c)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6),0_4px_15px_rgba(0,0,0,0.2)] overflow-hidden group'>
-              <motion.div
-                animate={{ x: ['-100%', '200%'] }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: 'easeInOut'
-                }}
-                className='absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12'
-              />
+            <div className='relative w-fit px-3 py-1 md:px-6 md:py-2 flex rounded-md border border-red-900/40 bg-[linear-gradient(160deg,#7f1d1d,#ef4444,#991b1b,#450a0a)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_0_20px_rgba(185,28,28,0.4)] overflow-hidden group'>
+  {/* The "On-Air" Glow Shimmer */}
+  <motion.div
+    animate={{ opacity: [0.4, 0.8, 0.4] }}
+    transition={{
+      duration: 2,
+      repeat: Infinity,
+      ease: 'easeInOut'
+    }}
+    className='absolute inset-0 bg-red-500/20'
+  />
 
-              <p className='relative z-10 text-[10px] text-[#451a03] uppercase tracking-widest md:tracking-[0.3em] flex items-center gap-2 font-medium whitespace-nowrap'>
-                Officially Announced
-              </p>
-            </div>
+  <p className='relative z-10 text-[11px] text-white uppercase tracking-[0.2em] md:tracking-[0.4em] flex items-center gap-3 font-black whitespace-nowrap drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]'>
+    <span className="relative flex h-2.5 w-2.5">
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+    </span>
+    Now Live
+  </p>
+</div>
 
             <Image
               src='/images/studio_logo.png'

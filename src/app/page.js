@@ -14,6 +14,8 @@ import { Youtube } from 'lucide-react'
 import { createRouteSupabase } from '@/app/lib/supabase/server-route'
 import ScrollReveal from './components/ScrollReveal'
 
+export const revalidate = 0
+
 export const metadata = {
   title: "MicTale | India’s Best Creative Platform",
   description:
@@ -86,11 +88,12 @@ const navigationSchema = {
 
 
 export default async function HomePage() {
-  const supabase = await createRouteSupabase()
+  const supabase = createRouteSupabase()
 
-  const { data: shows } = await supabase
-    .from("shows")
-    .select("*")
+const { data: shows } = await supabase
+  .from("shows")
+  .select("*")
+  .throwOnError()
 
   return (
     <>
@@ -103,9 +106,7 @@ export default async function HomePage() {
        <ScrollReveal>
         <BannerClient bookPoster={BookPoster} />
        </ScrollReveal>
-       <ScrollReveal>
         <HomeShowsClient shows={shows || []} />
-       </ScrollReveal>
        <ScrollReveal>
         <div className="bg-gradient-to-b from-transparent to-slate-900 h-10" />
         <section id="solo-show" className="md:pb-0 bg-slate-900">
@@ -150,6 +151,7 @@ export default async function HomePage() {
         <ScrollReveal>
         <TopPerformers />
         </ScrollReveal>
+
 
         <div className="bg-gradient-to-b to-slate-900 from-transparent h-10" />
 <ScrollReveal>

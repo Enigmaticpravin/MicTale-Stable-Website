@@ -17,6 +17,16 @@ export function createRouteSupabase() {
             cookieStore.set(name, value, options)
           })
         }
+      },
+
+      // 🔴 THIS is the real fix
+      global: {
+        fetch: (url, options = {}) => {
+          return fetch(url, {
+            ...options,
+            cache: "no-store",
+          })
+        }
       }
     }
   )
