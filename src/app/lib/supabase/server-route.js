@@ -1,8 +1,8 @@
 import { cookies } from "next/headers"
 import { createServerClient } from "@supabase/ssr"
 
-export function createRouteSupabase() {
-  const cookieStore = cookies()
+export async function createRouteSupabase() {
+  const cookieStore = await cookies()
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -19,7 +19,6 @@ export function createRouteSupabase() {
         }
       },
 
-      // 🔴 THIS is the real fix
       global: {
         fetch: (url, options = {}) => {
           return fetch(url, {

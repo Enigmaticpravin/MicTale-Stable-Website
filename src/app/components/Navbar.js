@@ -48,7 +48,6 @@ const Navbar = () => {
   const getUser = async () => {
     const { data: { user } } = await supabaseAuth.auth.getUser()
     setUser(user)
-    console.log('Current user:', user)
   }
 
   getUser()

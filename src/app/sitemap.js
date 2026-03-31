@@ -18,8 +18,10 @@ export default async function sitemap() {
 
   const poems = await listPoemSlugs()
   const poemRoutes = poems.map(p => ({
-    url: `${base}/poem/${p.slug}`,
-    lastModified: p.updatedAt || new Date(),
+  url: `${base}/poem/${p.slug}`,
+lastModified: new Date(p.updatedAt),
+changeFrequency: 'daily',
+priority: 0.8,
   }))
 
 /*   const blogs = await listBlogSlugs()

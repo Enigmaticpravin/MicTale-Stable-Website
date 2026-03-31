@@ -5,7 +5,22 @@ import PoemPageClient from "./PoemPageClient";
 import Script from "next/script";
 import { fetchSimilarPoems } from "@/app/lib/database";
 
-export const revalidate = 60;
+export const revalidate = 0;
+
+function buildCleanContent(poem) {
+  const raw =
+    typeof poem.content === "string" && poem.content
+      ? poem.content
+      : Array.isArray(poem.lines)
+      ? poem.lines.join(" ")
+      : "";
+
+  return raw
+    .replace(/\n+/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/[^\p{L}\p{M}\p{N}\s.,!?]/gu, "")
+    .trim();
+}
 
 export async function generateMetadata({ params }) {
  const resolvedParams = await params;
@@ -15,7 +30,9 @@ export async function generateMetadata({ params }) {
 
   const title = `${poem.title} by ${poem.author} | ${poem.category}`;
   const url = `${process.env.NEXT_PUBLIC_BASE_URL || ""}/poem/${slug}`;
-  const description = `${poem.title} by ${poem.author} | Read full poem at MicTale`;
+const cleanContent = buildCleanContent(poem).slice(0, 160)
+
+const description = `${poem.title} by ${poem.author}. ${cleanContent} | Read more on MicTale`
 
   return {
     title,
@@ -99,6 +116,10 @@ export default async function PoemPage({ params }) {
   const isGhazal = category.toLowerCase().includes("ghazal");
   const shers = isGhazal ? buildShersFromContent(content) : [];
 
+const cleanContent = buildCleanContent(poem).slice(0, 160)
+
+const description = `${poem.title} by ${poem.author}. ${cleanContent} | Read more on MicTale`
+
   const similar = await fetchSimilarPoems({
     author,
     category,
@@ -121,24 +142,28 @@ export default async function PoemPage({ params }) {
       />
       <Script id="ld-json" type="application/ld+json">
         {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Poem",
-          name: title,
-          author: {
-            "@type": "Person",
-            name: author,
-          },
-          genre: category,
-          inLanguage: "hi",
-          datePublished: poem.createdAt || "",
-          url: `${process.env.NEXT_PUBLIC_BASE_URL}/poem/${slug}`,
-          publisher: {
-            "@type": "Organization",
-            name: "MicTale",
-            url: process.env.NEXT_PUBLIC_BASE_URL,
-          },
-          text: content,
-        })}
+          
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": {
+    "@type": "Person",
+    "name": author
+  },
+  "datePublished": poem.createdAt,
+  "dateModified": poem.createdAt,
+  "mainEntityOfPage":  `https://mictale.in/poem/${slug}`,
+  "publisher": {
+    "@type": "Organization",
+    "name": "MicTale",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://i.imgur.com/YFpScQU.png"
+    }
+  },
+  "description": description,
+  "articleBody": content
+})}
       </Script>
     </>
   );

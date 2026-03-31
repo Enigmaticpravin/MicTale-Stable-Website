@@ -31,7 +31,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "https://i.imgur.com/YFpScQU.png",
+        url: "https://res.cloudinary.com/drwvlsjzn/image/upload/v1774941071/join_our_family_nivdaf.png",
         width: 1200,
         height: 630,
         alt: "MicTale Logo",
@@ -40,8 +40,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "MicTale | Best Creative Platform",
-    images: ["https://i.imgur.com/YFpScQU.png"]
+    title: "MicTale | India's Best Creative Platform",
+    images: ["https://res.cloudinary.com/drwvlsjzn/image/upload/v1774941071/join_our_family_nivdaf.png"]
   },
   robots: { index: true, follow: true },
   alternates: { canonical: "https://www.mictale.in/" },
@@ -64,11 +64,15 @@ const organizationSchema = {
   name: "MicTale",
   url: "https://www.mictale.in",
   logo: "https://i.imgur.com/YFpScQU.png",
-  description: "MicTale is a new-age open mic platform.",
   sameAs: [
     "https://www.instagram.com/mictale.in",
     "https://www.youtube.com/@mictaleoriginals"
-  ]
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    email: "contact@mictale.in"
+  }
 }
 
 const breadcrumbSchema = {
@@ -79,16 +83,77 @@ const breadcrumbSchema = {
   ]
 }
 
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "PerformingArtsTheater",
+  name: "MicTale Studio",
+  image: "https://res.cloudinary.com/drwvlsjzn/image/upload/v1774941071/join_our_family_nivdaf.png",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Sector 64",
+    addressLocality: "Noida",
+    addressRegion: "UP",
+    postalCode: "201301",
+    addressCountry: "IN"
+  },
+  url: "https://www.mictale.in",
+  sameAs: [
+    "https://www.instagram.com/mictale.in"
+  ]
+}
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "MicTale",
+  url: "https://www.mictale.in",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://www.mictale.in/search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+
 const navigationSchema = {
   "@context": "https://schema.org",
-  "@type": "SiteNavigationElement",
-  name: "Main Navigation",
-  url: "https://www.mictale.in/"
+  "@type": "ItemList",
+  itemListElement: [
+    {
+      "@type": "SiteNavigationElement",
+      position: 1,
+      name: "Home",
+      url: "https://www.mictale.in/"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      position: 2,
+      name: "About",
+      url: "https://www.mictale.in/about"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      position: 3,
+      name: "Treasury",
+      url: "https://www.mictale.in/treasury"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      position: 4,
+      name: "Terms",
+      url: "https://www.mictale.in/terms-and-conditions"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      position: 5,
+      name: "Privacy Policy",
+      url: "https://www.mictale.in/privacy-policy"
+    }
+  ]
 }
 
 
 export default async function HomePage() {
-  const supabase = createRouteSupabase()
+  const supabase = await createRouteSupabase()
 
 const { data: shows } = await supabase
   .from("shows")
@@ -100,9 +165,14 @@ const { data: shows } = await supabase
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(navigationSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
 
       <main className="relative min-h-screen bg-slate-950 text-white overflow-hidden">
 
+<h1 className="hidden">
+  MicTale – India’s Best Creative Platform for Poetry, Ghazals, and Open Mics
+</h1>
        <ScrollReveal>
         <BannerClient bookPoster={BookPoster} />
        </ScrollReveal>
@@ -168,7 +238,10 @@ const { data: shows } = await supabase
         <ContactForm />
 </ScrollReveal>
         <Footer />
-
+<a href="/about" className='hidden'>About MicTale</a>
+<a href="/treasury" className='hidden'>Explore Treasury</a>
+<a href="/terms-and-conditions" className='hidden'>Terms</a>
+<a href="/privacy-policy" className='hidden'>Privacy</a>
       </main>
     </>
   )

@@ -4,7 +4,7 @@ export const metadata = {
  title: {
     absolute: 'About Us – MicTale',
   },
-  description: "Learn about the vision, journey, and mission of MicTale – India’s leading open mic platform for poets, performers, and storytellers.",
+  description: "Learn about the vision, journey, and mission of MicTale – India’s leading creative platform for poets, performers, standup comedians and storytellers.",
   keywords: [
     'MicTale', 'Open Mic India', 'Poetry Platform', 'Spoken Word', 'Storytelling',
     'Artist Growth', 'Mentorship', 'Creative Events', 'Performance Stage'
@@ -18,7 +18,7 @@ export const metadata = {
     siteName: 'MicTale',
     images: [
       {
-        url: 'https://i.imgur.com/WcNbK7B.png',
+        url: 'https://res.cloudinary.com/drwvlsjzn/image/upload/v1774941071/join_our_family_nivdaf.png',
         alt: 'MicTale logo and stage'
       }
     ],
@@ -28,7 +28,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: "About MicTale – India's Best Creative Platform",
     description: 'MicTale supports poets, storytellers, and performers with curated stages, mentorship, and a vibrant artist community.',
-    images: ['https://i.imgur.com/WcNbK7B.png']
+    images: ['https://res.cloudinary.com/drwvlsjzn/image/upload/v1774941071/join_our_family_nivdaf.png']
   },
     icons: {
     icon: [
@@ -56,7 +56,7 @@ export default function AboutPage() {
         "@type": "Person",
         "name": "Pravin Gupta",
         "jobTitle": "Founder",
-        "image": "https://i.imgur.com/PgDBhIz.png"
+        "image": "https://res.cloudinary.com/drwvlsjzn/image/upload/v1757776527/poets/lzpbtcm6nnfbeorprdzv.jpg"
       }
     ],
     "sameAs": [
