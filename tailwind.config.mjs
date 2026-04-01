@@ -95,6 +95,10 @@ export default {
 		},
 	  }
 	},
+	 corePlugins: {},
+  future: {
+    hoverOnlyWhenSupported: false,
+  },
 	plugins: [require("tailwindcss-animate")],
   };
   
