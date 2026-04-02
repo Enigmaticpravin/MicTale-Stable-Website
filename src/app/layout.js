@@ -82,6 +82,7 @@ export default function RootLayout({ children }) {
       lang="en"
       data-scroll-behavior="smooth"
     >
+      <link rel="preconnect" href="https://jbskoeenkkwqcrlolvuk.supabase.co" />
       <body {...(ADD_GPTW ? { "data-gptw": "" } : {})}>
         <ClientRoot>
           <ToastProvider>{children}</ToastProvider>

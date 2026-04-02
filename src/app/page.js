@@ -3,18 +3,16 @@ import Image from 'next/image'
 import originallogo from '@/../public/images/MicTale Originals.png'
 import BookPoster from '@/app/images/bookcover.webp'
 import SoloShow from './components/SoloShow'
-import StoryboardGallery from './components/StoryboardGallery'
-import TopPerformers from './components/TopPerformers'
-import YouTubeChannelComponent from './components/YouTubeChannelComponent'
 import ContactForm from './components/Contact'
 import Footer from './components/Footer'
 import BannerClient from './components/BannerClient'
 import HomeShowsClient from './components/ShowsClient'
 import { Youtube } from 'lucide-react'
-import { createRouteSupabase } from '@/app/lib/supabase/server-route'
+import { supabaseAdmin } from '@/app/lib/supabase/admin'
 import ScrollReveal from './components/ScrollReveal'
+import HomeLazyComponents from './components/HomeLazyComponents'
 
-export const revalidate = 0
+export const revalidate = 60
 
 export const metadata = {
   title: "MicTale | India’s Best Creative Platform",
@@ -153,7 +151,7 @@ const navigationSchema = {
 
 
 export default async function HomePage() {
-  const supabase = await createRouteSupabase()
+  const supabase = supabaseAdmin
 
 const { data: shows } = await supabase
   .from("shows")
@@ -218,23 +216,8 @@ const { data: shows } = await supabase
           </a>
         </div>
         </ScrollReveal>
+        <HomeLazyComponents />
         <ScrollReveal>
-        <TopPerformers />
-        </ScrollReveal>
-
-
-        <div className="bg-gradient-to-b to-slate-900 from-transparent h-10" />
-<ScrollReveal>
-        <StoryboardGallery />
-</ScrollReveal>
-
-        <div className="bg-gradient-to-b from-slate-900 to-transparent h-10" />
-
-        <YouTubeChannelComponent />
-
-        <div className="bg-gradient-to-b to-slate-950 from-transparent h-10" />
-
-<ScrollReveal>
         <ContactForm />
 </ScrollReveal>
         <Footer />

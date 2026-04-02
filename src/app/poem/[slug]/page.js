@@ -1,4 +1,4 @@
-import React from "react";
+import React, { cache } from "react";
 import { notFound } from "next/navigation";
 import { getPoemBySlug } from "@/app/lib/poems";
 import PoemPageClient from "./PoemPageClient";
@@ -6,7 +6,12 @@ import { listPoemSlugs } from "@/app/lib/poems";
 import Script from "next/script";
 import { fetchSimilarPoems } from "@/app/lib/database";
 
-export const revalidate = 0;
+export const revalidate = 300;
+
+// 🔥 CACHE (prevents double DB calls)
+const getCachedPoem = cache(async (slug) => {
+  return await getPoemBySlug(slug);
+});
 
 function buildCleanContent(poem) {
   const raw =
@@ -23,32 +28,50 @@ function buildCleanContent(poem) {
     .trim();
 }
 
-export async function generateStaticParams() {
-  const poems = await listPoemSlugs()
+// 🔥 PARALLEL FETCH START
+async function getPoemData(slug) {
+  const poem = await getCachedPoem(slug);
+  if (!poem) return null;
 
-  return poems.map(p => ({
-    slug: p.slug
-  }))
+  const similarPromise = fetchSimilarPoems({
+    author: poem.author,
+    category: poem.category,
+    excludeSlug: slug,
+    limit: 4,
+  });
+
+  return {
+    poem,
+    similarPromise,
+  };
+}
+
+export async function generateStaticParams() {
+  const poems = await listPoemSlugs();
+
+  return poems.map((p) => ({
+    slug: p.slug,
+  }));
 }
 
 export async function generateMetadata({ params }) {
- const resolvedParams = await params;
-  const { slug } = resolvedParams;
-  const poem = await getPoemBySlug(slug);
+  const { slug } = await params;
+
+  const poem = await getCachedPoem(slug);
   if (!poem) return { title: "Poem not found" };
 
   const title = `${poem.title} by ${poem.author} | ${poem.category}`;
   const url = `${process.env.NEXT_PUBLIC_BASE_URL || ""}/poem/${slug}`;
-const cleanContent = buildCleanContent(poem).slice(0, 160)
+  const cleanContent = buildCleanContent(poem).slice(0, 160);
 
-const description = `${poem.title} by ${poem.author}. ${cleanContent} | Read more on MicTale`
+  const description = `${poem.title} by ${poem.author}. ${cleanContent} | Read more on MicTale`;
 
   return {
     title,
     description,
     alternates: { canonical: url },
     other: {
-      description: description,
+      description,
     },
     keywords: [
       poem.title,
@@ -98,6 +121,7 @@ function buildShersFromContent(content = "") {
     .split(/।\s*|\r?\n/)
     .map((s) => s.trim())
     .filter(Boolean);
+
   const shers = [];
   for (let i = 0; i < raw.length; i += 2) {
     const first = raw[i] || "";
@@ -110,31 +134,30 @@ function buildShersFromContent(content = "") {
 export default async function PoemPage({ params }) {
   const { slug } = await params;
 
-  const poem = await getPoemBySlug(slug);
-  if (!poem) notFound();
+  const data = await getPoemData(slug);
+  if (!data || !data.poem) notFound();
+
+  const { poem, similarPromise } = data;
+
+  // 🔥 already started earlier (parallel)
+  const similar = await similarPromise;
 
   const title = poem.title || "";
   const author = poem.author || poem.poet || "";
   const category = (poem.category || "").toString();
+
   const content =
     typeof poem.content === "string" && poem.content
       ? poem.content
       : Array.isArray(poem.lines)
       ? poem.lines.join("\n")
       : "";
+
   const isGhazal = category.toLowerCase().includes("ghazal");
   const shers = isGhazal ? buildShersFromContent(content) : [];
 
-const cleanContent = buildCleanContent(poem).slice(0, 160)
-
-const description = `${poem.title} by ${poem.author}. ${cleanContent} | Read more on MicTale`
-
-  const similar = await fetchSimilarPoems({
-    author,
-    category,
-    excludeSlug: slug,
-    limit: 4,
-  });
+  const cleanContent = buildCleanContent(poem).slice(0, 160);
+  const description = `${poem.title} by ${poem.author}. ${cleanContent} | Read more on MicTale`;
 
   return (
     <>
@@ -149,30 +172,30 @@ const description = `${poem.title} by ${poem.author}. ${cleanContent} | Read mor
         }}
         similar={similar}
       />
+
       <Script id="ld-json" type="application/ld+json">
         {JSON.stringify({
-          
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": title,
-  "author": {
-    "@type": "Person",
-    "name": author
-  },
-  "datePublished": poem.createdAt,
-  "dateModified": poem.createdAt,
-  "mainEntityOfPage":  `https://mictale.in/poem/${slug}`,
-  "publisher": {
-    "@type": "Organization",
-    "name": "MicTale",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://i.imgur.com/YFpScQU.png"
-    }
-  },
-  "description": description,
-  "articleBody": content
-})}
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: title,
+          author: {
+            "@type": "Person",
+            name: author,
+          },
+          datePublished: poem.createdAt,
+          dateModified: poem.createdAt,
+          mainEntityOfPage: `https://mictale.in/poem/${slug}`,
+          publisher: {
+            "@type": "Organization",
+            name: "MicTale",
+            logo: {
+              "@type": "ImageObject",
+              url: "https://i.imgur.com/YFpScQU.png",
+            },
+          },
+          description,
+          articleBody: content,
+        })}
       </Script>
     </>
   );
