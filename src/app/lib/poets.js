@@ -14,7 +14,7 @@ export async function addPoet({ name, bio, image }) {
     throw new Error('Missing fields')
   }
 
-  const supabase = createRouteSupabase()
+  const supabase = await createRouteSupabase()
 
   const slug = slugify(name)
 
@@ -39,7 +39,7 @@ export async function addPoet({ name, bio, image }) {
 }
 
 export async function listPoetSlugs() {
-  const supabase = createRouteSupabase()
+  const supabase = await createRouteSupabase()
 
   const { data, error } = await supabase
     .from('poets')

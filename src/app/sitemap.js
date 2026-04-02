@@ -1,9 +1,25 @@
 import { listPoemSlugs } from '@/app/lib/poems'
-/* import { listBlogSlugs } from '@/app/lib/blogs' */
 import { listPoetSlugs } from '@/app/lib/poets'
+
+export const revalidate = 0
 
 export default async function sitemap() {
   const base = process.env.NEXT_PUBLIC_BASE_URL || "https://www.mictale.in"
+
+  let poems = []
+  let poets = []
+
+  try {
+    poems = await listPoemSlugs()
+  } catch (e) {
+    console.error("SITEMAP POEMS FAIL:", e)
+  }
+
+  try {
+    poets = await listPoetSlugs()
+  } catch (e) {
+    console.error("SITEMAP POETS FAIL:", e)
+  }
 
   const staticRoutes = [
     "",
@@ -16,24 +32,16 @@ export default async function sitemap() {
     lastModified: new Date(),
   }))
 
-  const poems = await listPoemSlugs()
   const poemRoutes = poems.map(p => ({
-  url: `${base}/poem/${p.slug}`,
-lastModified: new Date(p.updatedAt),
-changeFrequency: 'daily',
-priority: 0.8,
+    url: `${base}/poem/${p.slug}`,
+    lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
+    changeFrequency: 'daily',
+    priority: 0.8,
   }))
 
-/*   const blogs = await listBlogSlugs()
-  const blogRoutes = blogs.map(b => ({
-    url: `${base}/blog/${b.slug}`,
-    lastModified: b.updatedAt || new Date(),
-  })) */
-
-  const poets = await listPoetSlugs()
   const poetRoutes = poets.map(p => ({
     url: `${base}/poet/${p.slug}`,
-    lastModified: p.updatedAt || new Date(),
+    lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
   }))
 
   return [

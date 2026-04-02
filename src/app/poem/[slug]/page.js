@@ -2,6 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { getPoemBySlug } from "@/app/lib/poems";
 import PoemPageClient from "./PoemPageClient";
+import { listPoemSlugs } from "@/app/lib/poems";
 import Script from "next/script";
 import { fetchSimilarPoems } from "@/app/lib/database";
 
@@ -20,6 +21,14 @@ function buildCleanContent(poem) {
     .replace(/\s+/g, " ")
     .replace(/[^\p{L}\p{M}\p{N}\s.,!?]/gu, "")
     .trim();
+}
+
+export async function generateStaticParams() {
+  const poems = await listPoemSlugs()
+
+  return poems.map(p => ({
+    slug: p.slug
+  }))
 }
 
 export async function generateMetadata({ params }) {

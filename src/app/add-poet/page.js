@@ -1,4 +1,3 @@
-// app/admin/add-poet/page.jsx
 'use client'
 
 import { useState } from 'react'
@@ -6,22 +5,14 @@ import { useState } from 'react'
 export default function AddPoetPage() {
   const [name, setName] = useState('')
   const [bio, setBio] = useState('')
-  const [image, setImage] = useState(null)
-  const [preview, setPreview] = useState(null)
+  const [imageUrl, setImageUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
 
-  const handleImageChange = e => {
-    const file = e.target.files[0]
-    setImage(file)
-    if (file) {
-      setPreview(URL.createObjectURL(file))
-    }
-  }
-
   const handleSubmit = async e => {
     e.preventDefault()
-    if (!name || !bio || !image) {
+
+    if (!name || !bio || !imageUrl) {
       setMessage('Please fill all fields')
       return
     }
@@ -30,31 +21,20 @@ export default function AddPoetPage() {
       setLoading(true)
       setMessage('')
 
-      const formData = new FormData()
-      formData.append('file', image)
-
-      const uploadRes = await fetch('/api/upload/poet-image', {
-        method: 'POST',
-        body: formData,
-      })
-      const uploadData = await uploadRes.json()
-      if (!uploadData.ok) throw new Error('Image upload failed')
-
-      const imageUrl = uploadData.url
-
       const res = await fetch('/api/poets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, bio, image: imageUrl }),
       })
+
       const data = await res.json()
+
       if (!res.ok) throw new Error(data.error || 'Error saving poet')
 
       setMessage('Poet added successfully!')
       setName('')
       setBio('')
-      setImage(null)
-      setPreview(null)
+      setImageUrl('')
     } catch (err) {
       console.error(err)
       setMessage(err.message)
@@ -86,14 +66,18 @@ export default function AddPoetPage() {
           rows="4"
         />
 
-        <input type="file" accept="image/*" onChange={handleImageChange} />
-
-        {preview && <img src={preview} alt="Preview" className="w-32 h-32 object-cover rounded" />}
+        <input
+          type="text"
+          placeholder="Image URL"
+          value={imageUrl}
+          onChange={e => setImageUrl(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
 
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="bg-blue-600 text-white px-4 py-2 rounded"
         >
           {loading ? 'Saving...' : 'Save Poet'}
         </button>

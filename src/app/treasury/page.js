@@ -110,7 +110,6 @@ export default async function TreasuryPage() {
 
       <div className="bg-slate-950">
         <TreasuryClient initialPoems={initialPoems} initialGhazals={initialGhazals} />
-        <div className="bg-gradient-to-b from-transparent to-slate-900 h-20"></div>
         <InstagramGrid />
         <div className="bg-gradient-to-b from-slate-900 to-transparent h-10"></div>
         <MetallicFeatureCard />

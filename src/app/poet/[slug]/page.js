@@ -2,11 +2,20 @@ import { notFound } from 'next/navigation'
 import { getPoetBySlug, getPoemsByAuthor } from '@/app/lib/database'
 import PoemListClient from './PoemListClient'
 import Footer from '@/app/components/Footer'
+import { listPoetSlugs } from '@/app/lib/poets'
 
-export const revalidate = 60
+export const revalidate = 0
+
+export async function generateStaticParams() {
+  const poets = await listPoetSlugs()
+
+  return poets.map(p => ({
+    slug: p.slug
+  }))
+}
 
 export async function generateMetadata({ params }) {
-  const { slug } = params
+  const { slug } = await params
   const author = await getPoetBySlug(slug)
   if (!author) return { title: 'Poet not found' }
 
@@ -27,6 +36,10 @@ export async function generateMetadata({ params }) {
       'shayari',
       'ghazal',
       `${author.name} poems`,
+      `${author.name} shayari`,
+      `${author.name} ghazal`,
+      `${author.name} biography`,
+      `${author.name} poetry collection`
     ],
     openGraph: {
       title,
@@ -74,7 +87,7 @@ function buildJsonLd(author, poems, baseUrl) {
 }
 
 export default async function PoetProfilePage({ params }) {
-  const { slug } = params
+  const { slug } = await params
   const author = await getPoetBySlug(slug)
   if (!author) notFound()
 

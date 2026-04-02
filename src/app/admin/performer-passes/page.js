@@ -136,7 +136,7 @@ export default function PerformerPassesPage () {
 
       performanceType: 'Poetry', showId: '', slotDate: '', slotTime: '06:00 PM',
 
-      isFirstTimer: false, video_editing_service: false, paymentStatus: 'Pending'
+      isFirstTimer: false, video_editing_service: false, paymentStatus: 'pending'
 
     })
 

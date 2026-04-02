@@ -42,19 +42,21 @@ export default function PoemListClient ({ poems, author }) {
           <div className='mx-auto py-10 flex flex-col items-center gap-6 bg-white rounded-2xl'>
             <div className=' max-w-5xl flex w-full items-center px-6 gap-4'>
               <div className='relative md:w-44 md:h-44 md:rounded-4xl w-24 h-24 rounded-2xl overflow-hidden shadow-lg ring-1 ring-gray-700'>
-                {author.image ? (
-                  <Image
-                    src={author.image}
-                    alt={author.name}
-                    fill
-                    className='object-cover'
-                    priority
-                  />
-                ) : (
-                  <div className='w-full h-full flex items-center justify-center md:text-4xl text-lg font-semibold bg-gray-800 text-gray-500'>
-                    {author.name?.[0]?.toUpperCase()}
-                  </div>
-                )}
+              {author.image ? (
+  <Image
+    src={author.image}
+    alt={author.name}
+    fill
+    sizes="(max-width: 768px) 100vw, 300px"
+    quality={75}
+    className='object-cover'
+    priority
+  />
+) : (
+  <div className='w-full h-full flex items-center justify-center md:text-4xl text-lg font-semibold bg-gray-800 text-gray-500'>
+    {author.name?.[0]?.toUpperCase()}
+  </div>
+)}
               </div>
               <div className='flex flex-col'>
                 <h1 className='md:text-4xl text-xl font-semibold text-gray-900'>

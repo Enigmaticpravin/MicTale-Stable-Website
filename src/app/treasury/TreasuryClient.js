@@ -90,7 +90,6 @@ export default function TreasuryClient ({ initialPoems, initialGhazals }) {
 </ul>
           </div>
         </div>
-        <div className='bg-gradient-to-b from-slate-900 to-transparent h-10'></div>
       </main>
     </>
   )

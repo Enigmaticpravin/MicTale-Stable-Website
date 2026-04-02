@@ -1,11 +1,11 @@
-import { createRouteSupabase } from '@/app/lib/supabase/server-route'
+import { supabaseAdmin } from './supabase/admin'
 
 function toPlain(row) {
   return row ? JSON.parse(JSON.stringify(row)) : null
 }
 
 export async function getPoemBySlug(slug) {
-  const supabase = await createRouteSupabase()
+  const supabase =  supabaseAdmin
 
   let { data } = await supabase
     .from('poems')
@@ -16,7 +16,7 @@ export async function getPoemBySlug(slug) {
 }
 
 export async function listPoemSlugs(max = 5000) {
-  const supabase = await createRouteSupabase()
+  const supabase =  supabaseAdmin
 
   const { data } = await supabase
     .from('poems')
@@ -33,7 +33,7 @@ export async function listPoemSlugs(max = 5000) {
 }
 
 export async function upsertPoem(poem) {
-  const supabase = await createRouteSupabase()
+  const supabase = supabaseAdmin
 
   const { data, error } = await supabase
     .from('poems')
