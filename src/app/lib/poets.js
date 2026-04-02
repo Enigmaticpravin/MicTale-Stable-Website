@@ -1,4 +1,4 @@
-import { createRouteSupabase } from '@/app/lib/supabase/server-route'
+import { supabaseAdmin } from "./supabase/admin"
 
 function slugify(str) {
   return str
@@ -14,7 +14,7 @@ export async function addPoet({ name, bio, image }) {
     throw new Error('Missing fields')
   }
 
-  const supabase = await createRouteSupabase()
+  const supabase = supabaseAdmin
 
   const slug = slugify(name)
 
@@ -39,7 +39,7 @@ export async function addPoet({ name, bio, image }) {
 }
 
 export async function listPoetSlugs() {
-  const supabase = await createRouteSupabase()
+  const supabase = supabaseAdmin
 
   const { data, error } = await supabase
     .from('poets')
