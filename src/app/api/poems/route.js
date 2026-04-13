@@ -45,7 +45,12 @@ export async function POST (req) {
 
     const url = `https://mictale.in/poem/${slug}`
 
-    submitToGoogleIndexing(url)
+try {
+  await submitToGoogleIndexing(url)
+  console.log("Indexed:", url)
+} catch (e) {
+  console.error("Indexing failed:", e.message)
+}
 
     revalidateTag('poems')
     revalidateTag(`poem:${slug}`)

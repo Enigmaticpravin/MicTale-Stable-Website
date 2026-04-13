@@ -7,6 +7,7 @@ import ContactForm from './components/Contact'
 import Footer from './components/Footer'
 import BannerClient from './components/BannerClient'
 import HomeShowsClient from './components/ShowsClient'
+import Link from 'next/link'
 import { Youtube } from 'lucide-react'
 import { supabaseAdmin } from '@/app/lib/supabase/admin'
 import ScrollReveal from './components/ScrollReveal'
@@ -153,6 +154,17 @@ const navigationSchema = {
 export default async function HomePage() {
   const supabase = supabaseAdmin
 
+  const { data: poems } = await supabase
+  .from("poems")
+  .select("slug, title, author")
+  .order("createdAt", { ascending: false })
+  .limit(20)
+
+  const { data: poets } = await supabase
+  .from("poets")
+  .select("slug, name")
+  .limit(10)
+
 const { data: shows } = await supabase
   .from("shows")
   .select("*")
@@ -217,14 +229,32 @@ const { data: shows } = await supabase
         </div>
         </ScrollReveal>
         <HomeLazyComponents />
+<section className="hidden">
+  <h2>Latest Poems</h2>
+
+  {poems?.map((p) => (
+    <Link key={p.slug} href={`/poem/${p.slug}`}>
+      {p.title} by {p.author}
+    </Link>
+  ))}
+</section>
+<section className="hidden">
+  <h2>Popular Poets</h2>
+
+  {poets?.map((p) => (
+    <Link key={p.slug} href={`/poet/${p.slug}`}>
+      {p.name}
+    </Link>
+  ))}
+</section>
         <ScrollReveal>
         <ContactForm />
 </ScrollReveal>
         <Footer />
-<a href="/about" className='hidden'>About MicTale</a>
-<a href="/treasury" className='hidden'>Explore Treasury</a>
-<a href="/terms-and-conditions" className='hidden'>Terms</a>
-<a href="/privacy-policy" className='hidden'>Privacy</a>
+<Link href="/about" className='hidden'>About MicTale</Link>
+<Link href="/treasury" className='hidden'>Explore Treasury</Link>
+<Link href="/terms-and-conditions" className='hidden'>Terms</Link>
+<Link href="/privacy-policy" className='hidden'>Privacy</Link>
       </main>
     </>
   )

@@ -162,6 +162,7 @@ export default function PoemPageClient ({ poem, similar }) {
                 </h1>
                 <Link
                   href={`/poet/${slugify(author)}`}
+                  prefetch
                   className='text-yellow-500 text-base font-medium italic'
                 >
                   {author}
@@ -225,6 +226,7 @@ export default function PoemPageClient ({ poem, similar }) {
                         <Link
                           key={s.slug}
                           href={`/poem/${s.slug}`}
+                          prefetch
                           className='block group'
                         >
                           <div className='pb-4 border-b border-slate-800/40 last:border-b-0'>

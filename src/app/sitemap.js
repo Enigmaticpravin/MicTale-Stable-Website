@@ -1,7 +1,7 @@
 import { listPoemSlugs } from '@/app/lib/poems'
 import { listPoetSlugs } from '@/app/lib/poets'
 
-export const revalidate = 0
+export const revalidate = 300
 
 export default async function sitemap() {
   const base = process.env.NEXT_PUBLIC_BASE_URL || "https://www.mictale.in"
@@ -32,14 +32,12 @@ export default async function sitemap() {
     lastModified: new Date(),
   }))
 
-  const poemRoutes = poems.map(p => ({
+  const poemRoutes = (poems || []).map(p => ({
     url: `${base}/poem/${p.slug}`,
     lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
-    changeFrequency: 'daily',
-    priority: 0.8,
   }))
 
-  const poetRoutes = poets.map(p => ({
+  const poetRoutes = (poets || []).map(p => ({
     url: `${base}/poet/${p.slug}`,
     lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
   }))

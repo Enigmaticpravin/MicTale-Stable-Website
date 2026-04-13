@@ -135,12 +135,14 @@ export default function PoemListClient ({ poems, author }) {
                       className='text-sm md:text-lg font-medium text-gray-100'
                     >
                       <Link
+                      prefetch
                         href={`/poem/${poem.slug || poem.id}`}
                       >
                         {poem.title || 'Untitled'}
                       </Link>
                     </h3>
                     <Link
+                    prefetch
                       href={`/poem/${poem.slug || poem.id}`}
                       className='inline-flex items-center px-3 py-1.5 text-xs md:text-sm border border-gray-700/60 rounded-lg hover:border-amber-500 hover:text-amber-400 transition'
                     >
