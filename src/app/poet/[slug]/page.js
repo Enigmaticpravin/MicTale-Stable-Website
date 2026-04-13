@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { getPoetBySlug, getPoemsByAuthor } from '@/app/lib/database'
 import PoemListClient from './PoemListClient'
 import Footer from '@/app/components/Footer'
+import Link from 'next/link'
 import { listPoetSlugs } from '@/app/lib/poets'
 
 export const revalidate = 300

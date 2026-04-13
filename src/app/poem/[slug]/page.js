@@ -5,6 +5,7 @@ import PoemPageClient from './PoemPageClient'
 import { listPoemSlugs } from '@/app/lib/poems'
 import Script from 'next/script'
 import { fetchSimilarPoems } from '@/app/lib/database'
+import Link from 'next/link'
 
 export const revalidate = 300
 const getCachedPoem = cache(async slug => {
@@ -174,14 +175,14 @@ export default async function PoemPage ({ params }) {
           {title} by {author}
         </h2>
 
-        <a href={`/poet/${author.toLowerCase().replace(/\s+/g, '-')}`}>
+        <Link href={`/poet/${author.toLowerCase().replace(/\s+/g, '-')}`}>
           More poems by {author}
-        </a>
+        </Link>
 
         {similar.map(s => (
-          <a key={s.slug} href={`/poem/${s.slug}`}>
+          <Link key={s.slug} href={`/poem/${s.slug}`}>
             {s.title}
-          </a>
+          </Link>
         ))}
       </div>
 
