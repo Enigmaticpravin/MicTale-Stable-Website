@@ -184,7 +184,25 @@ const { data: shows } = await supabase
   MicTale – India’s Best Creative Platform for Poetry, Ghazals, and Open Mics
 </h1>
        <ScrollReveal>
-        <BannerClient bookPoster={BookPoster} />
+          <div className="hidden md:block">
+                      <Image
+                        src="/images/desktophome.png"
+                        alt="Banner Desktop"
+                        width={1920}
+                        height={1080}
+                        className="w-full h-auto rounded-2xl"
+                      />
+                    </div>
+                    
+                    <div className="block md:hidden">
+                      <Image
+                        src="/images/mobilehome.png"
+                        alt="Banner Mobile"
+                        width={1080}
+                        height={608}
+                        className="w-full h-auto rounded-2xl"
+                      />
+                    </div>
        </ScrollReveal>
         <HomeShowsClient shows={shows || []} />
        <ScrollReveal>
@@ -203,7 +221,7 @@ const { data: shows } = await supabase
         </section>
         </ScrollReveal>
 
-        <div className="bg-gradient-to-b from-slate-900 to-transparent h-10" />
+        <div className="bg-gradient-to-b from-slate-900 to-transparent h-4" />
         <ScrollReveal>
         <div className="flex flex-col mx-2 rounded-2xl md:flex-row bg-white items-center justify-between py-5 px-5 bg-cover bg-center bg-no-repeat gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">

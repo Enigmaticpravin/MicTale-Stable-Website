@@ -1,121 +1,53 @@
 'use client'
 
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import {
-  ChevronRight,
-  Instagram,
-  ArrowUpRight
-} from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const MicTaleLuxuryAnnouncement = () => {
-  const [isExpanded, setIsExpanded] = useState(false)
+
 
   return (
+    <Link href="/rent_mictale_studio">
     <section className='relative mx-auto md:mx-6 group'>
 <div
   className="relative z-10 bg-[linear-gradient(135deg,#f8fafc_0%,#cbd5e1_25%,#f1f5f9_50%,#94a3b8_75%,#e2e8f0_100%)] rounded-b-3xl cursor-pointer shadow-[0_20px_50px_rgba(0,0,0,0.2)]"
-  onClick={() => {
-    if (window.innerWidth >= 768) {
-      setIsExpanded(!isExpanded);
-    }
-  }}
 >
         <div className='absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.4),transparent)] pointer-events-none' />
 
         <div className='relative z-20 md:py-8 py-8 md:px-10 flex flex-col md:flex-row items-center justify-center md:gap-18'>
           <div className='flex flex-col items-center'>
-            <div className='relative w-fit px-3 py-1 md:px-6 md:py-2 flex rounded-md border border-red-900/40 bg-[linear-gradient(160deg,#7f1d1d,#ef4444,#991b1b,#450a0a)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_0_20px_rgba(185,28,28,0.4)] overflow-hidden group'>
-  {/* The "On-Air" Glow Shimmer */}
-  <motion.div
-    animate={{ opacity: [0.4, 0.8, 0.4] }}
-    transition={{
-      duration: 2,
-      repeat: Infinity,
-      ease: 'easeInOut'
-    }}
-    className='absolute inset-0 bg-red-500/20'
-  />
-
-  <p className='relative z-10 text-[11px] text-white uppercase tracking-[0.2em] md:tracking-[0.4em] flex items-center gap-3 font-black whitespace-nowrap drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]'>
-    <span className="relative flex h-2.5 w-2.5">
-      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
-    </span>
-    Now Live
-  </p>
-</div>
+           
 
             <Image
               src='/images/studio_logo.png'
               width={400}
               height={250}
               alt='MicTale Luxury Announcement'
-              className='w-auto h-10 md:h-16 object-contain'
+              className='w-auto h-8 md:h-16 mb-2 md:mb-0 object-contain'
             />
-          </div>
+<p className='text-black libre-baskerville-regular-italic -mt-3 text-xs md:text-lg'>
+  is now available for 
+  <span className="relative inline-flex items-center ml-1 px-2 md:px-5 md:py-1 font-bold text-white text-sm rounded-full overflow-hidden group">
+    <span className="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-700 to-slate-950" />
 
-          <div className='w-60 md:w-40 h-[0.7px] bg-gradient-to-r from-transparent via-slate-800 to-transparent mb-2 md:hidden'></div>
+    <span className="absolute inset-0 border-t border-white/40 rounded-full" />
 
-          <div className='md:mt-0 flex flex-col items-center'>
-            <p className='text-slate-500 text-[10px] md:text-sm'>
-              India&apos;s Most Creative Studio
-            </p>
-            <div className='w-30 md:w-40 bg-slate-700 h-[0.7px]'></div>
-            <div className='tracking-widest text-sm md:text-lg uppercase text-black'>
-          Now Hosting Shows
-            </div>
-            
-          </div>
-          <div className='mt-6 md:mt-0 hidden md:flex items-center gap-4'>
-            <motion.div
-              animate={{ x: isExpanded ? 5 : 0 }}
-              className='p-3 rounded-full border border-black/10 bg-black/5 group-hover:border-black/20 transition-all'
-            >
-              <ChevronRight
-                className={`text-slate-800 transition-transform duration-500 ${
-                  isExpanded ? 'rotate-90' : ''
-                }`}
-              />
-            </motion.div>
-          </div>
+    <span className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.4)_0%,transparent_75%)]" />
+
+    <span className="absolute inset-0 shadow-[inset_0_-2px_6px_rgba(0,0,0,0.4)] rounded-full" />
+
+    <span className="text-xs md:text-lg relative z-10 tracking-tight">
+      space bookings
+    </span>
+
+    <span className="absolute -inset-1 bg-blue-600/20 blur-lg -z-10 group-hover:bg-blue-600/40 transition-colors duration-500" />
+  </span>
+</p></div>
+       
+
+          
         </div>
-
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className='overflow-hidden'
-            >
-            <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-4xl mx-auto px-8 py-6 bg-[#030712] border border-white/10 rounded-xl">
-  
-  <div className="flex flex-col mb-4 md:mb-0">
-    <p className="text-[10px] uppercase tracking-[0.3em] text-blue-500 font-bold mb-1">Stay Tuned</p>
-    <h3 className="text-lg font-light text-slate-200">
-      For more updates, follow us on <span className="font-semibold text-white">Instagram</span>
-    </h3>
-  </div>
-  <a
-    href="https://www.instagram.com/mictale.in"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="flex items-center gap-3 px-6 py-2.5 bg-white text-black rounded-lg hover:bg-slate-200 transition-all duration-300"
-  >
-    <Instagram size={18} />
-    <span className="text-xs font-bold uppercase tracking-widest">Follow @MicTale</span>
-    <ArrowUpRight size={14} className="opacity-50" />
-  </a>
-</div>
-
-              <div className='pb-10 flex justify-center'>
-                <div className='h-[1px] w-32 bg-gradient-to-r from-transparent via-slate-400 to-transparent' />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       <style jsx>{`
@@ -126,23 +58,8 @@ const MicTaleLuxuryAnnouncement = () => {
         }
       `}</style>
     </section>
+    </Link>
   )
 }
-
-const FeatureBox = ({ icon, title, desc }) => (
-  <div className='flex flex-col items-center text-center space-y-4 group/item'>
-    <div className='w-12 h-12 flex items-center justify-center rounded-xl bg-black/5 border border-black/10 text-slate-800 group-hover/item:scale-110 group-hover/item:border-slate-500/40 transition-all duration-700'>
-      {icon}
-    </div>
-    <div>
-      <h4 className='text-xs font-bold text-slate-900 uppercase tracking-widest mb-1'>
-        {title}
-      </h4>
-      <p className='text-[11px] text-slate-600 font-light leading-relaxed'>
-        {desc}
-      </p>
-    </div>
-  </div>
-)
 
 export default MicTaleLuxuryAnnouncement

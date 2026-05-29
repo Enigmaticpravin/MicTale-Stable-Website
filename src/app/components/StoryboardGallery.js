@@ -57,9 +57,9 @@ const StoryboardGallery = () => {
   }
 
   return (
-    <div className='bg-slate-900 p-8 flex flex-col items-center justify-center'>
+    <div className='bg-slate-900 py-12 flex flex-col items-center justify-center'>
       <div className='w-full max-w-6xl'>
-        <div className='justify-center items-center flex flex-col mb-10'>
+        <div className='justify-center items-center flex flex-col mb-2 md:mb-10'>
           <p
             className='uppercase text-transparent bg-clip-text bg-gradient-to-t font-semibold text-[12px] md:text-[18px] from-yellow-700 via-yellow-500 to-yellow-900'
             style={poppinsStyle}
@@ -71,7 +71,7 @@ const StoryboardGallery = () => {
           </p>
         </div>
 
-        <div className='grid grid-cols-2 md:grid-cols-4 gap-2'>
+        <div className='grid grid-cols-2 md:grid-cols-4 gap-2 mx-2 md:mx-0'>
           {images.map(image => (
             <div
               key={image.id}

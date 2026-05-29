@@ -123,7 +123,7 @@ const Navbar = () => {
 
   return (
     <>
-      <WhatsNew />
+  {pathname !== '/rent_mictale_studio' && <WhatsNew />}
       <nav
         className={`text-white bg-gradient-to-r from-gray-950 via-slate-900 to-gray-950 sticky top-0 z-50 transition-all duration-500 ${
           isScrolled

@@ -33,7 +33,7 @@ const SoloShow = () => {
 
   return (
     <div
-      className="block items-center justify-center overflow-hidden md:bg-slate-900"
+      className="block items-center justify-center overflow-hidden -mb-5 md:bg-slate-900"
     >
       <div className="md:flex md:flex-row md:justify-center md:items-center">
         <div
@@ -54,7 +54,7 @@ const SoloShow = () => {
 
         {imageHeight > 0 && (
           <div
-            className="md:relative w-full md:w-[30%] overflow-hidden mx-auto md:flex md:flex-col mt-0 hidden"
+            className="md:relative w-full md:w-[30%] overflow-hidden mx-auto md:flex md:flex-col mb-0 mt-0 hidden"
             style={{ height: `${imageHeight}px` }}
           >
             <div className="pointer-events-none absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-slate-900 to-transparent z-20" />

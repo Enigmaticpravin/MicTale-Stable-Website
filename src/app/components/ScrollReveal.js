@@ -10,15 +10,13 @@ export default function ScrollReveal({ children, className = "" }) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // When the element is visible in the viewport
         if (entry.isIntersecting) {
           setIsVisible(true)
-          // Stop observing once it's visible (animate only once)
           observer.disconnect() 
         }
       },
       {
-        threshold: 0.1, // Trigger when 10% of the component is visible
+        threshold: 0.1,
       }
     )
 
@@ -36,8 +34,8 @@ export default function ScrollReveal({ children, className = "" }) {
       ref={ref}
       className={`transform transition-all duration-1000 ease-out ${
         isVisible 
-          ? 'opacity-100 translate-y-0' // End State: Visible & Original Position
-          : 'opacity-0 translate-y-12'  // Start State: Invisible & Moved Down
+          ? 'opacity-100 translate-y-0'
+          : 'opacity-0 translate-y-12'
       } ${className}`}
     >
       {children}

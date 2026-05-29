@@ -30,7 +30,7 @@ const TopPerformers = () => {
   return (
     <section className="py-12 px-4 flex items-center justify-center">
       <div className="max-w-6xl w-full">
-        <div className="text-center mb-10">
+        <div className="text-center mb-2 md:mb-10">
          <p className="uppercase bg-clip-text text-transparent bg-gradient-to-t text-[12px] md:text-[18px] font-bold from-yellow-700 via-yellow-500 to-yellow-900">
               meet our
             </p>

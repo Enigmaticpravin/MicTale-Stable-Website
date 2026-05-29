@@ -211,7 +211,6 @@ useEffect(() => {
                 </p>
               </div>
 
-              {/* Desktop Process */}
               <div className='hidden lg:grid grid-cols-3 gap-12 mb-12'>
                 <div className='text-center relative'>
                   <div className='w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 relative'>
@@ -249,7 +248,6 @@ useEffect(() => {
                     with care and attention
                   </p>
 
-                  {/* Arrow */}
                   <div className='absolute top-10 -right-6 hidden xl:block'>
                     <ArrowRight className='w-6 h-6 text-gray-300' />
                   </div>
@@ -272,7 +270,6 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Mobile Process */}
               <div className='md:hidden space-y-8 mb-12'>
                 <div className='flex items-start space-x-4'>
                   <div className='w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0 relative'>
@@ -326,7 +323,6 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Timeline */}
               <div className='bg-gray-50 rounded-2xl p-2 md:p-6'>
                 <div className='flex flex-row items-center justify-center text-sm text-gray-600'>
                   <div className='flex items-center space-x-3'>
@@ -411,7 +407,6 @@ useEffect(() => {
                     />
                   </div>
 
-                  {/* Content */}
                   <div>
                     <label className='block text-sm font-semibold text-gray-700 mb-3'>
                       Your Content
