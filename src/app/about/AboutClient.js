@@ -211,7 +211,7 @@ export default function MicTalePremium () {
           ))}
         </section>
 
-        <div
+       <div
           ref={setRef('visionary-header')}
           id='visionary-header'
           className='justify-center items-center flex flex-col my-5 md:my-10'
@@ -221,7 +221,7 @@ export default function MicTalePremium () {
             className='uppercase text-transparent bg-clip-text bg-gradient-to-t font-semibold text-[12px] md:text-[18px] from-yellow-700 via-yellow-500 to-yellow-900'
             style={poppinsStyle}
           >
-            the visionary
+            the visionaries
           </p>
           <p className='text-transparent bg-clip-text bg-gradient-to-t font-semibold  text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white elsie-regular'>
             Behind MicTale
@@ -233,7 +233,7 @@ export default function MicTalePremium () {
     <div 
       ref={setRef('founder-story')}
       id='founder-story'
-      className='montserrat-regular md:text-lg text-white leading-relaxed text-justify'
+      className='montserrat-regular md:text-lg text-white leading-relaxed text-justify mb-16 md:mb-24'
       style={{
         ...getAnimationStyle('founder-story', -0),
         transform: `${
@@ -266,29 +266,86 @@ export default function MicTalePremium () {
         </div>
       </div>
 
-         {[
-
+      {[
         'Pravin Gupta is an Indian author, Founder and CTO at MicTale. He has written bestselling titles like Kaalikh and Her Love Drowned The Poet, and newspapers like Hindustan Times and Dainik Jagran have also praised his work. He is a self-taught artist who believes in the power of creativity to change lives.',
-
         'Professionally, he works a graphic design job. Personally, he juggles writing, wildlife photography, music, and mild overthinking. He is also half-coder, half-therapist-for-his-own-ideas.',
-
         'MicTale was not a startup idea. It was a reaction. Tired of overpriced, underwhelming open mics and gatekept creative spaces, Pravin started an Instagram page in late 2024 with zero budget and one goal; to create a platform where talent did not need permission.',
-
         'He began by posting one sher a day. That page slowly became a vibe. And in January 2025, MicTale hosted its first open mic with no sponsor, but with just a mic, a rented hall, and people who actually gave a damn.',
-
         'That day flipped the switch.',
-
         'Since then, Pravin has been building MicTale like Dashrath Manjhi breaking the mountain, funding it from his salary, designing every visual, scripting every post, and creating something most people only talk about in "let\'s do something bro" conversations.',
-
         'He is not doing this for fame or followers. He is doing it because no one else would. And if you have ever felt like your voice did not fit the mold, welcome home!'
-
       ].map((paragraph, index) => (
-
         <p
           key={index}
           className='mb-3 text-sm md:text-lg'
           style={getAnimationStyle(
             'founder-story',
+            -5 * index,
+            `${index * 0.1}s`
+          )}
+        >
+          {paragraph}
+        </p>
+      ))}
+      
+      <div className="clear-both"></div>
+    </div>
+
+<div className="bg-white h-0.5 mb-10"></div>
+
+    <div 
+      ref={setRef('co-founder-story')}
+      id='co-founder-story'
+      className='montserrat-regular md:text-lg text-white leading-relaxed text-justify'
+      style={{
+        ...getAnimationStyle('co-founder-story', -0),
+        transform: `${
+          getAnimationStyle('co-founder-story', -10).transform
+        } rotateY(${hasAnimated['co-founder-story'] ? '0deg' : '-15deg'})`
+      }}
+    >
+      <div
+        ref={setRef('co-founder-image')}
+        id='co-founder-image'
+        className='relative group float-right ml-2 md:ml-8 mb-4 w-fit'
+        style={{
+          ...getAnimationStyle('co-founder-image', 20),
+          transform: `${
+            getAnimationStyle('co-founder-image', 20).transform
+          } rotateY(${
+            hasAnimated['co-founder-image'] ? '0deg' : '15deg'
+          })`
+        }}
+      >
+        <div className='relative'>
+          <Image
+            src='https://res.cloudinary.com/drwvlsjzn/image/upload/v1780376379/WhatsApp_Image_2026-05-17_at_10.41.02_AM_h7garx.jpg'
+            alt='Prathak Gupta'
+            width={800}
+            height={800}
+            className='w-40 md:w-80 h-auto rounded-xl object-cover'
+          />
+        </div>
+      </div>
+
+      {[
+        'Prathak Gupta is the Co-Founder and Chief Operations Officer at MicTale. A software developer by profession and a builder by mindset, he has always been someone who prefers action over announcements and execution over excuses.',
+        'With a background in Computer Science Engineering, software development, event management, and leadership, Prathak combines technical thinking with practical problem-solving. Whether it is managing teams, handling operations, coordinating events, or finding solutions under pressure, he believes that ideas only matter when they are executed. His experience spans full-stack development, Android applications, networking projects, competitive programming, and large-scale event coordination.',
+        'His journey with MicTale began long before the studio existed.',
+        'At a time when MicTale was slowly becoming a postponed reality, the vision was alive but the path forward was uncertain. The community had been built, events had been hosted, and the dream was clear, but creating a permanent home for creators felt increasingly distant.',
+        'During a casual conversation at Pravin\'s home, Prathak raised a simple question: "Why do not we start looking for spaces again?"',
+        'The next day, he found a potential venue in Noida and called Pravin to inspect it.',
+        'What seemed like an ordinary visit became one of the most important moments in MicTale\'s story.',
+        'Together, they evaluated the space, imagined its possibilities, and made the decision to move forward. That venue would later become MicTale Studio, the physical home of a community that had until then existed mostly through rented halls, temporary setups, and pure determination.',
+        'Prathak invested his focus in turning that vision into reality. From operational planning and execution to helping shape the foundation of the studio itself, he played a critical role in ensuring that MicTale became more than just an idea people talked about.',
+        'Today, he continues to work in building MicTale into a long-term creative ecosystem for poets, storytellers, musicians, comedians, filmmakers, and artists.',
+        'He believes that every meaningful project reaches a point where belief alone is not enough. Someone has to take the first real step.'
+      ].map((paragraph, index) => (
+        <p
+          key={index}
+          className='mb-3 text-sm md:text-lg'
+          style={getAnimationStyle(
+            'co-founder-story',
             -5 * index,
             `${index * 0.1}s`
           )}

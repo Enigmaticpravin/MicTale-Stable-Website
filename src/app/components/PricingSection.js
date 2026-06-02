@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react';
 import { Check, ArrowRight } from 'lucide-react';
 
@@ -40,6 +42,26 @@ export default function PricingSection() {
       btnText: "Contact Us"
     }
   ];
+
+  const handleWhatsapp = (card) => {
+  const phone = "919667645676";
+
+  const message = `Hello MicTale,
+
+I am interested in the ${card.title}.
+
+Package: ${card.title}
+Price: ${card.price}${card.unit}
+
+Included:
+${card.features.map(feature => `• ${feature}`).join('\n')}
+
+Please share availability and booking details.`;
+
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+  window.open(url, "_blank");
+};
 
   const goldText = "bg-gradient-to-b from-[#D4AF37] via-[#F9E498] to-[#B8860B] bg-clip-text text-transparent";
   const goldBtn = "bg-gradient-to-r from-[#B8860B] via-[#F9E498] to-[#D4AF37] text-black font-bold shadow-[0_0_20px_rgba(212,175,55,0.2)] hover:shadow-[0_0_30px_rgba(212,175,55,0.45)] transition-all duration-300";
@@ -115,15 +137,16 @@ export default function PricingSection() {
                 </ul>
               </div>
 
-              <button 
-                className={`w-full mt-3 md:mt-8 py-1 md:py-3.5 rounded-full text-xs md:font-bold tracking-widest uppercase transition-all duration-300 cursor-pointer ${
-                  card.isPopular 
-                    ? `${goldBtn}` 
-                    : 'bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 text-white backdrop-blur-md'
-                }`}
-              >
-                {card.btnText}
-              </button>
+         <button
+  onClick={() => handleWhatsapp(card)}
+  className={`w-full mt-3 md:mt-8 py-1 md:py-3.5 rounded-full text-xs md:font-bold tracking-widest uppercase transition-all duration-300 cursor-pointer ${
+    card.isPopular
+      ? `${goldBtn}`
+      : 'bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 text-white backdrop-blur-md'
+  }`}
+>
+  {card.btnText}
+</button>
             </div>
           ))}
         </div>

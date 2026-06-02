@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react';
 import { Layers, Sparkles, Sun, ShieldAlert, ArrowRight, Play } from 'lucide-react';
 
@@ -126,7 +128,7 @@ export default function ExperienceSection() {
     ))}
   </div>
   
-  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 md:mt-4 pt-4 border-t border-white/5">
+  <div className="hidden flex-col sm:flex-row sm:items-center justify-between gap-6 md:mt-4 pt-4 border-t border-white/5">
     <p className="text-gray-400 text-[10px] md:text-xs leading-relaxed max-w-md tracking-wide">
       From crystal-clear isolated acoustics to responsive mood lighting and high-tier equipment, every square inch is engineered to amplify your creative voice.
     </p>

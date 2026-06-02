@@ -350,6 +350,53 @@ const Navbar = () => {
               </span>
             </Link>
 
+             <Link
+              href='/rent_mictale_studio'
+              className={`relative inline-block rounded-full px-3 py-1 transition-all duration-300 ${
+                isActive('/rent_mictale_studio')
+                  ? 'text-black font-semibold'
+                  : 'text-white hover:scale-105'
+              }`}
+            >
+              <span
+                className='absolute inset-0 rounded-full p-[1px] md:p-[1.5px]'
+                style={{
+                  background:
+                    'linear-gradient(90deg, rgba(212,175,55,0.8), rgba(255,107,107,0.7), rgba(108,92,231,0.7), rgba(0,206,201,0.7), rgba(255,195,0,0.8), rgba(212,175,55,0.8))',
+                  backgroundSize: '200% auto',
+                  animation: 'rainbowFlow 6s linear infinite'
+                }}
+              >
+                <span className={`block h-full w-full rounded-full ${isActive('/rent_mictale_studio') ? 'bg-white' : 'bg-black'}`} />
+              </span>
+
+              <span
+                className='absolute inset-0 rounded-full blur-[4px] opacity-70 pointer-events-none'
+                style={{
+                  background:
+                    'linear-gradient(90deg, #D4AF37, #FF6B6B, #6C5CE7, #00CEA1, #FFC300, #D4AF37)',
+                  backgroundSize: '200% auto',
+                  animation: 'rainbowFlow 6s linear infinite',
+                  zIndex: 0
+                }}
+              />
+
+              <style jsx>{`
+                @keyframes rainbowFlow {
+                  0% {
+                    background-position: 0% center;
+                  }
+                  100% {
+                    background-position: 200% center;
+                  }
+                }
+              `}</style>
+
+              <span className='relative z-10 rounded-full mix-blend-normal'>
+                Rent Our Venue
+              </span>
+            </Link>
+
             <Link
               href='/about'
               className={`relative inline-block rounded-full px-3 py-1 transition-colors duration-200 ${
@@ -663,6 +710,53 @@ const Navbar = () => {
           </Link>
         ))}
       </nav>
+      <Link
+              href='/rent_mictale_studio'
+              className={`relative inline-block w-full rounded-full px-3 py-2 text-center transition-all duration-300 ${
+                isActive('/rent_mictale_studio')
+                  ? 'text-black font-semibold'
+                  : 'text-white hover:scale-105'
+              }`}
+            >
+              <span
+                className='absolute inset-0 rounded-full p-[1px] md:p-[1.5px]'
+                style={{
+                  background:
+                    'linear-gradient(90deg, rgba(212,175,55,0.8), rgba(255,107,107,0.7), rgba(108,92,231,0.7), rgba(0,206,201,0.7), rgba(255,195,0,0.8), rgba(212,175,55,0.8))',
+                  backgroundSize: '200% auto',
+                  animation: 'rainbowFlow 6s linear infinite'
+                }}
+              >
+                <span className={`block h-full w-full rounded-full ${isActive('/rent_mictale_studio') ? 'bg-white' : 'bg-black'}`} />
+              </span>
+
+              <span
+                className='absolute inset-0 rounded-full blur-[4px] opacity-70 pointer-events-none'
+                style={{
+                  background:
+                    'linear-gradient(90deg, #D4AF37, #FF6B6B, #6C5CE7, #00CEA1, #FFC300, #D4AF37)',
+                  backgroundSize: '200% auto',
+                  animation: 'rainbowFlow 6s linear infinite',
+                  zIndex: 0
+                }}
+              />
+
+              <style jsx>{`
+                @keyframes rainbowFlow {
+                  0% {
+                    background-position: 0% center;
+                  }
+                  100% {
+                    background-position: 200% center;
+                  }
+                }
+              `}</style>
+
+              {/* Button Content */}
+              <span className='relative z-10 rounded-full mix-blend-normal'>
+                Rent Our Venue
+              </span>
+            </Link>
 
       <div className='py-4 border-t border-black/10'>
         {user ? (

@@ -83,7 +83,7 @@ export default function Footer() {
 
           <BackToTop />
         </div>
-         <p className='text-xs md:text-sm items-center text-center mb-4 justify-center mx-auto'>© {new Date().getFullYear()} MicTale. All rights reserved.</p>
+         <p className='text-xs md:text-sm items-center text-center mb-4 justify-center mx-auto'>© {new Date().getFullYear()} MicTale. All rights reserved. | Developed & Managed by <a href="https://www.instagram.com/theprojectenigma.in" className='border-blue-500 rounded-2xl border-2 px-2 montserrat-regular uppercase'>The Project Enigma</a></p>
       </div>
     </footer>
   )

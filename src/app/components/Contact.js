@@ -17,7 +17,9 @@ const ContactForm = () => {
         body: JSON.stringify({ feedback }),
       });
 
-      if (!res.ok) throw new Error("Failed");
+   const result = await res.json();
+
+console.log("API RESPONSE:", result);
 
       setFeedback("");
       setShowSuccess(true);

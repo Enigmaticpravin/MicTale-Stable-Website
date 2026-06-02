@@ -186,9 +186,16 @@ const BookingPopup = ({ isOpen, onClose, showId, user, selectedDate, category })
                     Performance Fee
                   </p>
                 )}
-                <p className="text-2xl md:text-4xl font-serif text-black font-bold">
+                {category == 'Comedy Show' ? (
+                  <p className="text-2xl md:text-4xl font-serif text-black font-bold">
+                    ₹100
+                  </p>
+                ) : (
+                  <p className="text-2xl md:text-4xl font-serif text-black font-bold">
                   ₹{formData.videoEditingService ? '399' : '299'}
                 </p>
+                )}
+               
               </div>
               
               <button
