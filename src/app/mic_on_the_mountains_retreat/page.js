@@ -1,4 +1,5 @@
 import Image from "next/image"
+import DetailedSchedule from "../components/DetailedSchedule"
 import { Fraunces, Caveat, Inter } from "next/font/google"
 import { 
   Mountain, 
@@ -167,6 +168,7 @@ export default function RetreatPage() {
       <Hero />
       <Experience />
       <Itinerary />
+      <DetailedSchedule />
         <StayExperience />
       <Package />
       <Closing />
