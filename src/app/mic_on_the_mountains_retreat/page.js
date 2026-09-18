@@ -35,7 +35,7 @@ const inter = Inter({
 })
 
 const BOOKING_URL = "https://payments.cashfree.com/forms/gostopsxmictale"
-const INSTAGRAM_URL = "https://instagram.com"
+const INSTAGRAM_URL = "https://instagram.com/mictale.in"
 
 const borderPattern =
   "repeating-linear-gradient(135deg,#ffffff 0 18px,#173d78 18px 36px,#ffffff 36px 54px,#e51c2b 54px 72px)"
@@ -52,21 +52,21 @@ export const metadata = {
     description:
       "A poetic mountain retreat for artists and creators: 9 to 11 October in Mussoorie.",
     type: "website",
-    images: ["/images/title.png"],
+    images: ["/images/og-image.png"],
   },
   twitter: {
     card: "summary_large_image",
     title: "Mic on the Mountains | MicTale",
     description:
       "A poetic mountain retreat for artists and creators: 9 to 11 October in Mussoorie.",
-    images: ["/images/title.png"],
+    images: ["/images/og-image.png"],
   },
 }
 
 const eventJsonLd = {
   "@context": "https://schema.org",
   "@type": "Event",
-  name: "Mic & Mountains: A Poetic Mountain Retreat by MicTale",
+  name: "Mic on the Mountains: A Mountain Retreat by MicTale",
   startDate: "2026-10-09",
   endDate: "2026-10-11",
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
