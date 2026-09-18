@@ -114,7 +114,7 @@ const itinerary = [
 ]
 
 const inclusions = [
-  { icon: Mountain, text: "2 nights' stay at goSTOPS Mussoorie" },
+  { icon: Mountain, text: "3 Day-2 nights' stay at goSTOPS Mussoorie" },
   { icon: Coffee, text: "Daily breakfast" },
   { icon: Mic, text: "Your spot at the Open Mic" },
   { icon: Clapperboard, text: "Full video of the retreat's key sessions" },
@@ -273,16 +273,32 @@ function Hero() {
       <SkyBackdrop />
 
       <div className="flex w-full flex-col items-center gap-4 md:gap-7">
-        <Image
-          src="/images/partners.png"
-          alt="MicTale and retreat partners"
-          width={1080}
-          height={200}
-          priority
-          quality={100}
-          sizes="(max-width: 768px) 580px, 640px"
-          className="h-auto w-[580px] md:w-[640px]"
-        />
+       <div className="flex flex-col items-center">
+  <div className="flex items-center justify-center gap-3 md:gap-5">
+    <img 
+      src="https://gostops.com/blog/wp-content/uploads/2020/07/hand-with-gostop-log.png" 
+      alt="Partner 1" 
+      className="h-7 md:h-12 w-auto object-contain"
+    />
+
+    <span className="text-xl md:text-2xl font-light text-black">
+      x
+    </span>
+
+    <img 
+      src="/images/logo.png" 
+      alt="Partner 2" 
+      className="h-4 md:h-8 w-auto object-contain invert"
+    />
+  </div>
+
+  <span 
+    className="text-sm md:text-xl text-black italic tracking-wide"
+    style={{ fontFamily: "'Playfair Display', serif" }}
+  >
+    presents
+  </span>
+</div>
 <h1 className="w-full">
           <Image
             src="/images/titl.png"
