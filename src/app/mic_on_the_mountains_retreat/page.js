@@ -34,7 +34,7 @@ const inter = Inter({
   display: "swap",
 })
 
-const BOOKING_URL = "#book"
+const BOOKING_URL = "https://payments.cashfree.com/forms/gostopsxmictale"
 const INSTAGRAM_URL = "https://instagram.com"
 
 const borderPattern =
@@ -46,11 +46,11 @@ const sideBorderPattern =
 export const metadata = {
   title: "Mic on the Mountains",
   description:
-    "MicTale presents Mic on the Mountains — a poetic mountain retreat for artists and creators, 9 to 11 October in Mussoorie. Open mic, a bonfire baithak and a trek to Cloud's End. Only 12 spots.",
+    "MicTale presents Mic on the Mountains, a poetic mountain retreat for artists and creators, 9 to 11 October in Mussoorie. Open mic, a bonfire baithak and a trek to Cloud's End. Only 12 spots.",
   openGraph: {
     title: "Mic on the Mountains | MicTale",
     description:
-      "A poetic mountain retreat for artists and creators — 9 to 11 October in Mussoorie.",
+      "A poetic mountain retreat for artists and creators: 9 to 11 October in Mussoorie.",
     type: "website",
     images: ["/images/title.png"],
   },
@@ -58,7 +58,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Mic on the Mountains | MicTale",
     description:
-      "A poetic mountain retreat for artists and creators — 9 to 11 October in Mussoorie.",
+      "A poetic mountain retreat for artists and creators: 9 to 11 October in Mussoorie.",
     images: ["/images/title.png"],
   },
 }
@@ -94,21 +94,21 @@ const itinerary = [
     day: "Day 1",
     date: "9 Oct",
     title: "Arrival, and the first circle",
-    text: "Make your way up to goSTOPS Mussoorie. Unpack, breathe the thinner air, and meet the strangers you'll be sharing a mountain with. We close the day with a slow welcome circle as the valley goes dark.",
+    text: "Make your way up to goSTOPS Mussoorie. Unpack, breathe the thinner air, and meet the strangers you will be sharing a mountain with. We close the day with a slow welcome circle as the valley goes dark.",
     accent: "#173d78",
   },
   {
     day: "Day 2",
     date: "10 Oct",
     title: "Open Mic, then Baithak",
-    text: "Daylight is for the mic — bring your poem, your song, the story you've been carrying around too long. After dark the bonfire takes over: warm conversations, music, and a night that doesn't really ask to end.",
+    text: "Daylight is for the mic. Bring your poem, your song, the story you have been carrying around too long. After dark the bonfire takes over: warm conversations, music, and a night that doesn't really ask to end.",
     accent: "#e51c2b",
   },
   {
     day: "Day 3",
     date: "11 Oct",
     title: "The walk to Cloud's End",
-    text: "We leave the noise behind for good and trek out to Cloud's End. The walk becomes part of the retreat itself — a quiet, shared way to close a weekend that started with strangers and ends with a story.",
+    text: "We leave the noise behind for good and trek out to Cloud's End. The walk becomes part of the retreat itself; a quiet, shared way to close a weekend that started with strangers and ends with a story.",
     accent: "#2f4f3e",
   },
 ]
@@ -269,10 +269,10 @@ export default function RetreatPage() {
 
 function Hero() {
   return (
-    <section className="relative isolate flex min-h-[100svh] flex-col items-center justify-center overflow-hidden text-center">
+    <section className="relative isolate flex flex-col py-20 items-center justify-center overflow-hidden text-center">
       <SkyBackdrop />
 
-      <div className="flex w-full flex-col items-center gap-4 md:gap-7 -mt-20">
+      <div className="flex w-full flex-col items-center gap-4 md:gap-7">
         <Image
           src="/images/partners.png"
           alt="MicTale and retreat partners"
@@ -290,12 +290,12 @@ function Hero() {
             width={2080}
             height={700}
             priority
-            sizes="(max-width: 800px) 100vw, 700px"
-            className="mx-auto h-auto w-full max-w-[700px]"
+            sizes="(max-width: 800px) 85vw, 700px"
+            className="mx-auto h-auto w-[85%] max-w-[350px] md:w-full md:max-w-[700px]"
           />
         </h1>
 
-        <p className="mx-auto max-w-2xl text-lg tracking-widest text-black -mt-5 -mb-8">A 3-DAY MOUNTAIN RETREAT PROGRAMME</p>
+        <p className="mx-auto max-w-2xl text-sm md:text-lg tracking-widest text-black -mt-2 md:-mt-5 md:-mb-8">A 3-DAY MOUNTAIN RETREAT PROGRAMME</p>
 
         <Image
           src="/images/dates.png"
@@ -307,30 +307,35 @@ function Hero() {
           className="mx-auto h-auto w-[80%] max-w-[520px]"
         />
 
-      <div className="flex flex-col items-center gap-4">
-  <a
-    href={BOOKING_URL}
-    className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-white/10 bg-gradient-to-br from-[#173d78] via-[#0f2750] to-[#071329] px-10 py-4 text-sm font-semibold tracking-wide text-white shadow-[0_14px_30px_-10px_rgba(23,61,120,0.6)] transition-all duration-500 hover:scale-[1.04] hover:border-white hover:shadow-[0_20px_40px_-12px_rgba(23,61,120,0.9)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#173d78]"
+      </div><button 
+  type="button"
+  className="flex flex-col mt-20 items-center gap-3 text-[#173d78]/70 transition-all duration-300 hover:text-[#173d78] focus-visible:outline-none group"
+>
+  <style>{`
+    @keyframes custom-scroll-drop {
+      0% { transform: translateY(0); animation-timing-function: ease-in-out; }
+      35% { transform: translateY(16px); animation-timing-function: ease-in-out; } /* Smooth bottom */
+      60% { transform: translateY(0); animation-timing-function: ease-in; } /* Smooth back top */
+      70% { transform: translateY(0); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); } /* Brief pause, then high gravity acceleration */
+      85% { transform: translateY(22px); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); } /* Sudden force drop to the very bottom */
+      100% { transform: translateY(0); } /* Reset */
+    }
+    .animate-custom-scroll {
+      animation: custom-scroll-drop 2.5s infinite;
+    }
+  `}</style>
+
+  <div className="relative flex h-[38px] w-[25px] md:h-[48px] md:w-[30px] justify-center rounded-full border-[2px] border-current pt-[8px]">
+    <div className="h-[6px] w-[6px] rounded-full bg-current animate-custom-scroll" />
+  </div>
+
+  <span 
+    className="text-[11px] font-semibold uppercase tracking-[0.2em]"
+    style={{ fontFamily: "var(--font-display)" }}
   >
-    <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 ease-in-out group-hover:translate-x-full" />
-    
-    {/* Text and Icon Container */}
-    <span className="relative uppercase tracking-widest flex items-center gap-2">
-      Reserve your seat
-      
-      <svg 
-        className="h-4 w-4 transition-all duration-300 group-hover:translate-x-1.5" 
-        fill="none" 
-        viewBox="0 0 24 24" 
-        stroke="currentColor" 
-        strokeWidth={2.5}
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-      </svg>
-    </span>
-  </a>
-</div>
-      </div>
+    Scroll Down
+  </span>
+</button>
     </section>
   )
 }
@@ -351,20 +356,27 @@ function SkyBackdrop() {
 
 function Experience() {
   return (
-    <section className="relative px-6 py-24 md:py-32 bg-[#f4efe4]">
+    <section className="relative px-6 py-12 md:py-22 bg-[#f4efe4]"
+    style={{
+    backgroundImage: "repeating-linear-gradient(to right, #172554 0, #172554 16px, transparent 16px, transparent 28px)",
+    backgroundSize: "100% 1px",
+    backgroundPosition: "bottom",
+    backgroundRepeat: "no-repeat"
+  }}
+>
       <PaperGrain />
       <div className="relative mx-auto max-w-3xl text-center">
         <h2
-          className="text-4xl leading-tight md:text-6xl"
+          className="text-2xl leading-tight md:text-6xl"
           style={{ fontFamily: "var(--font-display)" }}
         >
           Come for the mountains.
           <br />
           Stay for the stories.
         </h2>
-        <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-[#173d78]/75">
+        <p className="mx-auto mt-2 md:mt-8 max-w-xl text-sm md:text-lg leading-relaxed text-[#173d78]/75">
           A slow weekend away from the noise. A place to meet strangers, hear
-          stories, perform, listen, and simply exist for a while — somewhere the
+          stories, perform, listen, and simply exist for a while, somewhere the
           air is thinner and the conversations run longer.
         </p>
       </div>
@@ -373,23 +385,23 @@ function Experience() {
 }
 function Itinerary() {
   return (
-    <section className="relative px-6 py-24 md:py-32 bg-[#f4efe4]">
+    <section className="relative px-6 py-12 md:py-22 bg-[#f4efe4]">
       <PaperGrain />
       <div className="relative mx-auto max-w-5xl">
-        <div className="mx-auto mb-16 max-w-2xl text-center">
+        <div className="mx-auto mb-6 md:mb-16 max-w-2xl text-center">
           <h2
-            className="text-4xl md:text-5xl"
+            className="text-2xl md:text-5xl"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Three days, one story
           </h2>
-          <p className="mt-4 text-base text-[#173d78]/70">
-            A rough shape for the weekend — postcards from a trip you haven't
+          <p className="mt-1 md:mt-4 text-xs md:text-base text-[#173d78]/70 px-16 md:px-0">
+            A rough shape for the weekend, postcards from a trip you haven't
             taken yet.
           </p>
         </div>
 
-        <div className="flex flex-col gap-14 md:gap-10">
+        <div className="flex flex-col gap-2 md:gap-10">
           {itinerary.map((item, i) => (
             <Postcard key={item.day} item={item} reversed={i % 2 === 1} />
           ))}
@@ -429,21 +441,20 @@ function StayExperience() {
   ]
 
   return (
-    <section className="relative overflow-hidden bg-[#f4efe4] px-6 py-24 md:py-32">
+    <section className="relative overflow-hidden bg-[#f4efe4] px-6 py-8 md:py-12">
       <PaperGrain />
 
       <div className="relative mx-auto max-w-6xl">
-        {/* Heading */}
-        <div className="mx-auto mb-14 max-w-3xl text-center">
+        <div className="mx-auto mb-5 md:mb-14 max-w-3xl text-center">
           <p
-            className="mb-3 text-sm uppercase tracking-[0.22em] text-[#e51c2b]"
+            className="mb-3 text-xs md:text-sm uppercase tracking-[0.22em] text-[#e51c2b]"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Your home in the hills
           </p>
 
           <h2
-            className="text-4xl leading-tight md:text-6xl"
+            className="text-2xl leading-tight md:text-6xl"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Know your staying
@@ -451,37 +462,37 @@ function StayExperience() {
             <span className="italic">experience.</span>
           </h2>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-[#173d78]/70 md:text-lg">
+          <p className="mx-auto mt-2 md:mt-6 max-w-2xl text-xs leading-relaxed text-[#173d78]/70 md:text-lg">
             For three days, goSTOPS Mussoorie becomes more than just a place
             to sleep. It is where we meet, eat, talk, make things, stay up
             late and let the mountain slow us down.
           </p>
         </div>
 
-        {/* Image Grid */}
-        <div className="grid auto-rows-[220px] grid-cols-1 gap-4 md:grid-cols-4">
-          {stayImages.map((image, index) => (
-            <div
-              key={image.src}
-              className={`group relative overflow-hidden rounded-[6px] border border-[#173d78]/15 bg-[#fbf7ee] shadow-[0_18px_40px_-28px_rgba(23,61,120,0.65)] ${image.className}`}
-            >
-              <img
-                src={image.src}
-                alt={image.alt}
-                loading={index === 0 ? "eager" : "lazy"}
-                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-              />
+<div className="grid grid-cols-1 gap-4 md:grid-cols-4 md:auto-rows-[220px]">
+  {stayImages.map((image, index) => (
+    <div
+      key={image.src}
+      className={`group relative overflow-hidden rounded-[6px] border border-[#173d78]/15 bg-[#fbf7ee] shadow-[0_18px_40px_-28px_rgba(23,61,120,0.65)] ${
+      
+        index === 0 ? "block h-[280px] md:h-auto" : "hidden md:block"
+      } ${image.className}`}
+    >
+      <img
+        src={image.src}
+        alt={image.alt}
+        loading={index === 0 ? "eager" : "lazy"}
+        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+      />
 
-              {/* subtle paper overlay */}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#173d78]/30 via-transparent to-white/5 opacity-70" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#173d78]/30 via-transparent to-white/5 opacity-70" />
 
-            </div>
-          ))}
-        </div>
+    </div>
+  ))}
+</div>
 
-        {/* Property experience */}
         <div className="mt-16 grid gap-10 md:grid-cols-[0.8fr_1.2fr] md:items-start">
-          <div className="relative">
+          <div className="hidden md:flex md:relative">
             <div className="absolute -left-2 top-2 h-full w-full rotate-[-1deg] border border-dashed border-[#e51c2b]/25" />
 
             <div className="relative border border-[#173d78]/15 bg-[#fbf7ee] px-7 py-8 shadow-[0_18px_40px_-30px_rgba(23,61,120,0.55)] md:px-9 md:py-10">
@@ -505,16 +516,16 @@ function StayExperience() {
             </div>
           </div>
 
-          <div>
+          <div className="md:text-left text-center">
             <p
               className="mb-3 text-xs uppercase tracking-[0.2em] text-[#173d78]/45"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              While we're at goSTOPS
+              While we are at goSTOPS
             </p>
 
             <h3
-              className="text-3xl leading-tight md:text-4xl"
+              className="text-2xl leading-tight md:text-4xl"
               style={{ fontFamily: "var(--font-display)" }}
             >
               The property becomes
@@ -522,13 +533,13 @@ function StayExperience() {
               part of the retreat.
             </h3>
 
-            <p className="mt-5 text-base leading-relaxed text-[#173d78]/70">
+            <p className="mt-2 md:mt-5 text-xs md:text-base leading-relaxed text-[#173d78]/70 md:px-0 px-5">
               We are not coming to Mussoorie just to check into a room and
               leave. During the retreat, the goSTOPS property will be our
-              little basecamp — the place where the weekend actually unfolds.
+              little basecamp, the place where the weekend actually unfolds.
             </p>
 
-            <div className="mt-8 grid gap-0 sm:grid-cols-2">
+            <div className="mt-8 text-left grid gap-0 sm:grid-cols-2">
               {[
                 {
                   number: "01",
@@ -538,7 +549,7 @@ function StayExperience() {
                 {
                   number: "02",
                   title: "Bonfire Baithak",
-                  text: "A slower night around the fire — conversations, music and the kind of stories that happen naturally.",
+                  text: "A slower night around the fire; conversations, music and the kind of stories that happen naturally.",
                 },
                 {
                   number: "03",
@@ -565,13 +576,13 @@ function StayExperience() {
 
                     <div>
                       <h4
-                        className="text-xl"
+                        className="text-lg md:text-xl"
                         style={{ fontFamily: "var(--font-display)" }}
                       >
                         {item.title}
                       </h4>
 
-                      <p className="mt-2 text-sm leading-relaxed text-[#173d78]/60">
+                      <p className="mt-2 text-xs md:text-sm leading-relaxed text-[#173d78]/60 pr-10 md:pr-0">
                         {item.text}
                       </p>
                     </div>
@@ -582,10 +593,9 @@ function StayExperience() {
           </div>
         </div>
 
-        {/* Bottom note */}
-        <div className="mt-14 text-center">
+        <div className="mt-10 md:mt-14 text-center">
           <p
-            className="text-xl text-[#173d78]/75 md:text-2xl"
+            className="text-xl text-[#173d78]/75 md:text-2xl px-20  leading-6"
             style={{ fontFamily: "var(--font-hand)" }}
           >
             Come with a backpack. Leave with a few more people in your story.
@@ -604,32 +614,45 @@ function Postcard({ item, reversed }) {
       }`}
     >
       <div
-        className="flex shrink-0 flex-col items-center justify-center gap-3 px-8 py-10 text-white md:w-56"
+        className="flex shrink-0 flex-row items-center gap-5 px-6 py-6 text-white md:w-56 md:flex-col md:justify-center md:gap-3 md:px-8 md:py-10"
         style={{ backgroundColor: item.accent }}
       >
-        <span
-          className="text-xs uppercase tracking-[0.2em] opacity-85"
+        <div className="flex shrink-0 flex-col items-center gap-2 md:gap-3">
+          <span
+            className="text-[11px] uppercase tracking-[0.2em] opacity-85 md:text-xs"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            {item.day}
+          </span>
+          <span
+            className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-dashed border-white/70 text-xs md:h-16 md:w-16 md:text-sm"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            {item.date}
+          </span>
+        </div>
+
+        <h3
+          className="text-xl leading-snug md:hidden"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          {item.day}
-        </span>
-        <span
-          className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-white/70 text-sm"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          {item.date}
-        </span>
+          {item.title}
+        </h3>
       </div>
 
-      <div className="flex-1 border-t border-dashed border-[#173d78]/20 px-8 py-10 md:border-l md:border-t-0 md:px-12">
+      <div 
+        className={`flex-1 border-t border-dashed border-[#173d78]/20 px-6 py-8 md:border-t-0 md:px-12 md:py-10 ${
+          reversed ? "md:border-r" : "md:border-l"
+        }`}
+      >
         <h3
-          className="text-2xl md:text-3xl"
+          className="hidden text-2xl md:block md:text-3xl"
           style={{ fontFamily: "var(--font-display)" }}
         >
           {item.title}
         </h3>
         <p
-          className="mt-4 max-w-xl text-xl leading-relaxed text-[#173d78]/80"
+          className="max-w-xl text-lg leading-relaxed text-[#173d78]/80 md:mt-4 md:text-xl"
           style={{ fontFamily: "var(--font-hand)" }}
         >
           {item.text}
@@ -640,35 +663,35 @@ function Postcard({ item, reversed }) {
 }
 function Package() {
   return (
-    <section className="relative px-6 py-24 md:py-32 bg-[#f4efe4]">
+    <section className="relative px-6 py-12 md:py-22 bg-[#f4efe4]">
       <PaperGrain />
       <div className="relative mx-auto max-w-5xl">
-        <div className="mx-auto mb-14 max-w-2xl text-center">
+        <div className="mx-auto mb-10 md:mb-14 max-w-2xl text-center">
           <h2
-            className="text-4xl md:text-5xl"
+            className="text-2xl md:text-5xl"
             style={{ fontFamily: "var(--font-display)" }}
           >
             What's inside your stay
           </h2>
-          <p className="mt-4 text-base text-[#173d78]/70">
+          <p className="mt-2 md:mt-4 text-xs md:text-base text-[#173d78]/70 px-10 md:px-0">
             Everything you need for the weekend, coordinated end to end by
             MicTale.
           </p>
         </div>
 
-       <ul className="mx-auto grid max-w-3xl grid-cols-1 gap-x-10 gap-y-5 sm:grid-cols-2">
+       <ul className="mx-auto grid max-w-3xl grid-cols-2 gap-x-10 gap-y-5 sm:grid-cols-2 px-4 md:px-0">
   {inclusions.map((item) => {
     const Icon = item.icon;
     return (
       <li
         key={item.text}
-        className="flex items-start gap-3 border-b border-dotted border-[#173d78]/20 pb-4 text-left"
+        className="flex items-start gap-2 md:gap-3 border-b border-dotted border-[#173d78]/20 pb-2 md:pb-4 text-left"
       >
        
         <span className="mt-0.5 flex-shrink-0 text-[#173d78]">
           <Icon size={20} strokeWidth={1.75} />
         </span>
-        <span className="text-[15px] leading-snug text-[#173d78]/85">
+        <span className="text-xs md:text-[15px] leading-snug text-[#173d78]/85">
           {item.text}
         </span>
       </li>
@@ -676,20 +699,20 @@ function Package() {
   })}
 </ul>
 
-        <div className="mx-auto mt-16 grid max-w-4xl gap-8 sm:grid-cols-3">
+        <div className="mx-auto px-10 md:px-0 mt-16 grid max-w-4xl gap-8 sm:grid-cols-3">
           {tiers.map((tier) => (
             <TicketCard key={tier.name} tier={tier} />
           ))}
         </div>
 
-        <div className="mx-auto mt-14 max-w-xl border-t border-dashed border-[#173d78]/20 pt-8 text-center">
+       <div className="mx-auto mt-16 max-w-lg rounded-[6px] border border-dashed border-[#173d78]/20 bg-[#173d78]/[0.03] px-8 py-7 text-center transition-colors hover:border-[#173d78]/30 hover:bg-[#173d78]/[0.05]">
           <p
-            className="mb-3 text-sm uppercase tracking-[0.18em] text-[#173d78]/50"
+            className="mb-4 text-base font-semibold uppercase tracking-[0.2em] text-[#e51c2b]"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Not included
           </p>
-          <ul className="flex flex-col gap-1.5 text-sm text-[#173d78]/60">
+          <ul className="flex flex-col gap-2 text-sm text-[#173d78]/70">
             {exclusions.map((line) => (
               <li key={line}>{line}</li>
             ))}
@@ -703,38 +726,66 @@ function Package() {
 function TicketCard({ tier }) {
   return (
     <div
-      className={`relative flex flex-col justify-between rounded-[6px] border border-dashed p-7 ${
+      className={`group relative flex flex-col justify-between rounded-[8px] p-7 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_25px_50px_-12px_rgba(23,61,120,0.4)] ${
         tier.best
-          ? "border-[#e51c2b]/50 bg-[#fbf7ee] shadow-[0_18px_38px_-20px_rgba(229,28,43,0.4)]"
-          : "border-[#173d78]/20 bg-[#fbf7ee]/70"
+          ? "border-2 border-[#e51c2b] bg-[#fbf7ee] shadow-[0_20px_40px_-15px_rgba(229,28,43,0.3)]"
+          : "border border-[#173d78]/30 bg-[#fbf7ee]/90 shadow-[0_15px_30px_-15px_rgba(23,61,120,0.2)] hover:border-[#173d78]/60"
       }`}
     >
+      <div className="pointer-events-none absolute inset-1.5 rounded-[4px] border border-dashed border-[#173d78]/15" />
+
       {tier.best && (
         <span
-          className="absolute -right-3 -top-3 rotate-12 rounded-sm border-2 border-[#e51c2b] bg-[#fbf7ee] px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-[#e51c2b]"
+          className="absolute -right-3 -top-3 z-10 rotate-12 rounded-sm border-2 border-[#e51c2b] bg-[#fbf7ee] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-[#e51c2b] shadow-lg"
           style={{ fontFamily: "var(--font-display)" }}
         >
           Best value
         </span>
       )}
 
-      <div>
-        <p className="text-lg" style={{ fontFamily: "var(--font-display)" }}>
+      <div className="relative z-10">
+        <p className="text-2xl text-[#173d78]" style={{ fontFamily: "var(--font-display)" }}>
           {tier.name}
         </p>
-        <p className="mt-2 text-sm leading-relaxed text-[#173d78]/65">
+        <p className="mt-3 min-h-[60px] text-sm leading-relaxed text-[#173d78]/75">
           {tier.desc}
         </p>
       </div>
 
-      <div className="mt-8 flex items-end justify-between border-t border-dotted border-[#173d78]/20 pt-5">
-        <p className="text-3xl" style={{ fontFamily: "var(--font-display)" }}>
-          ₹{tier.price}
-        </p>
-        <p className="pb-1 text-xs text-[#173d78]/55">per person</p>
+      <div className="relative z-10 mt-6 border-t border-dashed border-[#173d78]/25 pt-6">
+        <div className="mb-6 flex items-end gap-1">
+          <p className="text-4xl text-[#173d78]" style={{ fontFamily: "var(--font-display)" }}>
+            ₹{tier.price}
+          </p>
+          <p className="pb-1.5 text-xs font-medium text-[#173d78]/60">per person</p>
+        </div>
+
+        <a
+          href={BOOKING_URL}
+          className={`relative flex w-full items-center justify-center overflow-hidden rounded-full px-6 py-3.5 text-sm font-semibold tracking-wide text-white transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+            tier.best
+              ? "bg-[#e51c2b] shadow-[0_10px_20px_-10px_rgba(229,28,43,0.8)] hover:bg-[#c91825] hover:shadow-[0_15px_25px_-8px_rgba(229,28,43,0.9)] focus-visible:outline-[#e51c2b]"
+              : "bg-[#173d78] shadow-[0_10px_20px_-10px_rgba(23,61,120,0.8)] hover:bg-[#0f2750] hover:shadow-[0_15px_25px_-8px_rgba(23,61,120,0.9)] focus-visible:outline-[#173d78]"
+          }`}
+        >
+          <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 ease-in-out group-hover:translate-x-full" />
+          
+          <span className="relative flex items-center gap-2">
+            Select Package
+            <svg 
+              className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor" 
+              strokeWidth={2.5}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </span>
+        </a>
       </div>
     </div>
-  )
+  );
 }
 
 function Closing() {
@@ -742,21 +793,21 @@ function Closing() {
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#f4efe4] via-[#cfdee6] to-[#a9c2ce]" />
 
-      <div className="mx-auto max-w-2xl px-6 pt-28 text-center md:pt-36">
+      <div className="mx-auto max-w-2xl px-6 text-center md:pt-36 pt-10">
         <h2
-          className="text-4xl md:text-6xl"
+          className="text-2xl md:text-6xl"
           style={{ fontFamily: "var(--font-display)" }}
         >
           See you in Mussoorie.
         </h2>
-        <p className="mx-auto mt-6 max-w-md text-base text-[#173d78]/75">
+        <p className="mx-auto mt-2 md:mt-6 max-w-md text-xs md:text-base text-[#173d78]/75 px-20 md:px-0">
           Twelve spots, one weekend, and a set of stories you won't get back in
           the city.
         </p>
 
         <a
           href={BOOKING_URL}
-          className="mt-10 inline-flex items-center justify-center rounded-full bg-[#e51c2b] px-9 py-4 text-sm font-medium text-white shadow-[0_16px_34px_-14px_rgba(229,28,43,0.6)] transition-transform duration-300 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#173d78]"
+          className="mt-4 uppercase tracking-widest md:mt-10 inline-flex items-center justify-center rounded-full bg-[#e51c2b] px-6 py-2 md:px-9 md:py-4 text-sm font-medium text-white shadow-[0_16px_34px_-14px_rgba(229,28,43,0.6)] transition-transform duration-300 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#173d78]"
         >
           Book your spot
         </a>
