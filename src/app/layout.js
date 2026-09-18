@@ -1,6 +1,7 @@
 import "./globals.css"
 import ClientRoot from "./components/ClientRoot"
 import { ToastProvider } from "./components/ui/Toast"
+import ReactLenis from 'lenis/react';
 
 export const metadata = {
   metadataBase: new URL("https://mictale.in"),
@@ -84,9 +85,12 @@ export default function RootLayout({ children }) {
     >
       <link rel="preconnect" href="https://jbskoeenkkwqcrlolvuk.supabase.co" />
       <body {...(ADD_GPTW ? { "data-gptw": "" } : {})}>
+        <ReactLenis root options={{ lerp: 0.05, duration: 1.5, smoothWheel: true, wheelMultiplier: 0.8 }}>
+     
         <ClientRoot>
           <ToastProvider>{children}</ToastProvider>
         </ClientRoot>
+         </ReactLenis>
       </body>
     </html>
   )

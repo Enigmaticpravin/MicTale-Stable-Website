@@ -1,12 +1,9 @@
 
 import Image from 'next/image'
 import originallogo from '@/../public/images/MicTale Originals.png'
-import BookPoster from '@/app/images/bookcover.webp'
 import SoloShow from './components/SoloShow'
 import ContactForm from './components/Contact'
 import Footer from './components/Footer'
-import BannerClient from './components/BannerClient'
-import HomeShowsClient from './components/ShowsClient'
 import Link from 'next/link'
 import { Youtube } from 'lucide-react'
 import { supabaseAdmin } from '@/app/lib/supabase/admin'
@@ -165,11 +162,6 @@ export default async function HomePage() {
   .select("slug, name")
   .limit(10)
 
-const { data: shows } = await supabase
-  .from("shows")
-  .select("*")
-  .throwOnError()
-
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
@@ -183,36 +175,37 @@ const { data: shows } = await supabase
 <h1 className="hidden">
   MicTale – India’s Best Creative Platform for Poetry, Ghazals, and Open Mics
 </h1>
-       <ScrollReveal>
-          <div className="hidden md:block">
-                      <Image
-                        src="/images/desktophome.png"
-                        alt="Banner Desktop"
-                        width={1920}
-                        height={1080}
-                        className="w-full h-auto rounded-2xl"
-                      />
-                    </div>
-                    
-                    <div className="block md:hidden">
-                      <Image
-                        src="/images/mobilehome.png"
-                        alt="Banner Mobile"
-                        width={1080}
-                        height={608}
-                        className="w-full h-auto rounded-2xl"
-                      />
-                    </div>
-       </ScrollReveal>
-        <HomeShowsClient shows={shows || []} />
+ <Link href="/mic_on_the_mountains_retreat" className="cursor-pointer block">
+      <ScrollReveal>
+        <div className="hidden md:block">
+          <Image
+            src="/images/desktopcover.png"
+            alt="Banner Desktop"
+            width={1920}
+            height={1080}
+            className="w-full h-auto rounded-2xl"
+          />
+        </div>
+
+        <div className="block md:hidden">
+          <Image
+            src="/images/Retreat Poster.webp"
+            alt="Banner Mobile"
+            width={1080}
+            height={608}
+            className="w-full h-auto rounded-2xl"
+          />
+        </div>
+      </ScrollReveal>
+    </Link>
        <ScrollReveal>
         <div className="bg-gradient-to-b from-transparent to-slate-900 h-10" />
         <section id="solo-show" className="md:pb-0 bg-slate-900">
           <div className="flex flex-col mb-3 md:mb-10 items-center">
-            <p className="uppercase bg-clip-text text-transparent bg-gradient-to-t text-[12px] md:text-[18px] font-bold from-yellow-700 via-yellow-500 to-yellow-900">
+            <p className="uppercase montserrat-regular tracking-wider text-white text-[12px] md:text-[18px]">
               we did our first
             </p>
-            <p className="text-transparent bg-clip-text bg-gradient-to-t text-2xl md:text-4xl font-semibold text-center from-slate-200 via-gray-400 to-white elsie-regular">
+            <p className="text-transparent bg-clip-text bg-gradient-to-t text-2xl md:text-4xl font-semibold text-center from-yellow-200 via-yellow-50 to-yellow-300 elsie-regular">
               Solo Poetry Show
             </p>
           </div>

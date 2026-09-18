@@ -17,7 +17,6 @@ import {
 import logo from '@/../public/images/logo.png'
 import mobilelogo from '@/app/images/mic transparent.png'
 import Link from 'next/link'
-import WhatsNew from '@/app/components/WhatsNew'
 import { AnimatePresence, motion } from 'framer-motion'
 import { usePathname, useRouter } from 'next/navigation'
 import { supabaseAuth } from '@/app/lib/supabase/auth'
@@ -123,9 +122,8 @@ const Navbar = () => {
 
   return (
     <>
-  {pathname !== '/rent_mictale_studio' && <WhatsNew />}
       <nav
-        className={`text-white bg-gradient-to-r from-gray-950 via-slate-900 to-gray-950 sticky top-0 z-50 transition-all duration-500 ${
+        className={`text-white bg-gradient-to-r from-gray-950 via-slate-900 to-gray-950 sticky top-0 z-[9999] transition-all duration-500 ${
           isScrolled
             ? 'bg-gradient-to-r from-gray-950 via-slate-900 to-gray-950'
             : 'm-0'
@@ -347,53 +345,6 @@ const Navbar = () => {
                     }
                   `}</style>
                 )}
-              </span>
-            </Link>
-
-             <Link
-              href='/rent_mictale_studio'
-              className={`relative inline-block rounded-full px-3 py-1 transition-all duration-300 ${
-                isActive('/rent_mictale_studio')
-                  ? 'text-black font-semibold'
-                  : 'text-white hover:scale-105'
-              }`}
-            >
-              <span
-                className='absolute inset-0 rounded-full p-[1px] md:p-[1.5px]'
-                style={{
-                  background:
-                    'linear-gradient(90deg, rgba(212,175,55,0.8), rgba(255,107,107,0.7), rgba(108,92,231,0.7), rgba(0,206,201,0.7), rgba(255,195,0,0.8), rgba(212,175,55,0.8))',
-                  backgroundSize: '200% auto',
-                  animation: 'rainbowFlow 6s linear infinite'
-                }}
-              >
-                <span className={`block h-full w-full rounded-full ${isActive('/rent_mictale_studio') ? 'bg-white' : 'bg-black'}`} />
-              </span>
-
-              <span
-                className='absolute inset-0 rounded-full blur-[4px] opacity-70 pointer-events-none'
-                style={{
-                  background:
-                    'linear-gradient(90deg, #D4AF37, #FF6B6B, #6C5CE7, #00CEA1, #FFC300, #D4AF37)',
-                  backgroundSize: '200% auto',
-                  animation: 'rainbowFlow 6s linear infinite',
-                  zIndex: 0
-                }}
-              />
-
-              <style jsx>{`
-                @keyframes rainbowFlow {
-                  0% {
-                    background-position: 0% center;
-                  }
-                  100% {
-                    background-position: 200% center;
-                  }
-                }
-              `}</style>
-
-              <span className='relative z-10 rounded-full mix-blend-normal'>
-                Rent Our Venue
               </span>
             </Link>
 
@@ -710,53 +661,6 @@ const Navbar = () => {
           </Link>
         ))}
       </nav>
-      <Link
-              href='/rent_mictale_studio'
-              className={`relative inline-block w-full rounded-full px-3 py-2 text-center transition-all duration-300 ${
-                isActive('/rent_mictale_studio')
-                  ? 'text-black font-semibold'
-                  : 'text-white hover:scale-105'
-              }`}
-            >
-              <span
-                className='absolute inset-0 rounded-full p-[1px] md:p-[1.5px]'
-                style={{
-                  background:
-                    'linear-gradient(90deg, rgba(212,175,55,0.8), rgba(255,107,107,0.7), rgba(108,92,231,0.7), rgba(0,206,201,0.7), rgba(255,195,0,0.8), rgba(212,175,55,0.8))',
-                  backgroundSize: '200% auto',
-                  animation: 'rainbowFlow 6s linear infinite'
-                }}
-              >
-                <span className={`block h-full w-full rounded-full ${isActive('/rent_mictale_studio') ? 'bg-white' : 'bg-black'}`} />
-              </span>
-
-              <span
-                className='absolute inset-0 rounded-full blur-[4px] opacity-70 pointer-events-none'
-                style={{
-                  background:
-                    'linear-gradient(90deg, #D4AF37, #FF6B6B, #6C5CE7, #00CEA1, #FFC300, #D4AF37)',
-                  backgroundSize: '200% auto',
-                  animation: 'rainbowFlow 6s linear infinite',
-                  zIndex: 0
-                }}
-              />
-
-              <style jsx>{`
-                @keyframes rainbowFlow {
-                  0% {
-                    background-position: 0% center;
-                  }
-                  100% {
-                    background-position: 200% center;
-                  }
-                }
-              `}</style>
-
-              {/* Button Content */}
-              <span className='relative z-10 rounded-full mix-blend-normal'>
-                Rent Our Venue
-              </span>
-            </Link>
 
       <div className='py-4 border-t border-black/10'>
         {user ? (
@@ -788,7 +692,7 @@ const Navbar = () => {
         </div>
         <div className='flex items-center space-x-2 text-black text-[9px] uppercase tracking-[0.3em] font-black'>
           <MapPin size={12} className="text-black" />
-          <span>Sector 64, Noida</span>
+          <span>Coming Soon</span>
         </div>
       </div>
     </div>

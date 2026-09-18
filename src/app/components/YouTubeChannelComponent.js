@@ -47,7 +47,7 @@ const YouTubeChannelComponent = () => {
         <header className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-16 gap-6">
           <div className="flex w-full flex-col justify-center items-center">
             <div className="flex items-center justify-center gap-2">
-              <span className="text-[8px] md:text-[10px] tracking-[0.4em] uppercase text-[#bf953f] font-bold">
+              <span className="text-[8px] md:text-[10px] tracking-[0.4em] uppercase text-white montserrat-regular">
                 Exclusively from
               </span>
             </div>
@@ -103,12 +103,12 @@ const YouTubeChannelComponent = () => {
                     {video.title}
                   </h3>
 
-                  <p className="text-blue-100/50 text-[10px] md:text-xs leading-relaxed line-clamp-2 font-light">
+                  <p className="text-gray-300 text-[10px] md:text-xs leading-relaxed line-clamp-2 font-light">
                     {video.desc}
                   </p>
 
                   <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                    <div className="flex gap-4 text-[10px] tracking-widest uppercase font-bold text-blue-300/60">
+                    <div className="flex gap-4 text-[10px] tracking-widest uppercase font-bold text-white">
                       <span className="flex items-center gap-1.5">
                         <Calendar size={12} />
                         {video.date}

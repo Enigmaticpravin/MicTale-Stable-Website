@@ -12,71 +12,13 @@ import { Youtube } from 'lucide-react'
 const YouTubeChannelComponent = dynamic(() => import('./components/YouTubeChannelComponent'), {ssr: false})
 const ContactForm = dynamic(() => import('./components/Contact'), {ssr: false})
 const Footer = dynamic(() => import('./components/Footer'), {ssr: false})
-import { useRouter } from 'next/navigation'
-
 export default function Home () {
-
-  const router = useRouter()
-
-  const handleClick = event => {
-    const { clientX, clientY, target } = event
-    const imageWidth = target.clientWidth || 0
-    const imageHeight = target.clientHeight || 0
-    const isMobile = window.innerWidth < 768
-
-    let choice
-
-    if (isMobile) {
-      choice =
-        clientY < imageHeight / 2
-          ? {
-              slug: 'kaalikh-author-signed-paperback-by-pravin-gupta',
-              title: 'Kaalikh (Author-signed, Paperback)'
-            }
-          : {
-              slug: 'he-is-a-hero-he-raped-by-anubhav-singh',
-              title: 'He is a Hero. He Raped!'
-            }
-    } else {
-      choice =
-        clientX < imageWidth / 2
-          ? {
-              slug: 'he-is-a-hero-he-raped-by-anubhav-singh',
-              title: 'He is a Hero. He Raped!'
-            }
-          : {
-              slug: 'kaalikh-author-signed-paperback-by-pravin-gupta',
-              title: 'Kaalikh (Author-signed, Paperback)'
-            }
-    }
-
-    router.push(`/book/${encodeURIComponent(choice.slug)}`)
-  }
 
   const poppinsStyle = {
     fontFamily: 'Poppins, sans-serif'
   }
   return (
     <div className='relative min-h-screen bg-slate-950 text-white overflow-hidden'>
-
-      <div className={`relative mx-auto md:px-6 transition-all duration-1000`}>
-        <div className='w-full flex-shrink-0 ' onClick={handleClick}>
-          <Image
-            src={BookPoster}
-            alt='Book Cover'
-            className='w-full h-auto cursor-pointer rounded-2xl md:flex hidden'
-            priority={true}
-          />
-          <Image
-            src='/images/mobilebanner.webp'
-            alt='Book Cover'
-            className='w-full h-auto cursor-pointer rounded-2xl md:hidden flex'
-            height={600}
-            width={300}
-            priority={true}
-          />
-        </div>
-      </div>
       <div className='bg-gradient-to-b from-transparent to-slate-900 h-10'></div>
       <section id='solo-show' className='md:pb-0 bg-slate-900'>
         <div className='justify-center items-center flex flex-col mb-3 md:mb-10'>
@@ -134,20 +76,7 @@ export default function Home () {
       <StoryboardGallery />
 
       <div className='bg-gradient-to-b from-slate-900 to-transparent h-10'></div>
-      <div className='justify-center items-center flex flex-col mb-2 mt-5'>
-        <p
-          className='uppercase text-transparent bg-clip-text bg-gradient-to-t font-semibold text-[12px] md:text-[18px] from-yellow-700 via-yellow-500 to-yellow-900'
-          style={poppinsStyle}
-        >
-          our upcoming
-        </p>
-        <p className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white veronica-class'>
-          Ventures
-        </p>
-      </div>
-      <LogoMarquee />
-      <div className='bg-gradient-to-b to-slate-900 from-transparent h-10'></div>
-      <YouTubeChannelComponent />
+
 
       <div className='bg-gradient-to-b from-slate-900 to-transparent h-10'></div>
       <ContactForm />

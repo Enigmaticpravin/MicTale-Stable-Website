@@ -61,12 +61,12 @@ const StoryboardGallery = () => {
       <div className='w-full max-w-6xl'>
         <div className='justify-center items-center flex flex-col mb-2 md:mb-10'>
           <p
-            className='uppercase text-transparent bg-clip-text bg-gradient-to-t font-semibold text-[12px] md:text-[18px] from-yellow-700 via-yellow-500 to-yellow-900'
+            className='uppercase font-semibold text-[12px] md:text-[18px] text-white montserrat-regular tracking-wider'
             style={poppinsStyle}
           >
             get a glimpse from
           </p>
-          <p className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-slate-200 via-gray-400 to-white elsie-regular'>
+          <p className='text-transparent bg-clip-text bg-gradient-to-t font-semibold text-2xl md:text-4xl text-center from-yellow-400 via-yellow-50 to-yellow-300 elsie-regular'>
             Our Latest Open Mic Show
           </p>
         </div>
