@@ -4,7 +4,7 @@ import { ToastProvider } from "./components/ui/Toast"
 import ReactLenis from 'lenis/react';
 
 export const metadata = {
-  metadataBase: new URL("https://mictale.in"),
+  metadataBase: new URL("https://www.mictale.in"),
 
   title: {
     default: "MicTale - India's Best Creative Platform",
@@ -33,7 +33,7 @@ export const metadata = {
 
   openGraph: {
     type: "website",
-    url: "https://mictale.in",
+    url: "https://www.mictale.in",
     title: "MicTale | India’s Best Creative Platform",
     description:
       "Step into MicTale, Delhi's open mic studio where poetry, music, comedy, and storytelling come alive. Perform, connect, and grow with a vibrant creative community.",
@@ -55,10 +55,6 @@ export const metadata = {
       "A stage for poets, storytellers, comedians, and musicians. MicTale is Delhi's creative hub for open mic events.",
     creator: "@mictale",
     images: ["https://i.imgur.com/YFpScQU.png"],
-  },
-
-  alternates: {
-    canonical: "https://mictale.in",
   },
 
   icons: {

@@ -170,22 +170,6 @@ export default async function PoemPage ({ params }) {
         similar={similar}
       />
 
-      <div className='hidden'>
-        <h2>
-          {title} by {author}
-        </h2>
-
-        <Link href={`/poet/${author.toLowerCase().replace(/\s+/g, '-')}`}>
-          More poems by {author}
-        </Link>
-
-        {similar.map(s => (
-          <Link key={s.slug} href={`/poem/${s.slug}`}>
-            {s.title}
-          </Link>
-        ))}
-      </div>
-
       <Script id='ld-json' type='application/ld+json'>
         {JSON.stringify({
           '@context': 'https://schema.org',

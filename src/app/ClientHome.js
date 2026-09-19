@@ -1,15 +1,12 @@
 'use client'
 
-import BookPoster from '@/app/images/bookcover.webp'
 import dynamic from 'next/dynamic'
 const SoloShow = dynamic(() => import('./components/SoloShow'), { ssr: false })
 const StoryboardGallery = dynamic(() => import('./components/StoryboardGallery'), { ssr: false })
 import originallogo from '@/../public/images/MicTale Originals.png'
 const TopPerformers = dynamic(() => import('./components/TopPerformers'), {ssr: false})
 import Image from 'next/image'
-const LogoMarquee = dynamic(() => import('./components/LogoMarquee'), {ssr: false})
 import { Youtube } from 'lucide-react'
-const YouTubeChannelComponent = dynamic(() => import('./components/YouTubeChannelComponent'), {ssr: false})
 const ContactForm = dynamic(() => import('./components/Contact'), {ssr: false})
 const Footer = dynamic(() => import('./components/Footer'), {ssr: false})
 export default function Home () {

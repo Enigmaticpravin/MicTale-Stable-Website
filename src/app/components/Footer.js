@@ -73,7 +73,7 @@ export default function Footer() {
             <Social href="https://instagram.com/mictale.in" label="Instagram">
               <Instagram className="h-5 w-5" />
             </Social>
-            <Social href="https://www.linkedin.com/company/mictale" label="Twitter">
+            <Social href="https://www.linkedin.com/company/mictale" label="LinkedIn">
               <Linkedin className="h-5 w-5" />
             </Social>
             <Social href="https://www.youtube.com/@mictaleoriginals" label="YouTube">
@@ -119,15 +119,6 @@ function Social({ href, label, children }) {
       {children}
       <span className="pointer-events-none absolute inset-0 -z-10 rounded-xl bg-gradient-to-r from-sky-500/0 via-cyan-400/0 to-fuchsia-500/0 opacity-0 blur-xl transition-all duration-300 group-hover:opacity-20" />
     </Link>
-  )
-}
-
-function LangBadge({ code = 'EN' }) {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-white/80">
-      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-      {code}
-    </span>
   )
 }
 

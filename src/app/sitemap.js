@@ -27,6 +27,7 @@ export default async function sitemap() {
     "treasury",
     "privacy-policy",
     "terms-and-conditions",
+    "mic_on_the_mountains_retreat",
   ].map(path => ({
     url: `${base}/${path}`,
     lastModified: new Date(),

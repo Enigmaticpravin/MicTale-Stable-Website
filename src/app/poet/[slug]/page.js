@@ -103,14 +103,7 @@ export default async function PoetProfilePage({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <PoemListClient poems={poems} author={author} />
-       <div className="hidden">
-        <h2>All poems by {author.name}</h2>
-        {poems.map(p => (
-          <Link key={p.id} href={`/poem/${p.slug || p.id}`}>
-            {p.title}
-          </Link>
-        ))}
-      </div>
+       
       <Footer />
     </>
   )

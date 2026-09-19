@@ -56,16 +56,11 @@ export const metadata = {
 
 const structuredData = {
   '@context': 'https://schema.org',
-  '@type': 'WebSite',
+  '@type': 'CollectionPage',
   name: 'Treasury: The Home of Finest Poetry',
   description:
     'Discover and explore the finest collection of poetry including Ghazals, Matlas, and Nazms. Submit your own poetry and connect with fellow poets.',
   url: 'https://www.mictale.in/treasury',
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: 'https://www.mictale.in/search?q={search_term_string}',
-    'query-input': 'required name=search_term_string'
-  },
   mainEntity: {
     '@type': 'CreativeWork',
     '@id': 'https://www.mictale.in/treasury',

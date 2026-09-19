@@ -130,10 +130,9 @@ const Navbar = () => {
         }`}
       >
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 md:py-4 py-2 flex justify-between items-center'>
-          <div
+          <Link
             className='relative cursor-pointer'
-            onClick={() => (router.push('/'))}
-          >
+            href='/'>
             <Image
               src={logo}
               className='hidden md:relative md:flex h-7 w-fit text-[#6c5ce7]'
@@ -146,7 +145,7 @@ const Navbar = () => {
               priority={true}
               alt='Mobile Logo'
             />
-          </div>
+          </Link>
 
           <Link
             href='/treasury'

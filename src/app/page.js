@@ -6,7 +6,6 @@ import ContactForm from './components/Contact'
 import Footer from './components/Footer'
 import Link from 'next/link'
 import { Youtube } from 'lucide-react'
-import { supabaseAdmin } from '@/app/lib/supabase/admin'
 import ScrollReveal from './components/ScrollReveal'
 import HomeLazyComponents from './components/HomeLazyComponents'
 
@@ -149,18 +148,6 @@ const navigationSchema = {
 
 
 export default async function HomePage() {
-  const supabase = supabaseAdmin
-
-  const { data: poems } = await supabase
-  .from("poems")
-  .select("slug, title, author")
-  .order("createdAt", { ascending: false })
-  .limit(20)
-
-  const { data: poets } = await supabase
-  .from("poets")
-  .select("slug, name")
-  .limit(10)
 
   return (
     <>
@@ -171,10 +158,6 @@ export default async function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
 
       <main className="relative min-h-screen bg-slate-950 text-white overflow-hidden">
-
-<h1 className="hidden">
-  MicTale – India’s Best Creative Platform for Poetry, Ghazals, and Open Mics
-</h1>
  <Link href="/mic_on_the_mountains_retreat" className="cursor-pointer block">
       <ScrollReveal>
         <div className="hidden md:block">
@@ -240,32 +223,10 @@ export default async function HomePage() {
         </div>
         </ScrollReveal>
         <HomeLazyComponents />
-<section className="hidden">
-  <h2>Latest Poems</h2>
-
-  {poems?.map((p) => (
-    <Link key={p.slug} href={`/poem/${p.slug}`}>
-      {p.title} by {p.author}
-    </Link>
-  ))}
-</section>
-<section className="hidden">
-  <h2>Popular Poets</h2>
-
-  {poets?.map((p) => (
-    <Link key={p.slug} href={`/poet/${p.slug}`}>
-      {p.name}
-    </Link>
-  ))}
-</section>
         <ScrollReveal>
         <ContactForm />
 </ScrollReveal>
         <Footer />
-<Link href="/about" className='hidden'>About MicTale</Link>
-<Link href="/treasury" className='hidden'>Explore Treasury</Link>
-<Link href="/terms-and-conditions" className='hidden'>Terms</Link>
-<Link href="/privacy-policy" className='hidden'>Privacy</Link>
       </main>
     </>
   )
