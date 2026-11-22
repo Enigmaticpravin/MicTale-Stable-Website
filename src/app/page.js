@@ -216,7 +216,7 @@ export default async function HomePage() {
               
               <span className="relative flex items-center gap-2">
                 <Youtube className="w-4 h-4 md:w-5 md:h-5" />
-                Subscribe Now
+                Subscribe No
               </span>
             </button>
           </a>
